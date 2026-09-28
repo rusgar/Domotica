@@ -46,23 +46,32 @@ function iniciarDashboard() {
   renderBanco();
   initDropZones();
 
+  // Reset estado
+  state.colocados = {};
+  state.zonasDesbloqueadas = {};
+  state.cronometro.segundos = 0;
+
   // Restaurar progreso guardado
   const progreso = cargarProgreso();
-  if (progreso && progreso.colocados) {
-    state.colocados = progreso.colocados;
+  if (progreso) {
+    state.colocados = progreso.colocados || {};
+    state.zonasDesbloqueadas = progreso.zonasDesbloqueadas || {};
     state.cronometro.segundos = progreso.segundos || 0;
+
+    // Repintar zonas desbloqueadas
+    Object.keys(state.zonasDesbloqueadas).forEach(zonaId => {
+      if (state.zonasDesbloqueadas[zonaId]) desbloquearZona(zonaId, true);
+    });
+
+    // Repintar chips colocados
     Object.entries(state.colocados).forEach(([id, zona]) => {
       const ap = APARATOS.find(a => a.id === id);
       if (!ap) return;
       const dropZone = document.querySelector(`.drop-zone[data-zona="${zona}"]`);
       if (!dropZone) return;
-      const chip = crearChipColocado(id);
-      dropZone.appendChild(chip);
+      dropZone.appendChild(crearChipColocado(id));
     });
     actualizarUsados();
-  } else {
-    state.cronometro.segundos = 0;
-    state.colocados = {};
   }
 
   actualizarTimerUI();
@@ -78,12 +87,28 @@ function cerrarSesion() {
 
   state.usuario = null;
   state.colocados = {};
+  state.zonasDesbloqueadas = {};
   state.cronometro.segundos = 0;
   state.examen.activo = false;
   state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
+  state.preguntaActual = null;
 
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
-  document.querySelectorAll('.zona').forEach(z => z.classList.remove('correcta', 'over'));
+  document.querySelectorAll('.zona').forEach(z => {
+    z.classList.add('bloqueada');
+    z.classList.remove('correcta', 'over');
+  });
+  document.querySelectorAll('.zona-estado').forEach(e => {
+    e.className = 'zona-estado bloqueada';
+    e.textContent = '🔒';
+  });
+  document.querySelectorAll('.btn-pregunta').forEach(b => {
+    b.textContent = '❓ Responder';
+    b.disabled = false;
+    b.style.opacity = '1';
+    b.style.cursor = 'pointer';
+  });
+
   document.getElementById('resultadoFinal').classList.remove('show');
   document.getElementById('loginOverlay').classList.remove('hidden');
   document.getElementById('profesorFields').classList.remove('show');
@@ -94,6 +119,7 @@ function cerrarSesion() {
   document.body.classList.remove('examen-activo');
   document.getElementById('btnExamen').classList.remove('activo');
   document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
+  document.getElementById('modalPregunta').classList.remove('show');
 
   actualizarTimerUI();
 }

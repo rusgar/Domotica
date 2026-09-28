@@ -145,10 +145,26 @@ function resetear() {
     return;
   }
   state.colocados = {};
+  state.zonasDesbloqueadas = {};
+
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
-  document.querySelectorAll('.zona').forEach(z => z.classList.remove('correcta', 'over'));
+  document.querySelectorAll('.zona').forEach(z => {
+    z.classList.add('bloqueada');
+    z.classList.remove('correcta', 'over');
+  });
+  document.querySelectorAll('.zona-estado').forEach(e => {
+    e.className = 'zona-estado bloqueada';
+    e.textContent = '🔒';
+  });
+  document.querySelectorAll('.btn-pregunta').forEach(b => {
+    b.textContent = '❓ Responder';
+    b.disabled = false;
+    b.style.opacity = '1';
+    b.style.cursor = 'pointer';
+  });
   document.querySelectorAll('.colocado').forEach(c => c.classList.remove('bien', 'mal'));
   document.getElementById('resultadoFinal').classList.remove('show');
+
   actualizarUsados();
   actualizarScore();
   actualizarBotonPista();
@@ -165,7 +181,13 @@ function colocarTodo() {
     alert('🔒 No puedes usar auto-colocar durante un examen.');
     return;
   }
+
   resetear();
+
+  // Desbloquear todas las zonas sin preguntar
+  Object.keys(NOMBRES_ZONAS).forEach(zonaId => desbloquearZona(zonaId, true));
+
+  // Colocar todos los aparatos
   APARATOS.forEach(ap => colocarAparato(ap.id, ap.zona));
   setTimeout(() => verificarTodo(), 300);
 }

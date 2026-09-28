@@ -72,57 +72,81 @@
       <h2>🏢 Edificio · Zonas de instalación</h2>
       <div class="building">
 
-        <div class="zona zona-exterior" data-zona="exterior">
-          <div class="titulo-zona"><span class="icon-zona">🌤️</span> Exterior / Cubierta</div>
-          <div class="descripcion-zona">Sensores que miden el clima: temperatura, humedad, radiación solar, viento, lluvia y calidad del aire.</div>
+        <div class="zona zona-exterior bloqueada" data-zona="exterior">
+          <div class="titulo-zona">
+            <span class="icon-zona">🌤️</span> Exterior / Cubierta
+            <button class="btn-pregunta" onclick="abrirPregunta('exterior')">❓ Responder para desbloquear</button>
+            <span class="zona-estado bloqueada" id="estado-exterior">🔒 Bloqueada</span>
+          </div>
           <div class="drop-zone" data-zona="exterior"></div>
         </div>
 
         <div class="fila-zonas">
-          <div class="zona zona-envolvente" data-zona="envolvente">
-            <div class="titulo-zona"><span class="icon-zona">🧱</span> Envolvente</div>
-            <div class="descripcion-zona">Paredes, ventanas, tejado. Temperatura de superficies y puentes térmicos.</div>
+          <div class="zona zona-envolvente bloqueada" data-zona="envolvente">
+            <div class="titulo-zona">
+              <span class="icon-zona">🧱</span> Envolvente
+              <button class="btn-pregunta" onclick="abrirPregunta('envolvente')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-envolvente">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="envolvente"></div>
           </div>
 
-          <div class="zona zona-interior" data-zona="interior">
-            <div class="titulo-zona"><span class="icon-zona">🏠</span> Interior (aulas, oficinas)</div>
-            <div class="descripcion-zona">Temperatura, humedad, CO₂, iluminación y presencia dentro del edificio.</div>
+          <div class="zona zona-interior bloqueada" data-zona="interior">
+            <div class="titulo-zona">
+              <span class="icon-zona">🏠</span> Interior (aulas, oficinas)
+              <button class="btn-pregunta" onclick="abrirPregunta('interior')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-interior">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="interior"></div>
           </div>
         </div>
 
         <div class="fila-zonas">
-          <div class="zona zona-electrico" data-zona="electrico">
-            <div class="titulo-zona"><span class="icon-zona">⚡</span> Cuadro eléctrico</div>
-            <div class="descripcion-zona">Analizadores de red, pinzas amperimétricas, registradores y contadores eléctricos.</div>
+          <div class="zona zona-electrico bloqueada" data-zona="electrico">
+            <div class="titulo-zona">
+              <span class="icon-zona">⚡</span> Cuadro eléctrico
+              <button class="btn-pregunta" onclick="abrirPregunta('electrico')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-electrico">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="electrico"></div>
           </div>
 
-          <div class="zona zona-hidraulico" data-zona="hidraulico">
-            <div class="titulo-zona"><span class="icon-zona">💧</span> Sala hidráulica</div>
-            <div class="descripcion-zona">Caudalímetros, contadores volumétricos, sensores de presión y detección de fugas.</div>
+          <div class="zona zona-hidraulico bloqueada" data-zona="hidraulico">
+            <div class="titulo-zona">
+              <span class="icon-zona">💧</span> Sala hidráulica
+              <button class="btn-pregunta" onclick="abrirPregunta('hidraulico')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-hidraulico">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="hidraulico"></div>
           </div>
         </div>
 
         <div class="fila-zonas">
-          <div class="zona zona-termico" data-zona="termico">
-            <div class="titulo-zona"><span class="icon-zona">🔥</span> Sala térmica (caldera)</div>
-            <div class="descripcion-zona">Contadores de energía térmica, sensores de impulsión/retorno, contadores de gas.</div>
+          <div class="zona zona-termico bloqueada" data-zona="termico">
+            <div class="titulo-zona">
+              <span class="icon-zona">🔥</span> Sala térmica (caldera)
+              <button class="btn-pregunta" onclick="abrirPregunta('termico')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-termico">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="termico"></div>
           </div>
 
-          <div class="zona zona-control" data-zona="control">
-            <div class="titulo-zona"><span class="icon-zona">🧠</span> Sala de control / BMS</div>
-            <div class="descripcion-zona">Controladores, actuadores y el sistema central de gestión del edificio.</div>
+          <div class="zona zona-control bloqueada" data-zona="control">
+            <div class="titulo-zona">
+              <span class="icon-zona">🧠</span> Sala de control / BMS
+              <button class="btn-pregunta" onclick="abrirPregunta('control')">❓ Responder</button>
+              <span class="zona-estado bloqueada" id="estado-control">🔒</span>
+            </div>
             <div class="drop-zone" data-zona="control"></div>
           </div>
         </div>
 
-        <div class="zona zona-gateway" data-zona="gateway">
-          <div class="titulo-zona"><span class="icon-zona">🔀</span> Gateways / Protocolos</div>
-          <div class="descripcion-zona">Traductores entre protocolos: Modbus, KNX, BACnet, Zigbee, MQTT, LoRa.</div>
+        <div class="zona zona-gateway bloqueada" data-zona="gateway">
+          <div class="titulo-zona">
+            <span class="icon-zona">🔀</span> Gateways / Protocolos
+            <button class="btn-pregunta" onclick="abrirPregunta('gateway')">❓ Responder para desbloquear</button>
+            <span class="zona-estado bloqueada" id="estado-gateway">🔒 Bloqueada</span>
+          </div>
           <div class="drop-zone" data-zona="gateway"></div>
         </div>
 
@@ -133,10 +157,26 @@
   </div>
 
   <!-- ============================================================ -->
+  <!-- MODAL PREGUNTA                                               -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="modalPregunta">
+    <div class="modal-pregunta">
+      <div class="modal-header">
+        <h3 id="preguntaZona">Zona</h3>
+        <button class="btn-cerrar-modal" onclick="cerrarPregunta()">✕</button>
+      </div>
+      <p class="pregunta-texto" id="preguntaTexto">Cargando pregunta...</p>
+      <div class="opciones" id="preguntaOpciones"></div>
+      <div class="feedback" id="preguntaFeedback"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
   <!-- SCRIPTS (orden importa)                                      -->
   <!-- ============================================================ -->
   <script src="js/config.js"></script>
   <script src="js/datos.js"></script>
+  <script src="js/preguntas.js"></script>
   <script src="js/estado.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/cronometro.js"></script>

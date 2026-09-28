@@ -9,6 +9,7 @@ function guardarProgreso() {
   const data = {
     colocados: state.colocados,
     segundos: state.cronometro.segundos,
+    zonasDesbloqueadas: state.zonasDesbloqueadas,
     timestamp: Date.now(),
   };
   try {

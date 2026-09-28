@@ -9,6 +9,12 @@ const state = {
   // Aparatos colocados: { idAparato: zonaId }
   colocados: {},
 
+  // Zonas desbloqueadas tras responder bien la pregunta
+  zonasDesbloqueadas: {},
+
+  // Pregunta actual mostrada en el modal
+  preguntaActual: null,
+
   // Cronómetro
   cronometro: {
     segundos: 0,
