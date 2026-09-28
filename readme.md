@@ -1,86 +1,127 @@
-# 🏢 Dashboard de Monitorización de Edificios
+# 🏢 Dashboard de Domótica y Monitorización
 
-Dashboard interactivo para que los alumnos aprendan a **colocar cada sensor, actuador, controlador y gateway** en la zona correcta de un edificio, según los contenidos del curso **ELEE017PO · Domótica y Monitorización del Consumo en Edificios**.
+Dashboard interactivo para el curso **ELEE017PO · Domótica y Monitorización del Consumo en Edificios**.
 
-## 📚 Contexto
+Incluye **dos módulos** dentro del mismo dashboard:
 
-El proyecto nace como material didáctico para las siguientes unidades:
+- **🔧 Colocar aparatos** — ejercicio de arrastrar y soltar para colocar sensores, actuadores, controladores y gateways en su zona correcta del edificio.
+- **📋 Auditoría** — ejercicios de auditoría energética por zonas con tarjetas aleatorias, cálculos automáticos y presupuesto limitado.
 
-- **Tema 2** – Condiciones interiores y exteriores
-- **Tema 3** – Medida y monitorización de consumos
-- **Tema 4** – Sistemas de monitorización y comunicación
+## 📚 Contexto didáctico
 
-Los alumnos deben arrastrar cada aparato hasta la zona del edificio donde se instalaría en la realidad: exterior, envolvente, interior, cuadro eléctrico, sala hidráulica, sala térmica, sala de control o gateways.
+El material cubre los temas del curso:
 
-## 🎯 Objetivos didácticos
+- **Tema 2** — Condiciones interiores y exteriores del edificio
+- **Tema 3** — Medida y monitorización de consumos (eléctrico, hídrico, térmico y gas)
+- **Tema 4** — Sistemas de monitorización y comunicación (protocolos, arquitecturas, seguridad)
 
+## 🎯 Objetivos
+
+### Módulo 1 · Colocar aparatos
 - Identificar el tipo de aparato por su función (sensor, actuador, controlador, gateway).
 - Asociar cada aparato a la zona física del edificio donde tiene sentido instalarlo.
-- Comprender la cadena: **sensor → gateway → controlador → actuador**.
-- Reflexionar sobre el coste económico de una instalación de monitorización.
+- Comprender la cadena sensor → gateway → controlador → actuador.
+- **Responder correctamente una pregunta teórica por zona** para desbloquearla.
+
+### Módulo 2 · Auditoría
+- Analizar zonas del edificio a partir de tarjetas con datos didácticos.
+- Distinguir entre **dato, observación, inferencia e hipótesis** (D / O / I / H).
+- Realizar cálculos de ahorro energético con unidades correctas.
+- Investigar con fuentes oficiales (CTE DB-HE, RITE, REBT) y técnicas.
+- Priorizar actuaciones con presupuesto limitado.
+- Razonar sin inventar datos: qué medir, con qué instrumento y para qué.
 
 ## 🚀 Cómo usarlo
 
-1. Abre `index.html` en cualquier navegador moderno.
-2. Pulsa **"Entrar como alumno"** para empezar la actividad.
-3. Arrastra los aparatos desde la izquierda hasta las zonas del edificio.
-4. Pulsa **"Verificar colocación"** cuando hayas terminado.
+1. Abre `index.html` en Chrome o Edge (recomendado).
+2. Pulsa **"Entrar como alumno"** o **"Entrar como profesor"**.
+3. Cambia de módulo con las **pestañas superiores**.
+4. Completa el ejercicio que corresponda.
 
-### Modo profesor
+### 👨‍🏫 Modo profesor
 
 - Pulsa **"Entrar como profesor"**.
 - Usuario: `profe` · Contraseña: `domotica2025`
 - Se desbloquean:
-  - Botón **Auto-colocar** (solución rápida).
-  - Botón **Modo examen** (bloquea pistas y reset, añade cuenta atrás).
+  - Botón **🤖 Auto-colocar** (solución rápida).
+  - Botón **🎓 Modo examen** (bloquea pistas, reset y auto-colocación, añade cuenta atrás).
   - Atajo de teclado `Ctrl + Shift + A` para auto-colocar.
 
-## 📁 Estructura
+## 📁 Estructura del proyecto
 
 dashboard-domotica/
 ├── index.html
 ├── css/
-│ └── styles.css
+│ ├── styles.css ← estilos del módulo colocar
+│ └── auditoria.css ← estilos del módulo auditoría
 ├── js/
-│ ├── config.js ← credenciales y constantes
+│ ├── config.js ← configuración global
 │ ├── datos.js ← catálogo de aparatos y zonas
+│ ├── preguntas.js ← banco de preguntas por zona
 │ ├── estado.js ← estado global
 │ ├── storage.js ← persistencia en localStorage
-│ ├── cronometro.js ← cronómetro
-│ ├── login.js ← login alumno/profesor
-│ ├── dragdrop.js ← arrastrar y soltar
+│ ├── cronometro.js ← cronómetro compartido
+│ ├── login.js ← login alumno/profesor + cambio de módulo
+│ ├── dragdrop.js ← arrastrar y soltar + preguntas
 │ ├── validacion.js ← verificación, pistas, reset
-│ ├── examen.js ← modo examen
-│ ├── ui.js ← renderizado de la interfaz
-│ └── main.js ← arranque y atajos
+│ ├── examen.js ← modo examen (ambos módulos)
+│ ├── ui.js ← renderizado del banco
+│ ├── main.js ← arranque y atajos
+│ └── auditoria/
+│ ├── tarjetas.js ← 10 tarjetas con variaciones aleatorias
+│ ├── fuentes.js ← base de fuentes oficiales y técnicas
+│ ├── normativa.js ← relación caso → normativa
+│ ├── calculos.js ← fórmulas y validadores
+│ ├── presupuesto.js ← lógica de presupuesto limitado
+│ ├── aleatorio.js ← reparto aleatorio de tarjetas
+│ ├── ficha.js ← render de la ficha de análisis
+│ ├── ui-auditoria.js ← interfaz del módulo auditoría
+│ ├── informe.js ← generación JSON + XLSX
+│ └── storage-carpeta.js ← guardado en carpeta "resultados"
 ├── documentacion/
 │ ├── pasos_1.md
 │ ├── pasos_2.md
-│ └── pasos_3.md
+│ ├── pasos_3.md
+│ ├── pasos_4.md
+│ └── pasos_5.md
 ├── README.md
 └── .gitignore
 
 
+## 💾 Guardado de informes
+
+Al terminar un ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
+
+1. Rellena tu nombre (obligatorio), grupo y email.
+2. Se descargan **dos archivos**:
+   - `informe_[nombre]_[fecha].json` → datos completos.
+   - `informe_[nombre]_[fecha].xlsx` → informe tabulado con rúbrica.
+3. **En Chrome/Edge** puedes pulsar además **"📁 Elegir carpeta resultados"** para que los siguientes informes se guarden ahí automáticamente sin pasar por Descargas.
+
 ## 🔧 Personalización rápida
 
-| Qué quiero cambiar | Dónde |
+| Qué cambiar | Dónde |
 |---|---|
 | Usuario y contraseña del profesor | `js/config.js` |
 | Duración del examen | `js/config.js` → `CONFIG.duracionExamenSegundos` |
+| Precio kWh | `js/config.js` → `CONFIG_AUDITORIA.precioKWh` |
 | Añadir/quitar aparatos | `js/datos.js` → array `APARATOS` |
-| Añadir zonas al edificio | `index.html` + `js/datos.js` → `NOMBRES_ZONAS` |
-| Colores y estilos | `css/styles.css` |
+| Añadir tarjetas de auditoría | `js/auditoria/tarjetas.js` → array `TARJETAS` |
+| Añadir fuentes | `js/auditoria/fuentes.js` |
+| Colores y estilos | `css/styles.css` y `css/auditoria.css` |
 
 ## 🗺️ Hoja de ruta
 
-- [x] Colocar aparatos por zonas con drag & drop
-- [x] Login alumno / profesor
-- [x] Cronómetro
-- [x] Guardar progreso en `localStorage`
-- [x] Modo examen con cuenta atrás
-- [ ] Ejercicio aleatorio (subconjunto de aparatos)
-- [ ] Presupuesto por tipo de edificio
-- [ ] Exportación de resultados a CSV
+- [x] **Paso 1** — Colocar aparatos por zonas con drag & drop
+- [x] **Paso 2** — Login, cronómetro y persistencia
+- [x] **Paso 3** — Modo examen
+- [x] **Paso 4** — Preguntas de desbloqueo por zona
+- [x] **Paso 5** — Módulo de auditoría con Ejercicio 6
+- [ ] **Paso 6** — Ejercicio Global (2 zonas + sensores + protocolos + envolvente)
+- [ ] **Paso 7** — Ejercicio 3 (detectives de ineficiencias, 10 casos)
+- [ ] **Paso 8** — Ejercicio 4 (auditoría de un aula real con mediciones)
+- [ ] **Paso 9** — Panel del profesor para ver todos los informes
+- [ ] **Paso 10** — Exportación a PDF con rúbrica automática
 
 ## 📄 Licencia
 

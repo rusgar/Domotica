@@ -1,5 +1,5 @@
 /* ============================================================
-   MODO EXAMEN
+   MODO EXAMEN (aplica a ambos módulos)
    ============================================================ */
 
 function toggleExamen() {
@@ -10,9 +10,12 @@ function toggleExamen() {
     alert('Modo examen desactivado.');
   } else {
     const minutos = CONFIG.duracionExamenSegundos / 60;
-    if (!confirm(`¿Activar modo examen?\n\n· Se reiniciará todo el progreso\n· Duración: ${minutos} minutos\n· Se bloquean pistas, reset y auto-colocación`)) return;
+    if (!confirm(`¿Activar modo examen?\n\n· Se reiniciará todo el progreso\n· Duración: ${minutos} minutos\n· Se bloquean pistas, reset y auto-colocación\n· Aplica a ambos módulos (Colocar y Auditoría)`)) return;
 
+    // Reset de ambos módulos
     resetear();
+    resetearAuditoriaSilencioso();
+
     state.examen.activo = true;
     state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
 
@@ -56,19 +59,50 @@ function finalizarExamenPorTiempo() {
     state.examen.intervalo = null;
   }
   detenerCronometro();
-  verificarTodo();
 
-  const res = document.getElementById('resultadoFinal');
-  res.className = 'resultado-final show mal';
-  res.innerHTML = `
-    <span class="icono-grande">⏰</span>
-    ¡TIEMPO AGOTADO!
-    <div class="detalle">
-      Se acabó el tiempo del examen. Los resultados se han registrado.<br>
-      Tiempo transcurrido: <strong>${formatearTiempo(state.cronometro.segundos)}</strong>
-    </div>
-  `;
+  // Verificar módulo activo
+  if (state.moduloActivo === 'colocar') {
+    verificarTodo();
+  } else {
+    // En auditoría, solo mostrar aviso
+    const cont = document.getElementById('tarjetasLista');
+    if (cont) {
+      const aviso = document.createElement('div');
+      aviso.className = 'resultado-final show mal';
+      aviso.innerHTML = `
+        <span class="icono-grande">⏰</span>
+        ¡TIEMPO AGOTADO!
+        <div class="detalle">
+          Se acabó el tiempo del examen. Entrega el informe cuando lo tengas listo.
+        </div>
+      `;
+      cont.prepend(aviso);
+    }
+  }
 
   document.getElementById('btnReset').disabled = true;
   document.querySelectorAll('.aparato').forEach(a => a.draggable = false);
+}
+
+// Reset silencioso de auditoría (sin confirmación, para uso interno del examen)
+function resetearAuditoriaSilencioso() {
+  state.auditoria = {
+    ejercicio: null,
+    config: null,
+    tarjetas: [],
+    variaciones: [],
+    fichas: [],
+    presupuesto: null
+  };
+  borrarProgresoAuditoria();
+
+  const inicio = document.getElementById('auditoriaInicio');
+  const trabajo = document.getElementById('auditoriaTrabajo');
+  if (inicio) inicio.style.display = 'block';
+  if (trabajo) trabajo.style.display = 'none';
+
+  const lista = document.getElementById('tarjetasLista');
+  if (lista) {
+    lista.innerHTML = '<div class="tarjeta-vacia">Pulsa "🎲 Repartir tarjetas" para empezar</div>';
+  }
 }

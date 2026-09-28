@@ -6,26 +6,39 @@ const state = {
   // Usuario actual: null | 'alumno' | 'profe'
   usuario: null,
 
-  // Aparatos colocados: { idAparato: zonaId }
+  // Módulo activo: 'colocar' | 'auditoria'
+  moduloActivo: 'colocar',
+
+  // ============================================================
+  // MÓDULO 1 · COLOCAR APARATOS
+  // ============================================================
   colocados: {},
-
-  // Zonas desbloqueadas tras responder bien la pregunta
   zonasDesbloqueadas: {},
-
-  // Pregunta actual mostrada en el modal
   preguntaActual: null,
 
-  // Cronómetro
+  // Cronómetro (compartido entre módulos)
   cronometro: {
     segundos: 0,
     intervalo: null,
     corriendo: false,
   },
 
-  // Examen
+  // Examen (aplica a ambos módulos)
   examen: {
     activo: false,
     segundosRestantes: CONFIG.duracionExamenSegundos,
     intervalo: null,
+  },
+
+  // ============================================================
+  // MÓDULO 2 · AUDITORÍA
+  // ============================================================
+  auditoria: {
+    ejercicio: null,       // '6' | 'global'
+    config: null,          // objeto de EJERCICIOS
+    tarjetas: [],          // tarjetas repartidas
+    variaciones: [],       // variación elegida por tarjeta
+    fichas: [],            // respuestas del alumno por tarjeta
+    presupuesto: null      // bloque de presupuesto
   },
 };

@@ -33,6 +33,11 @@ build/
 .env.local
 .env.*.local
 
+# Informes generados por los alumnos
+resultados/
+informe_*.json
+informe_*.xlsx
+
 # Archivos personales de prueba
 pruebas/
 borradores/

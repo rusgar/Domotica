@@ -43,27 +43,30 @@ function iniciarDashboard() {
     document.getElementById('btnExamen').style.display = 'none';
   }
 
+  // Restaurar módulo activo
+  const moduloGuardado = localStorage.getItem('dashboard_modulo_activo') || 'colocar';
+  cambiarModulo(moduloGuardado);
+
+  // Inicializar módulo colocar
   renderBanco();
   initDropZones();
 
-  // Reset estado
+  // Reset estado colocar
   state.colocados = {};
   state.zonasDesbloqueadas = {};
   state.cronometro.segundos = 0;
 
-  // Restaurar progreso guardado
+  // Restaurar progreso colocar
   const progreso = cargarProgreso();
   if (progreso) {
     state.colocados = progreso.colocados || {};
     state.zonasDesbloqueadas = progreso.zonasDesbloqueadas || {};
     state.cronometro.segundos = progreso.segundos || 0;
 
-    // Repintar zonas desbloqueadas
     Object.keys(state.zonasDesbloqueadas).forEach(zonaId => {
       if (state.zonasDesbloqueadas[zonaId]) desbloquearZona(zonaId, true);
     });
 
-    // Repintar chips colocados
     Object.entries(state.colocados).forEach(([id, zona]) => {
       const ap = APARATOS.find(a => a.id === id);
       if (!ap) return;
@@ -78,12 +81,17 @@ function iniciarDashboard() {
   actualizarScore();
   actualizarBotonPista();
   iniciarCronometro();
+
+  // Inicializar bloque de carpeta de resultados (si aplica)
+  if (typeof inicializarBotonCarpeta === 'function') {
+    inicializarBotonCarpeta();
+  }
 }
 
 function cerrarSesion() {
   detenerCronometro();
   detenerExamen();
-  borrarProgreso();
+  borrarTodoProgreso();
 
   state.usuario = null;
   state.colocados = {};
@@ -92,7 +100,16 @@ function cerrarSesion() {
   state.examen.activo = false;
   state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
   state.preguntaActual = null;
+  state.auditoria = {
+    ejercicio: null,
+    config: null,
+    tarjetas: [],
+    variaciones: [],
+    fichas: [],
+    presupuesto: null
+  };
 
+  // Reset UI colocar
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => {
     z.classList.add('bloqueada');
@@ -108,8 +125,26 @@ function cerrarSesion() {
     b.style.opacity = '1';
     b.style.cursor = 'pointer';
   });
-
   document.getElementById('resultadoFinal').classList.remove('show');
+
+  // Reset UI auditoría
+  const auditoriaInicio = document.getElementById('auditoriaInicio');
+  const auditoriaTrabajo = document.getElementById('auditoriaTrabajo');
+  if (auditoriaInicio) auditoriaInicio.style.display = 'block';
+  if (auditoriaTrabajo) auditoriaTrabajo.style.display = 'none';
+  const listaTarjetas = document.getElementById('tarjetasLista');
+  if (listaTarjetas) {
+    listaTarjetas.innerHTML = '<div class="tarjeta-vacia">Pulsa "🎲 Repartir tarjetas" para empezar</div>';
+  }
+
+  // Reset modal informe
+  document.getElementById('modalInforme').classList.remove('show');
+  document.getElementById('informeNombre').value = '';
+  document.getElementById('informeGrupo').value = '';
+  document.getElementById('informeEmail').value = '';
+  document.getElementById('informeError').classList.remove('show');
+
+  // Reset login
   document.getElementById('loginOverlay').classList.remove('hidden');
   document.getElementById('profesorFields').classList.remove('show');
   document.getElementById('userProfe').value = '';
@@ -121,5 +156,36 @@ function cerrarSesion() {
   document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
   document.getElementById('modalPregunta').classList.remove('show');
 
+  // Reset pestañas
+  cambiarModulo('colocar');
+
   actualizarTimerUI();
+}
+
+// ============================================================
+// CAMBIO DE MÓDULO (pestañas)
+// ============================================================
+function cambiarModulo(modulo) {
+  state.moduloActivo = modulo;
+  try { localStorage.setItem('dashboard_modulo_activo', modulo); } catch (e) {}
+
+  // Actualizar pestañas
+  document.querySelectorAll('.tab-modulo').forEach(t => t.classList.remove('active'));
+  const tabActiva = document.getElementById(modulo === 'colocar' ? 'tabColocar' : 'tabAuditoria');
+  if (tabActiva) tabActiva.classList.add('active');
+
+  // Mostrar / ocultar módulos
+  const mColocar = document.getElementById('moduloColocar');
+  const mAuditoria = document.getElementById('moduloAuditoria');
+  if (modulo === 'colocar') {
+    mColocar.classList.remove('modulo-oculto');
+    mColocar.classList.add('modulo-activo');
+    mAuditoria.classList.remove('modulo-activo');
+    mAuditoria.classList.add('modulo-oculto');
+  } else {
+    mAuditoria.classList.remove('modulo-oculto');
+    mAuditoria.classList.add('modulo-activo');
+    mColocar.classList.remove('modulo-activo');
+    mColocar.classList.add('modulo-oculto');
+  }
 }

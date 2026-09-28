@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard · Coloca cada aparato en su zona</title>
+  <title>Dashboard · Domótica y Monitorización</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auditoria.css">
+  <!-- ExcelJS para generar XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -14,7 +17,7 @@
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
       <h1>🏢 Dashboard de Monitorización</h1>
-      <div class="sub">Coloca cada aparato en su zona del edificio</div>
+      <div class="sub">Domótica y monitorización del consumo en edificios</div>
 
       <button class="btn-alumno" onclick="entrarComoAlumno()">👤 Entrar como alumno</button>
       <button class="btn-profe" onclick="mostrarCamposProfe()">👨‍🏫 Entrar como profesor</button>
@@ -33,8 +36,8 @@
   <!-- ============================================================ -->
   <header>
     <div>
-      <h1>🏢 Dashboard · Coloca cada aparato en su zona</h1>
-      <div class="sub">Arrastra los aparatos desde la izquierda hasta la zona correcta del edificio</div>
+      <h1>🏢 Dashboard de Monitorización</h1>
+      <div class="sub">Coloca los aparatos o audita zonas del edificio</div>
     </div>
     <div class="header-right">
       <div class="timer-box" id="timerBox">00:00</div>
@@ -48,116 +51,193 @@
   </div>
 
   <!-- ============================================================ -->
-  <!-- TOOLBAR                                                      -->
+  <!-- PESTAÑAS DE MÓDULOS                                          -->
   <!-- ============================================================ -->
-  <div class="toolbar">
-    <button class="btn-check" onclick="verificarTodo()">✓ Verificar colocación</button>
-    <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista (bloqueada)</button>
-    <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
-    <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
-    <button class="btn-reset" id="btnReset" onclick="resetear()">🔄 Reiniciar</button>
-    <div class="score">Aciertos: <span id="score">0</span> / <span id="total">0</span></div>
+  <div class="tabs-modulos">
+    <button class="tab-modulo active" id="tabColocar" onclick="cambiarModulo('colocar')">
+      🔧 Colocar aparatos
+    </button>
+    <button class="tab-modulo" id="tabAuditoria" onclick="cambiarModulo('auditoria')">
+      📋 Auditoría
+    </button>
   </div>
 
   <!-- ============================================================ -->
-  <!-- LAYOUT PRINCIPAL                                             -->
+  <!-- MÓDULO 1 · COLOCAR APARATOS                                  -->
   <!-- ============================================================ -->
-  <div class="layout">
-    <div class="panel-aparatos">
-      <h2>🔧 Banco de aparatos</h2>
-      <div id="bancoAparatos"></div>
+  <div id="moduloColocar" class="modulo-activo">
+
+    <div class="toolbar">
+      <button class="btn-check" onclick="verificarTodo()">✓ Verificar colocación</button>
+      <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista (bloqueada)</button>
+      <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
+      <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
+      <button class="btn-reset" id="btnReset" onclick="resetear()">🔄 Reiniciar</button>
+      <div class="score">Aciertos: <span id="score">0</span> / <span id="total">0</span></div>
     </div>
 
-    <div class="edificio">
-      <h2>🏢 Edificio · Zonas de instalación</h2>
-      <div class="building">
-
-        <div class="zona zona-exterior bloqueada" data-zona="exterior">
-          <div class="titulo-zona">
-            <span class="icon-zona">🌤️</span> Exterior / Cubierta
-            <button class="btn-pregunta" onclick="abrirPregunta('exterior')">❓ Responder para desbloquear</button>
-            <span class="zona-estado bloqueada" id="estado-exterior">🔒 Bloqueada</span>
-          </div>
-          <div class="drop-zone" data-zona="exterior"></div>
-        </div>
-
-        <div class="fila-zonas">
-          <div class="zona zona-envolvente bloqueada" data-zona="envolvente">
-            <div class="titulo-zona">
-              <span class="icon-zona">🧱</span> Envolvente
-              <button class="btn-pregunta" onclick="abrirPregunta('envolvente')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-envolvente">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="envolvente"></div>
-          </div>
-
-          <div class="zona zona-interior bloqueada" data-zona="interior">
-            <div class="titulo-zona">
-              <span class="icon-zona">🏠</span> Interior (aulas, oficinas)
-              <button class="btn-pregunta" onclick="abrirPregunta('interior')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-interior">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="interior"></div>
-          </div>
-        </div>
-
-        <div class="fila-zonas">
-          <div class="zona zona-electrico bloqueada" data-zona="electrico">
-            <div class="titulo-zona">
-              <span class="icon-zona">⚡</span> Cuadro eléctrico
-              <button class="btn-pregunta" onclick="abrirPregunta('electrico')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-electrico">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="electrico"></div>
-          </div>
-
-          <div class="zona zona-hidraulico bloqueada" data-zona="hidraulico">
-            <div class="titulo-zona">
-              <span class="icon-zona">💧</span> Sala hidráulica
-              <button class="btn-pregunta" onclick="abrirPregunta('hidraulico')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-hidraulico">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="hidraulico"></div>
-          </div>
-        </div>
-
-        <div class="fila-zonas">
-          <div class="zona zona-termico bloqueada" data-zona="termico">
-            <div class="titulo-zona">
-              <span class="icon-zona">🔥</span> Sala térmica (caldera)
-              <button class="btn-pregunta" onclick="abrirPregunta('termico')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-termico">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="termico"></div>
-          </div>
-
-          <div class="zona zona-control bloqueada" data-zona="control">
-            <div class="titulo-zona">
-              <span class="icon-zona">🧠</span> Sala de control / BMS
-              <button class="btn-pregunta" onclick="abrirPregunta('control')">❓ Responder</button>
-              <span class="zona-estado bloqueada" id="estado-control">🔒</span>
-            </div>
-            <div class="drop-zone" data-zona="control"></div>
-          </div>
-        </div>
-
-        <div class="zona zona-gateway bloqueada" data-zona="gateway">
-          <div class="titulo-zona">
-            <span class="icon-zona">🔀</span> Gateways / Protocolos
-            <button class="btn-pregunta" onclick="abrirPregunta('gateway')">❓ Responder para desbloquear</button>
-            <span class="zona-estado bloqueada" id="estado-gateway">🔒 Bloqueada</span>
-          </div>
-          <div class="drop-zone" data-zona="gateway"></div>
-        </div>
-
+    <div class="layout">
+      <div class="panel-aparatos">
+        <h2>🔧 Banco de aparatos</h2>
+        <div id="bancoAparatos"></div>
       </div>
 
-      <div class="resultado-final" id="resultadoFinal"></div>
+      <div class="edificio">
+        <h2>🏢 Edificio · Zonas de instalación</h2>
+        <div class="building">
+
+          <div class="zona zona-exterior bloqueada" data-zona="exterior">
+            <div class="titulo-zona">
+              <span class="icon-zona">🌤️</span> Exterior / Cubierta
+              <button class="btn-pregunta" onclick="abrirPregunta('exterior')">❓ Responder para desbloquear</button>
+              <span class="zona-estado bloqueada" id="estado-exterior">🔒 Bloqueada</span>
+            </div>
+            <div class="drop-zone" data-zona="exterior"></div>
+          </div>
+
+          <div class="fila-zonas">
+            <div class="zona zona-envolvente bloqueada" data-zona="envolvente">
+              <div class="titulo-zona">
+                <span class="icon-zona">🧱</span> Envolvente
+                <button class="btn-pregunta" onclick="abrirPregunta('envolvente')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-envolvente">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="envolvente"></div>
+            </div>
+
+            <div class="zona zona-interior bloqueada" data-zona="interior">
+              <div class="titulo-zona">
+                <span class="icon-zona">🏠</span> Interior (aulas, oficinas)
+                <button class="btn-pregunta" onclick="abrirPregunta('interior')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-interior">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="interior"></div>
+            </div>
+          </div>
+
+          <div class="fila-zonas">
+            <div class="zona zona-electrico bloqueada" data-zona="electrico">
+              <div class="titulo-zona">
+                <span class="icon-zona">⚡</span> Cuadro eléctrico
+                <button class="btn-pregunta" onclick="abrirPregunta('electrico')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-electrico">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="electrico"></div>
+            </div>
+
+            <div class="zona zona-hidraulico bloqueada" data-zona="hidraulico">
+              <div class="titulo-zona">
+                <span class="icon-zona">💧</span> Sala hidráulica
+                <button class="btn-pregunta" onclick="abrirPregunta('hidraulico')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-hidraulico">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="hidraulico"></div>
+            </div>
+          </div>
+
+          <div class="fila-zonas">
+            <div class="zona zona-termico bloqueada" data-zona="termico">
+              <div class="titulo-zona">
+                <span class="icon-zona">🔥</span> Sala térmica (caldera)
+                <button class="btn-pregunta" onclick="abrirPregunta('termico')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-termico">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="termico"></div>
+            </div>
+
+            <div class="zona zona-control bloqueada" data-zona="control">
+              <div class="titulo-zona">
+                <span class="icon-zona">🧠</span> Sala de control / BMS
+                <button class="btn-pregunta" onclick="abrirPregunta('control')">❓ Responder</button>
+                <span class="zona-estado bloqueada" id="estado-control">🔒</span>
+              </div>
+              <div class="drop-zone" data-zona="control"></div>
+            </div>
+          </div>
+
+          <div class="zona zona-gateway bloqueada" data-zona="gateway">
+            <div class="titulo-zona">
+              <span class="icon-zona">🔀</span> Gateways / Protocolos
+              <button class="btn-pregunta" onclick="abrirPregunta('gateway')">❓ Responder para desbloquear</button>
+              <span class="zona-estado bloqueada" id="estado-gateway">🔒 Bloqueada</span>
+            </div>
+            <div class="drop-zone" data-zona="gateway"></div>
+          </div>
+
+        </div>
+
+        <div class="resultado-final" id="resultadoFinal"></div>
+      </div>
     </div>
   </div>
 
   <!-- ============================================================ -->
-  <!-- MODAL PREGUNTA                                               -->
+  <!-- MÓDULO 2 · AUDITORÍA                                         -->
+  <!-- ============================================================ -->
+  <div id="moduloAuditoria" class="modulo-oculto">
+
+    <!-- Pantalla de inicio del módulo auditoría -->
+    <div id="auditoriaInicio" class="auditoria-inicio">
+      <div class="card-inicio">
+        <h2>📋 Módulo de Auditoría Energética</h2>
+        <p>Analiza zonas del edificio a partir de tarjetas con datos didácticos. No necesitas instrumentos de medida: razona, calcula y propón mejoras.</p>
+
+        <div class="ejercicios-disponibles">
+          <div class="ejercicio-card activo" onclick="iniciarEjercicio('6')">
+            <div class="ejercicio-num">Ejercicio 6</div>
+            <div class="ejercicio-nombre">3 zonas aleatorias</div>
+            <div class="ejercicio-desc">Auditoría de 3 zonas asignadas al azar · Presupuesto 1.500 €</div>
+            <div class="ejercicio-badge">Recomendado</div>
+          </div>
+
+          <div class="ejercicio-card deshabilitado">
+            <div class="ejercicio-num">Ejercicio Global</div>
+            <div class="ejercicio-nombre">2 zonas + integración</div>
+            <div class="ejercicio-desc">Auditoría completa con sensores, protocolos y envolvente</div>
+            <div class="ejercicio-badge pronto">Próximamente</div>
+          </div>
+
+          <div class="ejercicio-card deshabilitado">
+            <div class="ejercicio-num">Ejercicio 3</div>
+            <div class="ejercicio-nombre">Detectives de ineficiencias</div>
+            <div class="ejercicio-desc">10 casos prácticos con presupuesto de 8.000 €</div>
+            <div class="ejercicio-badge pronto">Próximamente</div>
+          </div>
+
+          <div class="ejercicio-card deshabilitado">
+            <div class="ejercicio-num">Ejercicio 4</div>
+            <div class="ejercicio-nombre">Auditoría de un aula real</div>
+            <div class="ejercicio-desc">Con mediciones reales y prueba antes/después</div>
+            <div class="ejercicio-badge pronto">Próximamente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla de trabajo del ejercicio activo -->
+    <div id="auditoriaTrabajo" class="auditoria-trabajo" style="display:none;">
+      <div class="auditoria-header">
+        <div>
+          <h2 id="auditoriaTitulo">Ejercicio 6 · 3 zonas aleatorias</h2>
+          <div class="auditoria-sub" id="auditoriaSubtitulo">Presupuesto 1.500 € · Datos didácticos</div>
+        </div>
+        <div class="auditoria-acciones">
+          <button class="btn-check" onclick="repartirTarjetas()">🎲 Repartir tarjetas</button>
+          <button class="btn-auto" onclick="mostrarModalInforme()">📤 Enviar informe</button>
+          <button class="btn-reset" onclick="resetearAuditoria()">🔄 Reiniciar</button>
+        </div>
+      </div>
+
+      <!-- Lista de tarjetas asignadas -->
+      <div class="tarjetas-lista" id="tarjetasLista">
+        <div class="tarjeta-vacia">Pulsa "🎲 Repartir tarjetas" para empezar</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL PREGUNTA (módulo colocar)                              -->
   <!-- ============================================================ -->
   <div class="modal-overlay" id="modalPregunta">
     <div class="modal-pregunta">
@@ -171,23 +251,90 @@
     </div>
   </div>
 
-   <!-- ============================================================ -->
+  <!-- ============================================================ -->
+  <!-- MODAL INFORME (módulo auditoría)                             -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="modalInforme">
+    <div class="modal-informe">
+      <div class="modal-header">
+        <h3>📤 Enviar informe</h3>
+        <button class="btn-cerrar-modal" onclick="cerrarModalInforme()">✕</button>
+      </div>
+
+      <p class="informe-texto">Rellena tus datos para generar el informe. Se descargarán dos archivos:</p>
+      <ul class="informe-lista">
+        <li>📄 <strong>JSON</strong> · datos completos del ejercicio</li>
+        <li>📊 <strong>XLSX</strong> · informe tabulado con rúbrica</li>
+      </ul>
+
+      <div class="informe-campos">
+        <label>
+          Nombre y apellidos <span class="obligatorio">*</span>
+          <input type="text" id="informeNombre" placeholder="Ej: Ana García López" autocomplete="off">
+        </label>
+        <label>
+          Grupo / clase
+          <input type="text" id="informeGrupo" placeholder="Ej: 2º STI" autocomplete="off">
+        </label>
+        <label>
+          Email (opcional)
+          <input type="email" id="informeEmail" placeholder="alumno@centro.es" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="informe-fs" id="informeFS" style="display:none;">
+        <button class="btn-fs" onclick="elegirCarpetaResultados()">
+          📁 Elegir carpeta "resultados" (guardado automático)
+        </button>
+        <div class="informe-fs-estado" id="informeFSEstado"></div>
+      </div>
+
+      <div class="informe-error" id="informeError"></div>
+
+      <div class="informe-acciones">
+        <button class="btn-cerrar-informe" onclick="cerrarModalInforme()">Cancelar</button>
+        <button class="btn-enviar-informe" onclick="generarInforme()">📥 Descargar informe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
   <!-- SCRIPTS (orden importa)                                      -->
   <!-- ============================================================ -->
+
+  <!-- Núcleo del dashboard -->
   <script src="js/config.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/preguntas.js"></script>
   <script src="js/estado.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/cronometro.js"></script>
+
+  <!-- Módulo colocar aparatos -->
   <script src="js/login.js"></script>
   <script src="js/dragdrop.js"></script>
   <script src="js/validacion.js"></script>
   <script src="js/examen.js"></script>
   <script src="js/ui.js"></script>
+
+  <!-- Módulo auditoría -->
+  <script src="js/auditoria/tarjetas.js"></script>
+  <script src="js/auditoria/fuentes.js"></script>
+  <script src="js/auditoria/normativa.js"></script>
+  <script src="js/auditoria/calculos.js"></script>
+  <script src="js/auditoria/presupuesto.js"></script>
+  <script src="js/auditoria/aleatorio.js"></script>
+  <script src="js/auditoria/ficha.js"></script>
+  <script src="js/auditoria/storage-carpeta.js"></script>
+  <script src="js/auditoria/informe.js"></script>
+  <script src="js/auditoria/ui-auditoria.js"></script>
+
+  <!-- Arranque final -->
   <script src="js/main.js"></script>
 
-  <!-- Diagnóstico: avisa si algún archivo no cargó -->
+  <!-- ============================================================ -->
+  <!-- DIAGNÓSTICO: avisa si algún archivo no cargó                 -->
+  <!-- ============================================================ -->
   <script>
     window.addEventListener('load', () => {
       const faltan = [];
@@ -195,13 +342,23 @@
       if (typeof APARATOS === 'undefined') faltan.push('datos.js');
       if (typeof PREGUNTAS === 'undefined') faltan.push('preguntas.js');
       if (typeof state === 'undefined') faltan.push('estado.js');
-      if (typeof renderBanco === 'undefined') faltan.push('ui.js');
+      if (typeof guardarProgreso === 'undefined') faltan.push('storage.js');
+      if (typeof actualizarTimerUI === 'undefined') faltan.push('cronometro.js');
       if (typeof entrarComoAlumno === 'undefined') faltan.push('login.js');
       if (typeof abrirPregunta === 'undefined') faltan.push('dragdrop.js');
       if (typeof verificarTodo === 'undefined') faltan.push('validacion.js');
       if (typeof toggleExamen === 'undefined') faltan.push('examen.js');
-      if (typeof actualizarTimerUI === 'undefined') faltan.push('cronometro.js');
-      if (typeof guardarProgreso === 'undefined') faltan.push('storage.js');
+      if (typeof renderBanco === 'undefined') faltan.push('ui.js');
+      if (typeof TARJETAS === 'undefined') faltan.push('auditoria/tarjetas.js');
+      if (typeof FUENTES_OFICIALES === 'undefined') faltan.push('auditoria/fuentes.js');
+      if (typeof NORMATIVA === 'undefined') faltan.push('auditoria/normativa.js');
+      if (typeof validarCalculo === 'undefined') faltan.push('auditoria/calculos.js');
+      if (typeof validarPresupuesto === 'undefined') faltan.push('auditoria/presupuesto.js');
+      if (typeof repartirTarjetas === 'undefined') faltan.push('auditoria/aleatorio.js');
+      if (typeof renderTarjetaAuditoria === 'undefined') faltan.push('auditoria/ficha.js');
+      if (typeof guardarEnCarpetaResultados === 'undefined') faltan.push('auditoria/storage-carpeta.js');
+      if (typeof generarInforme === 'undefined') faltan.push('auditoria/informe.js');
+      if (typeof iniciarEjercicio === 'undefined') faltan.push('auditoria/ui-auditoria.js');
 
       if (faltan.length > 0) {
         document.body.innerHTML = `
@@ -214,9 +371,15 @@
               <li>La carpeta se llama exactamente <code>js</code> (minúsculas).</li>
               <li>Los archivos están guardados con esos nombres exactos.</li>
               <li>Abres el HTML con doble clic o desde un servidor local (no desde dentro de un ZIP).</li>
+              <li>Si usas Chrome, prueba con Live Server o un servidor local si ves errores de CORS.</li>
             </ul>
           </div>
         `;
+      } else {
+        console.log('✅ Todos los scripts cargados correctamente.');
+        console.log('📊 Aparatos:', APARATOS.length);
+        console.log('🎲 Tarjetas:', TARJETAS.length);
+        console.log('👤 Sesión iniciada como:', state.usuario || 'invitado');
       }
     });
   </script>
