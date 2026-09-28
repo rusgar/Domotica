@@ -1,0 +1,38 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs y temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+temp/
+
+# Dependencias (por si en el futuro se añade)
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
+*.min.js
+*.min.css
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Archivos personales de prueba
+pruebas/
+borradores/
