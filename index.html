@@ -694,4 +694,46 @@ function mostrarPista() {
   const pistas = {
     exterior: '🌤️ Va fuera, midiendo el clima (temperatura, humedad, sol, viento, lluvia o calidad del aire).',
     envolvente: '🧱 Mide la temperatura de las superficies: paredes, ventanas o tejado.',
-    interior: '🏠 Va dentro: mide temperatura, humedad, CO₂, luz o presencia en aulas y
+    interior: '🏠 Va dentro: mide temperatura, humedad, CO₂, luz o presencia en aulas y oficinas.',
+    electrico: '⚡ Va en el cuadro eléctrico: mide tensión, corriente, potencia, energía o factor de potencia.',
+    hidraulico: '💧 Va en la sala hidráulica: mide caudal, volumen, presión o detecta fugas de agua.',
+    termico: '🔥 Va en la sala de calderas: mide energía térmica, temperaturas de impulsión/retorno o gas.',
+    control: '🧠 Va en la sala de control o BMS: controla, decide o ejecuta acciones.',
+    gateway: '🔀 Traduce entre protocolos: Modbus, KNX, BACnet, Zigbee, MQTT o LoRa.',
+  };
+  alert(`💡 Pista para: ${ap.emoji} ${ap.nombre}\n\n${pistas[ap.zona]}`);
+}
+
+// ================================================================
+// AUTO-COLOCAR (DEMO)
+// ================================================================
+function colocarTodo() {
+  resetear();
+  APARATOS.forEach(ap => {
+    colocarAparato(ap.id, ap.zona);
+  });
+  setTimeout(() => verificarTodo(), 300);
+}
+
+// ================================================================
+// RESET
+// ================================================================
+function resetear() {
+  state.colocados = {};
+  document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
+  document.querySelectorAll('.zona').forEach(z => z.classList.remove('correcta', 'over'));
+  document.querySelectorAll('.colocado').forEach(c => c.classList.remove('bien', 'mal'));
+  document.getElementById('resultadoFinal').classList.remove('show');
+  actualizarUsados();
+  actualizarScore();
+}
+
+// ================================================================
+// INICIALIZACIÓN
+// ================================================================
+renderBanco();
+initDropZones();
+</script>
+
+</body>
+</html>
