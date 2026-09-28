@@ -24,4 +24,83 @@ const APARATOS = [
   { id: 'sensor_co2', emoji: '🫁', nombre: 'Sensor CO₂ NDIR', tipo: 'Calidad aire interior', zona: 'interior', precio: 90 },
   { id: 'ldr', emoji: '💡', nombre: 'LDR / Fotodiodo', tipo: 'Sensor luminosidad', zona: 'interior', precio: 2 },
   { id: 'luxometro', emoji: '🔆', nombre: 'Luxómetro', tipo: 'Medida luz (lux)', zona: 'interior', precio: 120 },
-  { id: 'sensor_presencia', emoji: '👤', nombre: 'Sensor de presencia', tipo: 'Dete
+  { id: 'sensor_presencia', emoji: '👤', nombre: 'Sensor de presencia', tipo: 'Detección ocupación', zona: 'interior', precio: 30 },
+
+  // ELÉCTRICO
+  { id: 'analizador_redes', emoji: '📊', nombre: 'Analizador de redes', tipo: 'Medida P, Q, FP, armónicos', zona: 'electrico', precio: 280 },
+  { id: 'pinza_amperimetrica', emoji: '🔧', nombre: 'Pinza amperimétrica', tipo: 'Medida corriente', zona: 'electrico', precio: 80 },
+  { id: 'registrador_energia', emoji: '📼', nombre: 'Registrador de energía', tipo: 'Data logging eléctrico', zona: 'electrico', precio: 220 },
+
+  // HIDRÁULICO
+  { id: 'caudalimetro_mecanico', emoji: '⚙️', nombre: 'Caudalímetro mecánico', tipo: 'Medida caudal doméstico', zona: 'hidraulico', precio: 60 },
+  { id: 'caudalimetro_ultrasonico', emoji: '📡', nombre: 'Caudalímetro ultrasónico', tipo: 'Medida caudal alta precisión', zona: 'hidraulico', precio: 400 },
+  { id: 'sensor_presion', emoji: '🎚️', nombre: 'Sensor de presión', tipo: 'Medida presión agua (bar)', zona: 'hidraulico', precio: 50 },
+  { id: 'contador_volumetrico', emoji: '🔢', nombre: 'Contador volumétrico', tipo: 'Medida volumen agua (m³)', zona: 'hidraulico', precio: 90 },
+
+  // TÉRMICO
+  { id: 'contador_termico', emoji: '🔥', nombre: 'Contador de energía térmica', tipo: 'Medida kWh térmicos', zona: 'termico', precio: 300 },
+  { id: 'sensor_impulsion', emoji: '🌡️', nombre: 'Sensor de impulsión', tipo: 'Medida Tª salida caldera', zona: 'termico', precio: 35 },
+  { id: 'sensor_retorno', emoji: '🌡️', nombre: 'Sensor de retorno', tipo: 'Medida Tª vuelta caldera', zona: 'termico', precio: 35 },
+  { id: 'caudalimetro_termico', emoji: '🌀', nombre: 'Caudalímetro térmico', tipo: 'Medida caudal circuito', zona: 'termico', precio: 150 },
+  { id: 'contador_gas', emoji: '⛽', nombre: 'Contador de gas', tipo: 'Medida m³ o kWh de gas', zona: 'termico', precio: 110 },
+
+  // CONTROL
+  { id: 'plc', emoji: '🖥️', nombre: 'PLC', tipo: 'Controlador industrial', zona: 'control', precio: 450 },
+  { id: 'bms', emoji: '🧠', nombre: 'BMS', tipo: 'Controlador gestión edificio', zona: 'control', precio: 1200 },
+  { id: 'controlador_knx', emoji: '🎛️', nombre: 'Controlador KNX', tipo: 'Controlador domótica', zona: 'control', precio: 350 },
+  { id: 'controlador_bacnet', emoji: '🎛️', nombre: 'Controlador BACnet', tipo: 'Controlador climatización', zona: 'control', precio: 500 },
+  { id: 'actuador_luz', emoji: '💡', nombre: 'Actuador de luz', tipo: 'Actuador enciende/apaga', zona: 'control', precio: 70 },
+  { id: 'actuador_valvula', emoji: '🚰', nombre: 'Actuador de válvula', tipo: 'Actuador abre/cierra agua', zona: 'control', precio: 95 },
+  { id: 'actuador_persiana', emoji: '🪟', nombre: 'Actuador de persiana', tipo: 'Actuador sube/baja toldo', zona: 'control', precio: 85 },
+
+  // GATEWAY
+  { id: 'gateway_modbus', emoji: '🔀', nombre: 'Gateway Modbus', tipo: 'Gateway RTU/TCP ↔ IP', zona: 'gateway', precio: 180 },
+  { id: 'gateway_knx', emoji: '🔀', nombre: 'Gateway KNX', tipo: 'Gateway KNX ↔ IP', zona: 'gateway', precio: 250 },
+  { id: 'gateway_bacnet', emoji: '🔀', nombre: 'Gateway BACnet', tipo: 'Gateway MS/TP ↔ IP', zona: 'gateway', precio: 300 },
+  { id: 'gateway_zigbee', emoji: '🔀', nombre: 'Gateway Zigbee', tipo: 'Gateway Zigbee ↔ IP', zona: 'gateway', precio: 60 },
+  { id: 'gateway_lora', emoji: '🔀', nombre: 'Gateway LoRa', tipo: 'Gateway LoRa ↔ IP', zona: 'gateway', precio: 220 },
+  { id: 'broker_mqtt', emoji: '☁️', nombre: 'Broker MQTT', tipo: 'Mensajería IoT', zona: 'gateway', precio: 0 },
+];
+
+// Nombres legibles de las zonas (sin descripción reveladora)
+const NOMBRES_ZONAS = {
+  exterior: '🌤️ Exterior / Cubierta',
+  envolvente: '🧱 Envolvente',
+  interior: '🏠 Interior (aulas, oficinas)',
+  electrico: '⚡ Cuadro eléctrico',
+  hidraulico: '💧 Sala hidráulica',
+  termico: '🔥 Sala térmica (caldera)',
+  control: '🧠 Sala de control / BMS',
+  gateway: '🔀 Gateways / Protocolos',
+};
+
+// Pistas para cuando el alumno tenga desbloqueada la pista
+const PISTAS_ZONAS = {
+  exterior: '🌤️ Va fuera, midiendo el clima (temperatura, humedad, sol, viento, lluvia o calidad del aire).',
+  envolvente: '🧱 Mide la temperatura de las superficies: paredes, ventanas o tejado.',
+  interior: '🏠 Va dentro: mide temperatura, humedad, CO₂, luz o presencia en aulas y oficinas.',
+  electrico: '⚡ Va en el cuadro eléctrico: mide tensión, corriente, potencia, energía o factor de potencia.',
+  hidraulico: '💧 Va en la sala hidráulica: mide caudal, volumen, presión o detecta fugas de agua.',
+  termico: '🔥 Va en la sala de calderas: mide energía térmica, temperaturas de impulsión/retorno o gas.',
+  control: '🧠 Va en la sala de control o BMS: controla, decide o ejecuta acciones.',
+  gateway: '🔀 Traduce entre protocolos: Modbus, KNX, BACnet, Zigbee, MQTT o LoRa.',
+};
+
+// FUTURO: tipos de edificio para la actividad de presupuesto
+const TIPOS_EDIFICIO = {
+  colegio: {
+    nombre: 'Colegio',
+    zonasObligatorias: ['exterior','interior','electrico','hidraulico','termico','control','gateway'],
+    presupuesto: 5000,
+  },
+  hospital: {
+    nombre: 'Hospital',
+    zonasObligatorias: ['exterior','interior','electrico','hidraulico','termico','control','gateway'],
+    presupuesto: 25000,
+  },
+  oficina: {
+    nombre: 'Oficina',
+    zonasObligatorias: ['exterior','interior','electrico','control','gateway'],
+    presupuesto: 3000,
+  },
+};

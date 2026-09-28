@@ -171,7 +171,7 @@
     </div>
   </div>
 
-  <!-- ============================================================ -->
+   <!-- ============================================================ -->
   <!-- SCRIPTS (orden importa)                                      -->
   <!-- ============================================================ -->
   <script src="js/config.js"></script>
@@ -186,5 +186,39 @@
   <script src="js/examen.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- Diagnóstico: avisa si algún archivo no cargó -->
+  <script>
+    window.addEventListener('load', () => {
+      const faltan = [];
+      if (typeof CONFIG === 'undefined') faltan.push('config.js');
+      if (typeof APARATOS === 'undefined') faltan.push('datos.js');
+      if (typeof PREGUNTAS === 'undefined') faltan.push('preguntas.js');
+      if (typeof state === 'undefined') faltan.push('estado.js');
+      if (typeof renderBanco === 'undefined') faltan.push('ui.js');
+      if (typeof entrarComoAlumno === 'undefined') faltan.push('login.js');
+      if (typeof abrirPregunta === 'undefined') faltan.push('dragdrop.js');
+      if (typeof verificarTodo === 'undefined') faltan.push('validacion.js');
+      if (typeof toggleExamen === 'undefined') faltan.push('examen.js');
+      if (typeof actualizarTimerUI === 'undefined') faltan.push('cronometro.js');
+      if (typeof guardarProgreso === 'undefined') faltan.push('storage.js');
+
+      if (faltan.length > 0) {
+        document.body.innerHTML = `
+          <div style="padding:40px; color:#f87171; font-family:sans-serif;">
+            <h2>❌ Error: faltan archivos JS</h2>
+            <p>No se han cargado correctamente estos archivos:</p>
+            <ul>${faltan.map(f => `<li><code>js/${f}</code></li>`).join('')}</ul>
+            <p>Comprueba que:</p>
+            <ul>
+              <li>La carpeta se llama exactamente <code>js</code> (minúsculas).</li>
+              <li>Los archivos están guardados con esos nombres exactos.</li>
+              <li>Abres el HTML con doble clic o desde un servidor local (no desde dentro de un ZIP).</li>
+            </ul>
+          </div>
+        `;
+      }
+    });
+  </script>
 </body>
 </html>
