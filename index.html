@@ -10,18 +10,18 @@
     color: #e2e8f0;
     min-height: 100vh;
     padding: 20px;
+    transition: background 0.5s;
+  }
+  body.examen-activo {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
   }
 
   /* ============ LOGIN ============ */
   .login-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
   }
   .login-overlay.hidden { display: none; }
   .login-card {
@@ -29,110 +29,86 @@
     border: 1px solid #334155;
     border-radius: 20px;
     padding: 40px;
-    max-width: 460px;
-    width: 100%;
+    max-width: 460px; width: 100%;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  .login-card h1 {
-    color: #38bdf8;
-    font-size: 1.5rem;
-    margin-bottom: 8px;
-  }
-  .login-card .sub {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    margin-bottom: 30px;
-  }
+  .login-card h1 { color: #38bdf8; font-size: 1.5rem; margin-bottom: 8px; }
+  .login-card .sub { color: #94a3b8; font-size: 0.85rem; margin-bottom: 30px; }
   .login-card input {
-    width: 100%;
-    padding: 12px 14px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    color: #f1f5f9;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    outline: none;
-    transition: border-color 0.2s;
+    width: 100%; padding: 12px 14px;
+    background: #0f172a; border: 1px solid #334155;
+    border-radius: 10px; color: #f1f5f9;
+    font-size: 0.95rem; margin-bottom: 12px;
+    outline: none; transition: border-color 0.2s;
   }
   .login-card input:focus { border-color: #38bdf8; }
   .login-card button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 10px;
+    width: 100%; padding: 12px; border: none;
+    border-radius: 10px; font-weight: 700;
+    font-size: 0.95rem; cursor: pointer;
+    transition: all 0.2s; margin-bottom: 10px;
   }
   .btn-alumno { background: #38bdf8; color: #0f172a; }
   .btn-alumno:hover { background: #0ea5e9; }
   .btn-profe { background: #334155; color: #e2e8f0; }
   .btn-profe:hover { background: #475569; }
-  .btn-login-profe {
-    background: #22c55e; color: #0f172a;
-  }
+  .btn-login-profe { background: #22c55e; color: #0f172a; }
   .btn-login-profe:hover { background: #16a34a; }
-  .login-error {
-    color: #f87171;
-    font-size: 0.82rem;
-    margin-top: 8px;
-    min-height: 20px;
-  }
+  .login-error { color: #f87171; font-size: 0.82rem; margin-top: 8px; min-height: 20px; }
   .profesor-fields { display: none; margin-top: 16px; }
   .profesor-fields.show { display: block; }
 
   /* ============ HEADER ============ */
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 20px;
     padding: 15px 25px;
     background: rgba(30, 41, 59, 0.7);
-    border-radius: 16px;
-    border: 1px solid #334155;
-    flex-wrap: wrap;
-    gap: 12px;
+    border-radius: 16px; border: 1px solid #334155;
+    flex-wrap: wrap; gap: 12px;
   }
   header h1 { font-size: 1.4rem; color: #38bdf8; }
   header .sub { font-size: 0.8rem; color: #94a3b8; }
+
+  .header-right {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .timer-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fbbf24;
+    min-width: 90px;
+    text-align: center;
+  }
+  .timer-box.urgente { color: #f87171; animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: 0.6; } }
+
   .user-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 0.78rem; font-weight: 600;
   }
   .user-badge.alumno { background: rgba(56,189,248,0.15); color: #38bdf8; }
   .user-badge.profe  { background: rgba(34,197,94,0.15); color: #22c55e; }
 
   .toolbar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 20px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+    align-items: center; margin-bottom: 20px;
     padding: 12px 20px;
     background: rgba(30, 41, 59, 0.7);
-    border-radius: 16px;
-    border: 1px solid #334155;
+    border-radius: 16px; border: 1px solid #334155;
   }
   .toolbar button {
-    padding: 9px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.85rem;
+    padding: 9px 16px; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: 600; font-size: 0.85rem;
     transition: all 0.2s;
   }
-  .toolbar button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  .toolbar button:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-reset { background: #ef4444; color: white; }
   .btn-reset:hover:not(:disabled) { background: #dc2626; }
   .btn-check { background: #22c55e; color: #0f172a; }
@@ -141,64 +117,65 @@
   .btn-hint:hover:not(:disabled) { background: #d97706; }
   .btn-hint:disabled { background: #475569; color: #94a3b8; }
   .btn-auto { background: #a855f7; color: white; }
-  .btn-auto:hover { background: #9333ea; }
-  .btn-logout { background: #475569; color: #e2e8f0; }
+  .btn-auto:hover:not(:disabled) { background: #9333ea; }
+  .btn-examen { background: #dc2626; color: white; }
+  .btn-examen:hover:not(:disabled) { background: #b91c1c; }
+  .btn-examen.activo { background: #f59e0b; color: #0f172a; }
+  .btn-logout { background: #475569; color: #e2e8f0; padding:6px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem; }
   .btn-logout:hover { background: #334155; }
 
   .score {
-    margin-left: auto;
-    font-size: 1rem;
-    color: #94a3b8;
-    font-weight: 600;
+    margin-left: auto; font-size: 1rem;
+    color: #94a3b8; font-weight: 600;
   }
   .score span { color: #38bdf8; font-size: 1.2rem; }
+
+  .examen-banner {
+    display: none;
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 0.9rem;
+    animation: pulse 1.5s infinite;
+  }
+  .examen-banner.show { display: block; }
 
   .layout {
     display: grid;
     grid-template-columns: 340px 1fr;
     gap: 20px;
   }
-  @media (max-width: 1100px) {
-    .layout { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
 
   /* PANEL APARATOS */
   .panel-aparatos {
     background: rgba(30, 41, 59, 0.8);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 16px; padding: 16px;
     border: 1px solid #334155;
     max-height: calc(100vh - 200px);
     overflow-y: auto;
   }
   .panel-aparatos h2 {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    font-size: 0.9rem; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px; padding-bottom: 8px;
     border-bottom: 1px solid #334155;
   }
   .categoria {
-    font-size: 0.72rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 12px 0 6px;
-    padding-left: 4px;
+    font-size: 0.72rem; color: #64748b;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin: 12px 0 6px; padding-left: 4px;
   }
   .aparato {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex; align-items: center; gap: 10px;
     padding: 8px 10px;
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    cursor: grab;
-    transition: all 0.2s;
+    background: #0f172a; border: 1px solid #1e293b;
+    border-radius: 8px; margin-bottom: 6px;
+    cursor: grab; transition: all 0.2s;
     user-select: none;
   }
   .aparato:hover { border-color: #38bdf8; transform: translateX(3px); }
@@ -208,19 +185,21 @@
   .aparato .emoji { font-size: 1.3rem; }
   .aparato .nombre { font-size: 0.82rem; font-weight: 600; }
   .aparato .tipo { font-size: 0.68rem; color: #64748b; display: block; }
+  .aparato .precio {
+    font-size: 0.65rem; color: #fbbf24;
+    font-weight: 600; margin-left: auto;
+    white-space: nowrap;
+  }
 
   /* EDIFICIO */
   .edificio {
     background: rgba(30, 41, 59, 0.8);
-    border-radius: 16px;
-    padding: 20px;
+    border-radius: 16px; padding: 20px;
     border: 1px solid #334155;
   }
   .edificio h2 {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 0.9rem; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px;
     margin-bottom: 16px;
   }
 
@@ -228,8 +207,7 @@
 
   .zona {
     position: relative;
-    min-height: 100px;
-    padding: 12px;
+    min-height: 100px; padding: 12px;
     border-radius: 12px;
     border: 2px dashed #334155;
     background: rgba(15, 23, 42, 0.6);
@@ -241,41 +219,28 @@
     box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.15);
   }
   .zona.correcta {
-    border-color: #22c55e;
-    border-style: solid;
+    border-color: #22c55e; border-style: solid;
     background: rgba(34, 197, 94, 0.08);
   }
   .zona.correcta::after {
     content: '✓';
-    position: absolute;
-    top: 8px; right: 12px;
-    color: #22c55e;
-    font-size: 1.4rem;
-    font-weight: 700;
+    position: absolute; top: 8px; right: 12px;
+    color: #22c55e; font-size: 1.4rem; font-weight: 700;
   }
   .zona .titulo-zona {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #cbd5e1;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; font-weight: 700; color: #cbd5e1;
+    text-transform: uppercase; letter-spacing: 1px;
     margin-bottom: 10px;
   }
   .zona .titulo-zona .icon-zona { font-size: 1.2rem; }
   .zona .descripcion-zona {
-    font-size: 0.72rem;
-    color: #64748b;
-    margin-bottom: 10px;
-    font-style: italic;
+    font-size: 0.72rem; color: #64748b;
+    margin-bottom: 10px; font-style: italic;
   }
 
   .fila-zonas {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
   }
   @media (max-width: 700px) { .fila-zonas { grid-template-columns: 1fr; } }
 
@@ -289,23 +254,14 @@
   .zona-gateway    { border-left: 4px solid #8b5cf6; }
 
   .drop-zone {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-height: 40px;
+    display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px;
   }
   .colocado {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    animation: pop 0.3s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; background: #0f172a;
+    border: 1px solid #334155; border-radius: 8px;
+    font-size: 0.78rem; cursor: pointer;
+    transition: all 0.2s; animation: pop 0.3s ease;
   }
   @keyframes pop {
     0% { transform: scale(0.8); opacity: 0; }
@@ -316,32 +272,24 @@
   .colocado.mal { border-color: #ef4444; background: rgba(239,68,68,0.1); }
 
   .resultado-final {
-    margin-top: 20px;
-    padding: 24px;
-    border-radius: 16px;
-    text-align: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    display: none;
-    animation: pop 0.5s ease;
+    margin-top: 20px; padding: 24px;
+    border-radius: 16px; text-align: center;
+    font-size: 1.3rem; font-weight: 700;
+    display: none; animation: pop 0.5s ease;
   }
   .resultado-final.show { display: block; }
   .resultado-final.ok {
     background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.1));
-    border: 2px solid #22c55e;
-    color: #4ade80;
+    border: 2px solid #22c55e; color: #4ade80;
   }
   .resultado-final.mal {
     background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.1));
-    border: 2px solid #ef4444;
-    color: #f87171;
+    border: 2px solid #ef4444; color: #f87171;
   }
   .resultado-final .icono-grande { font-size: 3rem; display: block; margin-bottom: 10px; }
   .resultado-final .detalle {
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: #cbd5e1;
-    margin-top: 10px;
+    font-size: 0.9rem; font-weight: 400;
+    color: #cbd5e1; margin-top: 10px;
   }
 
   ::-webkit-scrollbar { width: 8px; }
@@ -353,7 +301,7 @@
 <body>
 
 <!-- ============================================================ -->
-<!-- LOGIN                                                        -->
+<!-- LOGIN -->
 <!-- ============================================================ -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
@@ -373,24 +321,30 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- DASHBOARD                                                    -->
+<!-- DASHBOARD -->
 <!-- ============================================================ -->
 <header>
   <div>
     <h1>🏢 Dashboard · Coloca cada aparato en su zona</h1>
     <div class="sub">Arrastra los aparatos desde la izquierda hasta la zona correcta del edificio</div>
   </div>
-  <div style="display:flex; align-items:center; gap:12px;">
+  <div class="header-right">
+    <div class="timer-box" id="timerBox">00:00</div>
     <span class="user-badge alumno" id="userBadge">👤 Alumno</span>
-    <button class="btn-logout" style="padding:6px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem;" onclick="cerrarSesion()">Salir</button>
+    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
   </div>
 </header>
 
+<div class="examen-banner" id="examenBanner">
+  🎓 MODO EXAMEN ACTIVO · No hay pistas · No se puede reiniciar · No hay auto-colocación
+</div>
+
 <div class="toolbar">
   <button class="btn-check" onclick="verificarTodo()">✓ Verificar colocación</button>
-  <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista</button>
+  <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista (bloqueada)</button>
   <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
-  <button class="btn-reset" onclick="resetear()">🔄 Reiniciar</button>
+  <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
+  <button class="btn-reset" id="btnReset" onclick="resetear()">🔄 Reiniciar</button>
   <div class="score">Aciertos: <span id="score">0</span> / <span id="total">0</span></div>
 </div>
 
@@ -466,83 +420,181 @@
 
 <script>
 // ================================================================
-// CREDENCIALES DEL PROFESOR (cámbialas aquí)
+// CONFIGURACIÓN
 // ================================================================
 const CREDENCIALES_PROFE = {
   usuario: 'profe',
   password: 'domotica2025'
 };
 
+const CONFIG = {
+  duracionExamenSegundos: 5 * 60, // 5 minutos de examen
+};
+
 // ================================================================
-// CATÁLOGO DE APARATOS
+// CATÁLOGO DE APARATOS (con precio base para futuro presupuesto)
 // ================================================================
+// FUTURO: el campo "precio" se usará para la actividad de presupuesto.
 const APARATOS = [
-  // EXTERIOR
-  { id: 'termometro_ext', emoji: '🌡️', nombre: 'Termómetro exterior', tipo: 'Sensor temperatura', zona: 'exterior' },
-  { id: 'higrometro_ext', emoji: '💧', nombre: 'Higrómetro exterior', tipo: 'Sensor humedad', zona: 'exterior' },
-  { id: 'piranometro', emoji: '☀️', nombre: 'Piranómetro', tipo: 'Sensor radiación solar', zona: 'exterior' },
-  { id: 'anemometro', emoji: '🌬️', nombre: 'Anemómetro', tipo: 'Sensor velocidad viento', zona: 'exterior' },
-  { id: 'veleta', emoji: '🧭', nombre: 'Veleta', tipo: 'Sensor dirección viento', zona: 'exterior' },
-  { id: 'pluviometro', emoji: '🌧️', nombre: 'Pluviómetro', tipo: 'Sensor lluvia', zona: 'exterior' },
-  { id: 'sensor_particulas', emoji: '🌫️', nombre: 'Sensor de partículas', tipo: 'Calidad aire exterior', zona: 'exterior' },
+  { id: 'termometro_ext', emoji: '🌡️', nombre: 'Termómetro exterior', tipo: 'Sensor temperatura', zona: 'exterior', precio: 25 },
+  { id: 'higrometro_ext', emoji: '💧', nombre: 'Higrómetro exterior', tipo: 'Sensor humedad', zona: 'exterior', precio: 30 },
+  { id: 'piranometro', emoji: '☀️', nombre: 'Piranómetro', tipo: 'Sensor radiación solar', zona: 'exterior', precio: 180 },
+  { id: 'anemometro', emoji: '🌬️', nombre: 'Anemómetro', tipo: 'Sensor velocidad viento', zona: 'exterior', precio: 90 },
+  { id: 'veleta', emoji: '🧭', nombre: 'Veleta', tipo: 'Sensor dirección viento', zona: 'exterior', precio: 75 },
+  { id: 'pluviometro', emoji: '🌧️', nombre: 'Pluviómetro', tipo: 'Sensor lluvia', zona: 'exterior', precio: 60 },
+  { id: 'sensor_particulas', emoji: '🌫️', nombre: 'Sensor de partículas', tipo: 'Calidad aire exterior', zona: 'exterior', precio: 120 },
 
-  // ENVOLVENTE
-  { id: 'camara_termo', emoji: '📷', nombre: 'Cámara termográfica', tipo: 'Temperatura superficie', zona: 'envolvente' },
-  { id: 'sonda_superficie', emoji: '🌡️', nombre: 'Sonda de superficie', tipo: 'Temperatura contacto', zona: 'envolvente' },
+  { id: 'camara_termo', emoji: '📷', nombre: 'Cámara termográfica', tipo: 'Temperatura superficie', zona: 'envolvente', precio: 350 },
+  { id: 'sonda_superficie', emoji: '🌡️', nombre: 'Sonda de superficie', tipo: 'Temperatura contacto', zona: 'envolvente', precio: 45 },
 
-  // INTERIOR
-  { id: 'dht22', emoji: '🌡️', nombre: 'DHT22', tipo: 'Temp + humedad interior', zona: 'interior' },
-  { id: 'ds18b20', emoji: '🔌', nombre: 'DS18B20', tipo: 'Temp digital 1-Wire', zona: 'interior' },
-  { id: 'pt100', emoji: '🎯', nombre: 'PT100', tipo: 'Temp alta precisión', zona: 'interior' },
-  { id: 'termistor', emoji: '🔘', nombre: 'Termistor', tipo: 'Temp doméstica', zona: 'interior' },
-  { id: 'sensor_co2', emoji: '🫁', nombre: 'Sensor CO₂ NDIR', tipo: 'Calidad aire interior', zona: 'interior' },
-  { id: 'ldr', emoji: '💡', nombre: 'LDR / Fotodiodo', tipo: 'Sensor luminosidad', zona: 'interior' },
-  { id: 'luxometro', emoji: '🔆', nombre: 'Luxómetro', tipo: 'Medida luz (lux)', zona: 'interior' },
-  { id: 'sensor_presencia', emoji: '👤', nombre: 'Sensor de presencia', tipo: 'Detección ocupación', zona: 'interior' },
+  { id: 'dht22', emoji: '🌡️', nombre: 'DHT22', tipo: 'Temp + humedad interior', zona: 'interior', precio: 8 },
+  { id: 'ds18b20', emoji: '🔌', nombre: 'DS18B20', tipo: 'Temp digital 1-Wire', zona: 'interior', precio: 6 },
+  { id: 'pt100', emoji: '🎯', nombre: 'PT100', tipo: 'Temp alta precisión', zona: 'interior', precio: 40 },
+  { id: 'termistor', emoji: '🔘', nombre: 'Termistor', tipo: 'Temp doméstica', zona: 'interior', precio: 3 },
+  { id: 'sensor_co2', emoji: '🫁', nombre: 'Sensor CO₂ NDIR', tipo: 'Calidad aire interior', zona: 'interior', precio: 90 },
+  { id: 'ldr', emoji: '💡', nombre: 'LDR / Fotodiodo', tipo: 'Sensor luminosidad', zona: 'interior', precio: 2 },
+  { id: 'luxometro', emoji: '🔆', nombre: 'Luxómetro', tipo: 'Medida luz (lux)', zona: 'interior', precio: 120 },
+  { id: 'sensor_presencia', emoji: '👤', nombre: 'Sensor de presencia', tipo: 'Detección ocupación', zona: 'interior', precio: 30 },
 
-  // ELÉCTRICO
-  { id: 'analizador_redes', emoji: '📊', nombre: 'Analizador de redes', tipo: 'P, Q, FP, armónicos', zona: 'electrico' },
-  { id: 'pinza_amperimetrica', emoji: '🔧', nombre: 'Pinza amperimétrica', tipo: 'Medida corriente', zona: 'electrico' },
-  { id: 'registrador_energia', emoji: '📼', nombre: 'Registrador de energía', tipo: 'Data logging eléctrico', zona: 'electrico' },
+  { id: 'analizador_redes', emoji: '📊', nombre: 'Analizador de redes', tipo: 'P, Q, FP, armónicos', zona: 'electrico', precio: 280 },
+  { id: 'pinza_amperimetrica', emoji: '🔧', nombre: 'Pinza amperimétrica', tipo: 'Medida corriente', zona: 'electrico', precio: 80 },
+  { id: 'registrador_energia', emoji: '📼', nombre: 'Registrador de energía', tipo: 'Data logging eléctrico', zona: 'electrico', precio: 220 },
 
-  // HIDRÁULICO
-  { id: 'caudalimetro_mecanico', emoji: '⚙️', nombre: 'Caudalímetro mecánico', tipo: 'Caudal doméstico', zona: 'hidraulico' },
-  { id: 'caudalimetro_ultrasonico', emoji: '📡', nombre: 'Caudalímetro ultrasónico', tipo: 'Caudal alta precisión', zona: 'hidraulico' },
-  { id: 'sensor_presion', emoji: '🎚️', nombre: 'Sensor de presión', tipo: 'Presión agua (bar)', zona: 'hidraulico' },
-  { id: 'contador_volumetrico', emoji: '🔢', nombre: 'Contador volumétrico', tipo: 'Volumen agua (m³)', zona: 'hidraulico' },
+  { id: 'caudalimetro_mecanico', emoji: '⚙️', nombre: 'Caudalímetro mecánico', tipo: 'Caudal doméstico', zona: 'hidraulico', precio: 60 },
+  { id: 'caudalimetro_ultrasonico', emoji: '📡', nombre: 'Caudalímetro ultrasónico', tipo: 'Caudal alta precisión', zona: 'hidraulico', precio: 400 },
+  { id: 'sensor_presion', emoji: '🎚️', nombre: 'Sensor de presión', tipo: 'Presión agua (bar)', zona: 'hidraulico', precio: 50 },
+  { id: 'contador_volumetrico', emoji: '🔢', nombre: 'Contador volumétrico', tipo: 'Volumen agua (m³)', zona: 'hidraulico', precio: 90 },
 
-  // TÉRMICO
-  { id: 'contador_termico', emoji: '🔥', nombre: 'Contador de energía térmica', tipo: 'kWh térmicos', zona: 'termico' },
-  { id: 'sensor_impulsion', emoji: '🌡️', nombre: 'Sensor de impulsión', tipo: 'Tª salida caldera', zona: 'termico' },
-  { id: 'sensor_retorno', emoji: '🌡️', nombre: 'Sensor de retorno', tipo: 'Tª vuelta caldera', zona: 'termico' },
-  { id: 'caudalimetro_termico', emoji: '🌀', nombre: 'Caudalímetro térmico', tipo: 'Caudal circuito', zona: 'termico' },
-  { id: 'contador_gas', emoji: '⛽', nombre: 'Contador de gas', tipo: 'm³ o kWh de gas', zona: 'termico' },
+  { id: 'contador_termico', emoji: '🔥', nombre: 'Contador de energía térmica', tipo: 'kWh térmicos', zona: 'termico', precio: 300 },
+  { id: 'sensor_impulsion', emoji: '🌡️', nombre: 'Sensor de impulsión', tipo: 'Tª salida caldera', zona: 'termico', precio: 35 },
+  { id: 'sensor_retorno', emoji: '🌡️', nombre: 'Sensor de retorno', tipo: 'Tª vuelta caldera', zona: 'termico', precio: 35 },
+  { id: 'caudalimetro_termico', emoji: '🌀', nombre: 'Caudalímetro térmico', tipo: 'Caudal circuito', zona: 'termico', precio: 150 },
+  { id: 'contador_gas', emoji: '⛽', nombre: 'Contador de gas', tipo: 'm³ o kWh de gas', zona: 'termico', precio: 110 },
 
-  // CONTROL
-  { id: 'plc', emoji: '🖥️', nombre: 'PLC', tipo: 'Control industrial', zona: 'control' },
-  { id: 'bms', emoji: '🧠', nombre: 'BMS', tipo: 'Gestión del edificio', zona: 'control' },
-  { id: 'controlador_knx', emoji: '🎛️', nombre: 'Controlador KNX', tipo: 'Domótica', zona: 'control' },
-  { id: 'controlador_bacnet', emoji: '🎛️', nombre: 'Controlador BACnet', tipo: 'Climatización', zona: 'control' },
-  { id: 'actuador_luz', emoji: '💡', nombre: 'Actuador de luz', tipo: 'Enciende/apaga', zona: 'control' },
-  { id: 'actuador_valvula', emoji: '🚰', nombre: 'Actuador de válvula', tipo: 'Abre/cierra agua', zona: 'control' },
-  { id: 'actuador_persiana', emoji: '🪟', nombre: 'Actuador de persiana', tipo: 'Sube/baja toldo', zona: 'control' },
+  { id: 'plc', emoji: '🖥️', nombre: 'PLC', tipo: 'Control industrial', zona: 'control', precio: 450 },
+  { id: 'bms', emoji: '🧠', nombre: 'BMS', tipo: 'Gestión del edificio', zona: 'control', precio: 1200 },
+  { id: 'controlador_knx', emoji: '🎛️', nombre: 'Controlador KNX', tipo: 'Domótica', zona: 'control', precio: 350 },
+  { id: 'controlador_bacnet', emoji: '🎛️', nombre: 'Controlador BACnet', tipo: 'Climatización', zona: 'control', precio: 500 },
+  { id: 'actuador_luz', emoji: '💡', nombre: 'Actuador de luz', tipo: 'Enciende/apaga', zona: 'control', precio: 70 },
+  { id: 'actuador_valvula', emoji: '🚰', nombre: 'Actuador de válvula', tipo: 'Abre/cierra agua', zona: 'control', precio: 95 },
+  { id: 'actuador_persiana', emoji: '🪟', nombre: 'Actuador de persiana', tipo: 'Sube/baja toldo', zona: 'control', precio: 85 },
 
-  // GATEWAY
-  { id: 'gateway_modbus', emoji: '🔀', nombre: 'Gateway Modbus', tipo: 'RTU/TCP ↔ IP', zona: 'gateway' },
-  { id: 'gateway_knx', emoji: '🔀', nombre: 'Gateway KNX', tipo: 'KNX ↔ IP', zona: 'gateway' },
-  { id: 'gateway_bacnet', emoji: '🔀', nombre: 'Gateway BACnet', tipo: 'MS/TP ↔ IP', zona: 'gateway' },
-  { id: 'gateway_zigbee', emoji: '🔀', nombre: 'Gateway Zigbee', tipo: 'Zigbee ↔ IP', zona: 'gateway' },
-  { id: 'gateway_lora', emoji: '🔀', nombre: 'Gateway LoRa', tipo: 'LoRa ↔ IP', zona: 'gateway' },
-  { id: 'broker_mqtt', emoji: '☁️', nombre: 'Broker MQTT', tipo: 'Mensajería IoT', zona: 'gateway' },
+  { id: 'gateway_modbus', emoji: '🔀', nombre: 'Gateway Modbus', tipo: 'RTU/TCP ↔ IP', zona: 'gateway', precio: 180 },
+  { id: 'gateway_knx', emoji: '🔀', nombre: 'Gateway KNX', tipo: 'KNX ↔ IP', zona: 'gateway', precio: 250 },
+  { id: 'gateway_bacnet', emoji: '🔀', nombre: 'Gateway BACnet', tipo: 'MS/TP ↔ IP', zona: 'gateway', precio: 300 },
+  { id: 'gateway_zigbee', emoji: '🔀', nombre: 'Gateway Zigbee', tipo: 'Zigbee ↔ IP', zona: 'gateway', precio: 60 },
+  { id: 'gateway_lora', emoji: '🔀', nombre: 'Gateway LoRa', tipo: 'LoRa ↔ IP', zona: 'gateway', precio: 220 },
+  { id: 'broker_mqtt', emoji: '☁️', nombre: 'Broker MQTT', tipo: 'Mensajería IoT', zona: 'gateway', precio: 0 },
 ];
+
+// FUTURO: tipos de edificio para la actividad de presupuesto
+const TIPOS_EDIFICIO = {
+  colegio: {
+    nombre: 'Colegio',
+    zonasObligatorias: ['exterior', 'interior', 'electrico', 'hidraulico', 'termico', 'control', 'gateway'],
+    presupuesto: 5000,
+  },
+  hospital: {
+    nombre: 'Hospital',
+    zonasObligatorias: ['exterior', 'interior', 'electrico', 'hidraulico', 'termico', 'control', 'gateway'],
+    presupuesto: 25000,
+  },
+  oficina: {
+    nombre: 'Oficina',
+    zonasObligatorias: ['exterior', 'interior', 'electrico', 'control', 'gateway'],
+    presupuesto: 3000,
+  },
+};
 
 // ================================================================
 // ESTADO
 // ================================================================
 const state = {
   colocados: {},
-  usuario: null, // 'alumno' | 'profe'
+  usuario: null,
+  // Cronómetro
+  cronometro: {
+    segundos: 0,
+    intervalo: null,
+    corriendo: false,
+  },
+  // Examen
+  examen: {
+    activo: false,
+    segundosRestantes: CONFIG.duracionExamenSegundos,
+    intervalo: null,
+  },
 };
+
+const STORAGE_KEY = () => `dashboard_progreso_${state.usuario || 'anon'}`;
+
+// ================================================================
+// CRONÓMETRO
+// ================================================================
+function formatearTiempo(seg) {
+  const m = Math.floor(seg / 60).toString().padStart(2, '0');
+  const s = Math.floor(seg % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function iniciarCronometro() {
+  detenerCronometro();
+  state.cronometro.corriendo = true;
+  state.cronometro.intervalo = setInterval(() => {
+    state.cronometro.segundos++;
+    actualizarTimerUI();
+    guardarProgreso();
+  }, 1000);
+}
+
+function detenerCronometro() {
+  if (state.cronometro.intervalo) {
+    clearInterval(state.cronometro.intervalo);
+    state.cronometro.intervalo = null;
+  }
+  state.cronometro.corriendo = false;
+}
+
+function actualizarTimerUI() {
+  const box = document.getElementById('timerBox');
+  if (state.examen.activo) {
+    box.textContent = '⏳ ' + formatearTiempo(state.examen.segundosRestantes);
+    if (state.examen.segundosRestantes <= 30) box.classList.add('urgente');
+    else box.classList.remove('urgente');
+  } else {
+    box.textContent = '⏱️ ' + formatearTiempo(state.cronometro.segundos);
+    box.classList.remove('urgente');
+  }
+}
+
+// ================================================================
+// LOCALSTORAGE
+// ================================================================
+function guardarProgreso() {
+  if (!state.usuario) return;
+  const data = {
+    colocados: state.colocados,
+    segundos: state.cronometro.segundos,
+    timestamp: Date.now(),
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY(), JSON.stringify(data));
+  } catch (e) { /* ignorar si está lleno */ }
+}
+
+function cargarProgreso() {
+  if (!state.usuario) return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY());
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+function borrarProgreso() {
+  if (!state.usuario) return;
+  try { localStorage.removeItem(STORAGE_KEY()); } catch (e) {}
+}
 
 // ================================================================
 // LOGIN
@@ -575,27 +627,62 @@ function entrarComoProfe() {
 function iniciarDashboard() {
   document.getElementById('loginOverlay').classList.add('hidden');
 
-  // Ajustar UI según rol
   const badge = document.getElementById('userBadge');
   if (state.usuario === 'profe') {
     badge.className = 'user-badge profe';
     badge.textContent = '👨‍🏫 Profesor';
     document.getElementById('btnAuto').style.display = 'inline-block';
+    document.getElementById('btnExamen').style.display = 'inline-block';
   } else {
     badge.className = 'user-badge alumno';
     badge.textContent = '👤 Alumno';
     document.getElementById('btnAuto').style.display = 'none';
+    document.getElementById('btnExamen').style.display = 'none';
   }
 
   renderBanco();
   initDropZones();
+
+  // Cargar progreso guardado
+  const progreso = cargarProgreso();
+  if (progreso && progreso.colocados) {
+    state.colocados = progreso.colocados;
+    state.cronometro.segundos = progreso.segundos || 0;
+    // Repintar chips en las zonas
+    Object.entries(state.colocados).forEach(([id, zona]) => {
+      const ap = APARATOS.find(a => a.id === id);
+      if (!ap) return;
+      const dropZone = document.querySelector(`.drop-zone[data-zona="${zona}"]`);
+      if (!dropZone) return;
+      const chip = document.createElement('div');
+      chip.className = 'colocado';
+      chip.dataset.id = id;
+      chip.innerHTML = `<span>${ap.emoji}</span> ${ap.nombre} ✕`;
+      chip.title = 'Clic para devolver al banco';
+      chip.addEventListener('click', () => devolverAlBanco(id));
+      dropZone.appendChild(chip);
+    });
+    actualizarUsados();
+  } else {
+    state.cronometro.segundos = 0;
+    state.colocados = {};
+  }
+
+  actualizarTimerUI();
   actualizarScore();
   actualizarBotonPista();
+  iniciarCronometro();
 }
 
 function cerrarSesion() {
+  detenerCronometro();
+  detenerExamen();
+  borrarProgreso();
   state.usuario = null;
   state.colocados = {};
+  state.cronometro.segundos = 0;
+  state.examen.activo = false;
+  state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => z.classList.remove('correcta', 'over'));
   document.getElementById('resultadoFinal').classList.remove('show');
@@ -604,19 +691,12 @@ function cerrarSesion() {
   document.getElementById('userProfe').value = '';
   document.getElementById('passProfe').value = '';
   document.getElementById('loginError').textContent = '';
+  document.getElementById('examenBanner').classList.remove('show');
+  document.body.classList.remove('examen-activo');
+  document.getElementById('btnExamen').classList.remove('activo');
+  document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
+  actualizarTimerUI();
 }
-
-// Atajo secreto para profesor: Ctrl + Shift + A
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-    e.preventDefault();
-    if (state.usuario === 'profe') {
-      colocarTodo();
-    } else {
-      console.log('🔒 Atajo reservado al profesor');
-    }
-  }
-});
 
 // ================================================================
 // RENDERIZAR BANCO
@@ -656,8 +736,13 @@ function renderBanco() {
           <div class="nombre">${ap.nombre}</div>
           <span class="tipo">${ap.tipo}</span>
         </div>
+        <div class="precio">${ap.precio}€</div>
       `;
       div.addEventListener('dragstart', e => {
+        if (state.examen.activo && state.examen.segundosRestantes <= 0) {
+          e.preventDefault();
+          return;
+        }
         e.dataTransfer.setData('text/plain', ap.id);
         div.classList.add('dragging');
       });
@@ -691,6 +776,8 @@ function initDropZones() {
 }
 
 function colocarAparato(id, zona) {
+  if (state.examen.activo && state.examen.segundosRestantes <= 0) return;
+
   if (state.colocados[id]) {
     const anterior = state.colocados[id];
     const anteriorDiv = document.querySelector(`.drop-zone[data-zona="${anterior}"] .colocado[data-id="${id}"]`);
@@ -712,10 +799,12 @@ function colocarAparato(id, zona) {
   actualizarUsados();
   actualizarScore();
   actualizarBotonPista();
+  guardarProgreso();
   document.getElementById('resultadoFinal').classList.remove('show');
 }
 
 function devolverAlBanco(id) {
+  if (state.examen.activo && state.examen.segundosRestantes <= 0) return;
   const zona = state.colocados[id];
   if (!zona) return;
   const div = document.querySelector(`.drop-zone[data-zona="${zona}"] .colocado[data-id="${id}"]`);
@@ -724,6 +813,7 @@ function devolverAlBanco(id) {
   actualizarUsados();
   actualizarScore();
   actualizarBotonPista();
+  guardarProgreso();
 }
 
 function actualizarUsados() {
@@ -748,14 +838,12 @@ function actualizarScore() {
 }
 
 // ================================================================
-// COMPROBAR SI HAY ALGUNA ZONA COMPLETA
+// COMPROBAR ZONAS COMPLETAS
 // ================================================================
 function zonasCompletas() {
   const completas = [];
-  Object.keys({
-    exterior:1, envolvente:1, interior:1, electrico:1,
-    hidraulico:1, termico:1, control:1, gateway:1
-  }).forEach(zonaId => {
+  ['exterior','envolvente','interior','electrico',
+   'hidraulico','termico','control','gateway'].forEach(zonaId => {
     const aparatosZona = APARATOS.filter(a => a.zona === zonaId);
     if (aparatosZona.length === 0) return;
     const todosBien = aparatosZona.every(a => state.colocados[a.id] === zonaId);
@@ -765,14 +853,23 @@ function zonasCompletas() {
 }
 
 // ================================================================
-// HABILITAR / DESHABILITAR BOTÓN PISTA
+// BOTÓN PISTA
 // ================================================================
 function actualizarBotonPista() {
   const btn = document.getElementById('btnPista');
+
+  // Examen bloquea siempre
+  if (state.examen.activo) {
+    btn.disabled = true;
+    btn.title = 'Pista bloqueada durante el examen';
+    btn.textContent = '💡 Pista (examen)';
+    return;
+  }
+
   const completas = zonasCompletas();
   if (completas.length > 0) {
     btn.disabled = false;
-    btn.title = 'Pista desbloqueada: ya has completado una zona';
+    btn.title = 'Pista desbloqueada';
     btn.textContent = `💡 Pista (${completas.length} zona${completas.length > 1 ? 's' : ''} completa${completas.length > 1 ? 's' : ''})`;
   } else {
     btn.disabled = true;
@@ -782,9 +879,13 @@ function actualizarBotonPista() {
 }
 
 // ================================================================
-// PISTA (solo si hay alguna zona completa)
+// PISTA
 // ================================================================
 function mostrarPista() {
+  if (state.examen.activo) {
+    alert('🔒 Las pistas están bloqueadas durante el examen.');
+    return;
+  }
   const completas = zonasCompletas();
   if (completas.length === 0) {
     alert('🔒 La pista se desbloquea cuando completes TODA una zona (todos sus aparatos bien colocados).');
@@ -797,11 +898,9 @@ function mostrarPista() {
     return;
   }
 
-  // Elegir un aparato que NO sea de una zona ya completada
   const candidatos = noColocados.filter(a => !completas.includes(a.zona));
-  const ap = (candidatos.length > 0 ? candidatos : noColocados)[
-    Math.floor(Math.random() * (candidatos.length > 0 ? candidatos.length : noColocados.length))
-  ];
+  const lista = candidatos.length > 0 ? candidatos : noColocados;
+  const ap = lista[Math.floor(Math.random() * lista.length)];
 
   const pistas = {
     exterior: '🌤️ Va fuera, midiendo el clima (temperatura, humedad, sol, viento, lluvia o calidad del aire).',
@@ -818,12 +917,12 @@ function mostrarPista() {
     `💡 Pista desbloqueada\n\n` +
     `Aparato: ${ap.emoji} ${ap.nombre}\n\n` +
     `${pistas[ap.zona]}\n\n` +
-    `(Zonas completas ya: ${completas.join(', ')})`
+    `(Zonas completas: ${completas.join(', ')})`
   );
 }
 
 // ================================================================
-// VERIFICAR TODO
+// VERIFICAR
 // ================================================================
 function verificarTodo() {
   const total = APARATOS.length;
@@ -865,12 +964,15 @@ function verificarTodo() {
     res.innerHTML = `
       <span class="icono-grande">💡</span>
       ¡TODO CORRECTO!
-      <div class="detalle">Has colocado los ${total} aparatos en su zona correcta. El edificio está listo y monitorizado.</div>
+      <div class="detalle">Has colocado los ${total} aparatos en su zona correcta.<br>
+      Tiempo: <strong>${formatearTiempo(state.cronometro.segundos)}</strong></div>
     `;
-    document.body.style.transition = 'background 0.8s';
+    detenerCronometro();
     document.body.style.background = 'linear-gradient(135deg, #052e16 0%, #14532d 100%)';
     setTimeout(() => {
-      document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+      document.body.style.background = state.examen.activo
+        ? 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)'
+        : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
     }, 2500);
   } else {
     res.className = 'resultado-final show mal';
@@ -880,20 +982,23 @@ function verificarTodo() {
       <div class="detalle">
         Aciertos: <strong>${aciertos}</strong> / ${total} ·
         Sin colocar: <strong>${faltan}</strong><br>
-        Los aparatos en <span style="color:#f87171">rojo</span> están mal colocados. Haz clic en ellos para devolverlos al banco.
+        Los aparatos en <span style="color:#f87171">rojo</span> están mal colocados.
       </div>
     `;
   }
-
   actualizarBotonPista();
 }
 
 // ================================================================
-// AUTO-COLOCAR (solo profesor, oculto)
+// AUTO-COLOCAR (solo profesor, bloqueado en examen)
 // ================================================================
 function colocarTodo() {
   if (state.usuario !== 'profe') {
     alert('🔒 Esta función solo está disponible para el profesor.');
+    return;
+  }
+  if (state.examen.activo) {
+    alert('🔒 No puedes usar auto-colocar durante un examen.');
     return;
   }
   resetear();
@@ -901,10 +1006,26 @@ function colocarTodo() {
   setTimeout(() => verificarTodo(), 300);
 }
 
+// Atajo secreto Ctrl+Shift+A (solo profe, bloqueado en examen)
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+    e.preventDefault();
+    if (state.usuario === 'profe' && !state.examen.activo) {
+      colocarTodo();
+    } else if (state.examen.activo) {
+      console.log('🔒 Atajo bloqueado durante el examen');
+    }
+  }
+});
+
 // ================================================================
 // RESET
 // ================================================================
 function resetear() {
+  if (state.examen.activo) {
+    alert('🔒 No se puede reiniciar durante un examen.');
+    return;
+  }
   state.colocados = {};
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => z.classList.remove('correcta', 'over'));
@@ -913,7 +1034,122 @@ function resetear() {
   actualizarUsados();
   actualizarScore();
   actualizarBotonPista();
+  guardarProgreso();
 }
+
+// ================================================================
+// MODO EXAMEN (solo profesor)
+// ================================================================
+function toggleExamen() {
+  if (state.usuario !== 'profe') return;
+
+  if (state.examen.activo) {
+    // Desactivar
+    detenerExamen();
+    alert('Modo examen desactivado.');
+  } else {
+    // Activar
+    if (!confirm(`¿Activar modo examen?\n\n· Se reiniciará todo el progreso\n· Duración: ${CONFIG.duracionExamenSegundos / 60} minutos\n· Se bloquean pistas, reset y auto-colocación`)) return;
+
+    resetear();
+    state.examen.activo = true;
+    state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
+
+    document.body.classList.add('examen-activo');
+    document.getElementById('examenBanner').classList.add('show');
+    document.getElementById('btnExamen').classList.add('activo');
+    document.getElementById('btnExamen').textContent = '🛑 Detener examen';
+
+    // Deshabilitar botones
+    document.getElementById('btnReset').disabled = true;
+
+    // Arrancar cuenta atrás
+    state.examen.intervalo = setInterval(() => {
+      state.examen.segundosRestantes--;
+      actualizarTimerUI();
+      if (state.examen.segundosRestantes <= 0) {
+        finalizarExamenPorTiempo();
+      }
+    }, 1000);
+
+    actualizarTimerUI();
+    actualizarBotonPista();
+  }
+}
+
+function detenerExamen() {
+  if (state.examen.intervalo) {
+    clearInterval(state.examen.intervalo);
+    state.examen.intervalo = null;
+  }
+  state.examen.activo = false;
+  document.body.classList.remove('examen-activo');
+  document.getElementById('examenBanner').classList.remove('show');
+  document.getElementById('btnExamen').classList.remove('activo');
+  document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
+  document.getElementById('btnReset').disabled = false;
+  actualizarTimerUI();
+  actualizarBotonPista();
+}
+
+function finalizarExamenPorTiempo() {
+  if (state.examen.intervalo) {
+    clearInterval(state.examen.intervalo);
+    state.examen.intervalo = null;
+  }
+  detenerCronometro();
+  verificarTodo();
+
+  const res = document.getElementById('resultadoFinal');
+  res.className = 'resultado-final show mal';
+  res.innerHTML = `
+    <span class="icono-grande">⏰</span>
+    ¡TIEMPO AGOTADO!
+    <div class="detalle">
+      Se acabó el tiempo del examen. Los resultados se han registrado.<br>
+      Tiempo transcurrido: <strong>${formatearTiempo(state.cronometro.segundos)}</strong>
+    </div>
+  `;
+
+  document.getElementById('btnReset').disabled = true;
+  document.querySelectorAll('.aparato').forEach(a => a.draggable = false);
+}
+
+// ================================================================
+// FUTURO: Generador de ejercicios aleatorios + presupuesto
+// ================================================================
+// Estas funciones están preparadas pero NO se usan todavía.
+// Se activarán en una próxima iteración cuando añadamos:
+//   - Ejercicio aleatorio (qué aparatos hay que colocar y cuáles no)
+//   - Cálculo de presupuesto según tipo de edificio
+function generarEjercicioAleatorio(tipo = 'colegio') {
+  const config = TIPOS_EDIFICIO[tipo];
+  if (!config) return null;
+
+  // Selecciona un subconjunto aleatorio de aparatos de las zonas obligatorias
+  const seleccionados = [];
+  config.zonasObligatorias.forEach(zonaId => {
+    const deZona = APARATOS.filter(a => a.zona === zonaId);
+    // Coge entre 1 y todos los de esa zona
+    const cuantos = 1 + Math.floor(Math.random() * deZona.length);
+    const shuffled = [...deZona].sort(() => Math.random() - 0.5);
+    seleccionados.push(...shuffled.slice(0, cuantos));
+  });
+
+  const costeTotal = seleccionados.reduce((s, a) => s + a.precio, 0);
+  return {
+    tipo,
+    aparatos: seleccionados,
+    costeTotal,
+    presupuesto: config.presupuesto,
+    dentroDePresupuesto: costeTotal <= config.presupuesto,
+  };
+}
+
+// ================================================================
+// ARRANQUE
+// ================================================================
+actualizarTimerUI();
 </script>
 
 </body>
