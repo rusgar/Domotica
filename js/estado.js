@@ -14,6 +14,8 @@ const state = {
   // ============================================================
   colocados: {},
   zonasDesbloqueadas: {},
+  zonasVerificadas: {},   // zona -> true cuando todos sus aparatos están bien y verificados
+  ultimaPregunta: {},     // zonaId -> índice de la última pregunta mostrada (para no repetir)
   preguntaActual: null,
 
   // Cronómetro (compartido entre módulos)

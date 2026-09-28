@@ -54,6 +54,8 @@ function iniciarDashboard() {
   // Reset estado colocar
   state.colocados = {};
   state.zonasDesbloqueadas = {};
+  state.zonasVerificadas = {};
+  state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
 
   // Restaurar progreso colocar
@@ -61,6 +63,8 @@ function iniciarDashboard() {
   if (progreso) {
     state.colocados = progreso.colocados || {};
     state.zonasDesbloqueadas = progreso.zonasDesbloqueadas || {};
+    state.zonasVerificadas = progreso.zonasVerificadas || {};
+    state.ultimaPregunta = progreso.ultimaPregunta || {};
     state.cronometro.segundos = progreso.segundos || 0;
 
     Object.keys(state.zonasDesbloqueadas).forEach(zonaId => {
@@ -82,6 +86,14 @@ function iniciarDashboard() {
   actualizarBotonPista();
   iniciarCronometro();
 
+  // Re-pintar zonas verificadas guardadas (y cuadrar las que ya no lo están).
+  // Va después de iniciarCronometro para que, si el ejercicio ya estaba
+  // completado, la victoria detenga el tiempo.
+  if (progreso) reconciliarZonasVerificadas();
+
+  // Estado inicial de los botones «✓ Validar» de cada zona
+  actualizarBotonesValidar();
+
   // Inicializar bloque de carpeta de resultados (si aplica)
   if (typeof inicializarBotonCarpeta === 'function') {
     inicializarBotonCarpeta();
@@ -96,10 +108,13 @@ function cerrarSesion() {
   state.usuario = null;
   state.colocados = {};
   state.zonasDesbloqueadas = {};
+  state.zonasVerificadas = {};
+  state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
   state.examen.activo = false;
   state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
   state.preguntaActual = null;
+  actualizarBotonesValidar();
   state.auditoria = {
     ejercicio: null,
     config: null,

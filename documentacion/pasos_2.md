@@ -54,50 +54,56 @@ El botón **"Salir"** vuelve a la pantalla de login, borra el progreso guardado 
 {
   "colocados": {
     "dht22": "interior",
-    "plc": "control",
-    ...
+    "plc": "control"
   },
   "segundos": 245,
+  "zonasDesbloqueadas": { "interior": true },
+  "zonasVerificadas": { "interior": true },
+  "ultimaPregunta": { "interior": 3 },
   "timestamp": 1732354821000
 }
+```
 
-Cuándo se guarda
-Al colocar un aparato en una zona.
+- `zonasVerificadas`: zonas a las que el alumno ha pulsado «✓ Validar» y están correctas.
+- `ultimaPregunta`: índice de la última pregunta mostrada por zona (para no repetir tras un reinicio).
 
-Al devolverlo al banco.
+### Cuándo se guarda
 
-Cada segundo que avanza el cronómetro.
+- Al colocar un aparato en una zona.
+- Al devolverlo al banco.
+- Al validar una zona (correcta o tras des-validarla).
+- Cada segundo que avanza el cronómetro.
 
-Cuándo se carga
+### Cuándo se carga
+
 Al entrar al dashboard después del login.
 
 Se restauran:
 
-Los chips ya colocados en sus zonas.
+- Los chips ya colocados en sus zonas.
+- El tiempo transcurrido.
+- El estado del banco (aparatos marcados como usados).
+- Las zonas desbloqueadas y las zonas ya validadas (se re-pintan en verde).
 
-El tiempo transcurrido.
+### Cuándo se borra
 
-El estado del banco (aparatos marcados como usados).
+- Al pulsar "Reiniciar" (limpia el progreso y lo guarda en blanco).
+- Al cerrar sesión (borra la clave del rol actual).
 
-Cuándo se borra
-Al pulsar "Reiniciar" (limpia el progreso y lo guarda en blanco).
+### Clave de almacenamiento
 
-Al cerrar sesión (borra la clave del rol actual).
-
-Clave de almacenamiento
 Cada rol tiene su propia clave para no mezclar progresos:
 
-text
+```text
 dashboard_progreso_alumno
 dashboard_progreso_profe
-📌 Decisiones tomadas
-El login está en el navegador (no hay backend). Suficiente para uso en clase.
+```
 
-El cronómetro no cuenta el tiempo desde la última sesión, empieza de cero en cada login.
+## 📌 Decisiones tomadas
 
-El progreso se guarda automáticamente, no hay botón "Guardar".
-
-text
+- El login está en el navegador (no hay backend). Suficiente para uso en clase.
+- El cronómetro no cuenta el tiempo desde la última sesión, empieza de cero en cada login.
+- El progreso se guarda automáticamente, no hay botón "Guardar".
 
 ---
 
@@ -139,7 +145,8 @@ Durante el examen se aplican estas restricciones:
 | Acción | Estado |
 |---|---|
 | Colocar / quitar aparatos | ✅ Permitido |
-| Botón "Verificar colocación" | ✅ Permitido |
+| Botón "✓ Validar" de cada zona | ✅ Permitido (y obligatorio para puntuar) |
+| Botón "✓ Verificar colocación" (barra) | ❌ Deshabilitado |
 | Botón "💡 Pista" | ❌ Bloqueado |
 | Botón "🔄 Reiniciar" | ❌ Deshabilitado |
 | Botón "🤖 Auto-colocar" | ❌ Bloqueado |
@@ -159,7 +166,7 @@ El fondo de la página cambia a un tono morado oscuro para reforzar visualmente 
 Cuando `segundosRestantes` llega a 0:
 
 1. Se detiene el cronómetro.
-2. Se ejecuta `verificarTodo()` automáticamente.
+2. Se ejecuta `verificarTodo()` automáticamente (revisa las zonas validadas y pinta aciertos/errores).
 3. Se muestra un mensaje grande:
    - **⏰ ¡TIEMPO AGOTADO!**
    - Aciertos, errores y tiempo transcurrido.

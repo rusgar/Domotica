@@ -64,11 +64,12 @@ El objeto `zonasDesbloqueadas` se guarda en `localStorage` junto al resto del pr
 
 ## 🧹 Reset
 
-Al pulsar `🔄 Reiniciar`:
+Al pulsar `🔄 Reiniciar` (o al fallar una validación, que reinicia todo):
 
-- Se vacían `colocados` y `zonasDesbloqueadas`.
+- Se vacían `colocados`, `zonasDesbloqueadas` y `zonasVerificadas`.
 - Todas las zonas vuelven a estado bloqueado.
-- Los botones de pregunta se reactivan.
+- Los botones de pregunta se reactivan y los de «✓ Validar» se deshabilitan.
+- Se conserva `ultimaPregunta`: la próxima pregunta de cada zona **no se repetirá**.
 
 ## 🔐 Auto-colocar (solo profesor)
 
@@ -76,7 +77,7 @@ El botón `🤖 Auto-colocar` ahora también desbloquea todas las zonas sin preg
 
 ## 📌 Decisiones tomadas
 
-- Las preguntas se eligen **al azar** cada vez que se abre el modal.
+- Las preguntas se eligen **al azar** cada vez que se abre el modal, **sin repetir la anterior** de esa zona (`ultimaPregunta`).
 - Al fallar **no se bloquea la zona**; simplemente se carga otra pregunta.
 - Los aciertos no se acumulan: solo hay que acertar **una vez** por zona.
 - El profesor en modo examen **no** desbloquea automáticamente: el alumno sigue respondiendo.

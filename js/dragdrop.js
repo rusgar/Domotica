@@ -2,7 +2,13 @@
    DRAG & DROP DE APARATOS (con preguntas de desbloqueo)
    ============================================================ */
 
+// Guard: initDropZones se llama en cada login; sin este flag los
+// listeners se duplicarían y cada drop ejecutaría colocarAparato dos veces.
+let dropZonesInicializadas = false;
+
 function initDropZones() {
+  if (dropZonesInicializadas) return;
+  dropZonesInicializadas = true;
   document.querySelectorAll('.drop-zone').forEach(zone => {
     zone.addEventListener('dragover', e => {
       e.preventDefault();
@@ -43,17 +49,28 @@ function colocarAparato(id, zona) {
   if (state.examen.activo && state.examen.segundosRestantes <= 0) return;
   if (!state.zonasDesbloqueadas[zona]) return;
 
-  if (state.colocados[id]) {
-    const anterior = state.colocados[id];
+  const anterior = state.colocados[id];
+
+  if (anterior) {
     const anteriorDiv = document.querySelector(`.drop-zone[data-zona="${anterior}"] .colocado[data-id="${id}"]`);
     if (anteriorDiv) anteriorDiv.remove();
+    // Al sacarle un aparato, la zona de origen pierde su validación
+    if (anterior !== zona) desVerificarZona(anterior);
   }
 
   state.colocados[id] = zona;
+
   const dropZone = document.querySelector(`.drop-zone[data-zona="${zona}"]`);
   if (!dropZone) return;
 
   dropZone.appendChild(crearChipColocado(id));
+
+  // Si la zona de destino estaba validada y ahora tiene un intruso,
+  // se des-valida en silencio. El aviso y el reinicio solo ocurren
+  // cuando el alumno pulsa «✓ Validar» de la zona.
+  if (state.zonasVerificadas[zona] && !zonaContenidoCorrecto(zona)) {
+    desVerificarZona(zona);
+  }
 
   actualizarUsados();
   actualizarScore();
@@ -70,6 +87,10 @@ function devolverAlBanco(id) {
   const div = document.querySelector(`.drop-zone[data-zona="${zona}"] .colocado[data-id="${id}"]`);
   if (div) div.remove();
   delete state.colocados[id];
+
+  // La zona pierde su validación al quitarle un aparato.
+  // Solo se re-valida cuando el alumno vuelve a pulsar «✓ Validar».
+  desVerificarZona(zona);
 
   actualizarUsados();
   actualizarScore();
@@ -100,7 +121,16 @@ function abrirPregunta(zonaId) {
     desbloquearZona(zonaId);
     return;
   }
-  const pregunta = lista[Math.floor(Math.random() * lista.length)];
+
+  // Elegir al azar PERO nunca repetir la pregunta anterior de esta zona
+  let indice = Math.floor(Math.random() * lista.length);
+  const ultima = state.ultimaPregunta[zonaId];
+  if (lista.length > 1 && ultima !== undefined && indice === ultima) {
+    indice = (indice + 1 + Math.floor(Math.random() * (lista.length - 1))) % lista.length;
+  }
+  state.ultimaPregunta[zonaId] = indice;
+
+  const pregunta = lista[indice];
   state.preguntaActual = { zonaId, pregunta };
 
   document.getElementById('preguntaZona').textContent =
@@ -164,6 +194,7 @@ function desbloquearZona(zonaId, silencioso = false) {
     estado.textContent = '🔓';
   }
 
+  actualizarBotonValidar(zonaId);
   const btnPreg = zona?.querySelector('.btn-pregunta');
   if (btnPreg) {
     btnPreg.textContent = '✅ Desbloqueada';

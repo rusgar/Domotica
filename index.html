@@ -68,7 +68,8 @@
   <div id="moduloColocar" class="modulo-activo">
 
     <div class="toolbar">
-      <button class="btn-check" onclick="verificarTodo()">✓ Verificar colocación</button>
+      <button class="btn-check" id="btnVerificar" disabled
+        title="Usa el botón «✓ Validar» de cada zona para comprobarla">✓ Verificar colocación</button>
       <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista (bloqueada)</button>
       <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
       <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
@@ -90,6 +91,7 @@
             <div class="titulo-zona">
               <span class="icon-zona">🌤️</span> Exterior / Cubierta
               <button class="btn-pregunta" onclick="abrirPregunta('exterior')">❓ Responder para desbloquear</button>
+              <button class="btn-validar" id="btnValidar-exterior" onclick="validarZona('exterior')" disabled>✓ Validar</button>
               <span class="zona-estado bloqueada" id="estado-exterior">🔒 Bloqueada</span>
             </div>
             <div class="drop-zone" data-zona="exterior"></div>
@@ -100,6 +102,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">🧱</span> Envolvente
                 <button class="btn-pregunta" onclick="abrirPregunta('envolvente')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-envolvente" onclick="validarZona('envolvente')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-envolvente">🔒</span>
               </div>
               <div class="drop-zone" data-zona="envolvente"></div>
@@ -109,6 +112,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">🏠</span> Interior (aulas, oficinas)
                 <button class="btn-pregunta" onclick="abrirPregunta('interior')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-interior" onclick="validarZona('interior')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-interior">🔒</span>
               </div>
               <div class="drop-zone" data-zona="interior"></div>
@@ -120,6 +124,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">⚡</span> Cuadro eléctrico
                 <button class="btn-pregunta" onclick="abrirPregunta('electrico')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-electrico" onclick="validarZona('electrico')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-electrico">🔒</span>
               </div>
               <div class="drop-zone" data-zona="electrico"></div>
@@ -129,6 +134,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">💧</span> Sala hidráulica
                 <button class="btn-pregunta" onclick="abrirPregunta('hidraulico')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-hidraulico" onclick="validarZona('hidraulico')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-hidraulico">🔒</span>
               </div>
               <div class="drop-zone" data-zona="hidraulico"></div>
@@ -140,6 +146,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">🔥</span> Sala térmica (caldera)
                 <button class="btn-pregunta" onclick="abrirPregunta('termico')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-termico" onclick="validarZona('termico')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-termico">🔒</span>
               </div>
               <div class="drop-zone" data-zona="termico"></div>
@@ -149,6 +156,7 @@
               <div class="titulo-zona">
                 <span class="icon-zona">🧠</span> Sala de control / BMS
                 <button class="btn-pregunta" onclick="abrirPregunta('control')">❓ Responder</button>
+                <button class="btn-validar" id="btnValidar-control" onclick="validarZona('control')" disabled>✓ Validar</button>
                 <span class="zona-estado bloqueada" id="estado-control">🔒</span>
               </div>
               <div class="drop-zone" data-zona="control"></div>
@@ -159,6 +167,7 @@
             <div class="titulo-zona">
               <span class="icon-zona">🔀</span> Gateways / Protocolos
               <button class="btn-pregunta" onclick="abrirPregunta('gateway')">❓ Responder para desbloquear</button>
+              <button class="btn-validar" id="btnValidar-gateway" onclick="validarZona('gateway')" disabled>✓ Validar</button>
               <span class="zona-estado bloqueada" id="estado-gateway">🔒 Bloqueada</span>
             </div>
             <div class="drop-zone" data-zona="gateway"></div>
@@ -347,6 +356,7 @@
       if (typeof entrarComoAlumno === 'undefined') faltan.push('login.js');
       if (typeof abrirPregunta === 'undefined') faltan.push('dragdrop.js');
       if (typeof verificarTodo === 'undefined') faltan.push('validacion.js');
+      if (typeof validarZona === 'undefined') faltan.push('validacion.js (validarZona)');
       if (typeof toggleExamen === 'undefined') faltan.push('examen.js');
       if (typeof renderBanco === 'undefined') faltan.push('ui.js');
       if (typeof TARJETAS === 'undefined') faltan.push('auditoria/tarjetas.js');
@@ -354,7 +364,7 @@
       if (typeof NORMATIVA === 'undefined') faltan.push('auditoria/normativa.js');
       if (typeof validarCalculo === 'undefined') faltan.push('auditoria/calculos.js');
       if (typeof validarPresupuesto === 'undefined') faltan.push('auditoria/presupuesto.js');
-      if (typeof repartirTarjetas === 'undefined') faltan.push('auditoria/aleatorio.js');
+      if (typeof repartirTarjetasAleatorias === 'undefined') faltan.push('auditoria/aleatorio.js');
       if (typeof renderTarjetaAuditoria === 'undefined') faltan.push('auditoria/ficha.js');
       if (typeof guardarEnCarpetaResultados === 'undefined') faltan.push('auditoria/storage-carpeta.js');
       if (typeof generarInforme === 'undefined') faltan.push('auditoria/informe.js');

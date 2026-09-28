@@ -14,7 +14,8 @@ function barajar(arr) {
 
 // Repartir N tarjetas aleatorias con variaciones aleatorias
 // Devuelve: [ { tarjeta, variacion, indice } , ... ]
-function repartirTarjetas(numTarjetas) {
+// NOTA: el nombre debe ser único; la UI define repartirTarjetas() y pisaría esta.
+function repartirTarjetasAleatorias(numTarjetas) {
   const tarjetasBarajadas = barajar(TARJETAS);
   const seleccionadas = tarjetasBarajadas.slice(0, numTarjetas);
 
@@ -44,7 +45,7 @@ function generarIdTarjetaRepartida(tarjetaId, variacion) {
 function repartirTarjetasUnicas(numTarjetas, excluir = []) {
   const disponibles = TARJETAS.filter(t => !excluir.includes(t.id));
   if (disponibles.length < numTarjetas) {
-    return repartirTarjetas(numTarjetas);
+    return repartirTarjetasAleatorias(numTarjetas);
   }
   const barajadas = barajar(disponibles);
   const seleccionadas = barajadas.slice(0, numTarjetas);

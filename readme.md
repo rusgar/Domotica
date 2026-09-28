@@ -22,6 +22,7 @@ El material cubre los temas del curso:
 - Asociar cada aparato a la zona física del edificio donde tiene sentido instalarlo.
 - Comprender la cadena sensor → gateway → controlador → actuador.
 - **Responder correctamente una pregunta teórica por zona** para desbloquearla.
+- **Validar cada zona con su botón «✓ Validar»**: si está completa y correcta se marca en verde; si tiene errores se reinicia todo el ejercicio.
 
 ### Módulo 2 · Auditoría
 - Analizar zonas del edificio a partir de tarjetas con datos didácticos.
@@ -36,7 +37,7 @@ El material cubre los temas del curso:
 1. Abre `index.html` en Chrome o Edge (recomendado).
 2. Pulsa **"Entrar como alumno"** o **"Entrar como profesor"**.
 3. Cambia de módulo con las **pestañas superiores**.
-4. Completa el ejercicio que corresponda.
+4. En Colocar aparatos: responde la pregunta de cada zona, coloca sus aparatos y pulsa **«✓ Validar»**. Ganas cuando validas todas las zonas.
 
 ### 👨‍🏫 Modo profesor
 

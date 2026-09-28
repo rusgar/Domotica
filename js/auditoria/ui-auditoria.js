@@ -41,7 +41,7 @@ function repartirTarjetas() {
     return;
   }
 
-  const repartidas = repartirTarjetas_aleatorio(config.numTarjetas);
+  const repartidas = repartirTarjetasAleatorias(config.numTarjetas);
 
   state.auditoria.tarjetas = repartidas.map(r => r.tarjeta);
   state.auditoria.variaciones = repartidas.map(r => r.variacion);
@@ -50,11 +50,6 @@ function repartirTarjetas() {
   renderTarjetasAuditoria();
   actualizarProgresoGlobal();
   guardarProgresoAuditoria();
-}
-
-// Wrapper para evitar conflicto de nombres con la función global
-function repartirTarjetas_aleatorio(n) {
-  return repartirTarjetas(n);
 }
 
 // Render de todas las tarjetas
