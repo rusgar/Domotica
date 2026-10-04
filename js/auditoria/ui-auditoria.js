@@ -214,6 +214,14 @@ function mostrarModalInforme() {
   if (campoIni && !campoIni.value.trim()) {
     campoIni.value = getIniciales();
   }
+
+  // Prefill de la puntuación de este ejercicio (0-50)
+  const campoNota = document.getElementById('informeNota');
+  if (campoNota) {
+    try {
+      campoNota.value = localStorage.getItem(`dashboard_nota_alumno_${state.auditoria.ejercicio}`) || '';
+    } catch (e) { campoNota.value = ''; }
+  }
 }
 
 function cerrarModalInforme() {

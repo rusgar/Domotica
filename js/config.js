@@ -11,6 +11,18 @@ const CONFIG = {
   duracionExamenSegundos: 5 * 60, // 5 minutos
 };
 
+// URL de la tarea de Moodle donde el alumno sube su JSON de auditoría.
+// Déjala vacía ('') y el botón solo descargará el archivo con instrucciones.
+const MOODLE = {
+  urlTarea: ''
+};
+
+// Escalación de la auditoría: 2 ejercicios asignados de 50 puntos cada uno
+const ESCALA_AUDITORIA = {
+  ejerciciosAsignados: ['6', 'global'], // Ejercicio 6 + Ejercicio Global
+  puntosPorEjercicio: 50
+};
+
 // Configuración del módulo de auditoría
 const CONFIG_AUDITORIA = {
   precioKWh: 0.18,

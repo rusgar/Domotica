@@ -3,7 +3,7 @@
    ============================================================ */
 
 // Generar el objeto JSON con todos los datos del alumno
-function construirInformeJSON(nombre, grupo, email, iniciales) {
+function construirInformeJSON(nombre, grupo, email, iniciales, notaAlumno) {
   const { ejercicio, config, tarjetas, variaciones, fichas } = state.auditoria;
   const ahora = new Date();
 
@@ -32,7 +32,10 @@ function construirInformeJSON(nombre, grupo, email, iniciales) {
     puntuacion: {
       aciertosAuto: puntGlobal.aciertosAuto,
       pendienteManual: puntGlobal.pendienteManual,
-      totalMaximo: puntGlobal.totalMaximo
+      totalMaximo: puntGlobal.totalMaximo,
+      // Autoevaluación del alumno: hasta ESCALA_AUDITORIA.puntosPorEjercicio (50)
+      notaAlumno: notaAlumno,
+      notaMaxima: ESCALA_AUDITORIA.puntosPorEjercicio
     },
     presupuesto: {
       maximo: config?.presupuesto || 0,
@@ -110,11 +113,9 @@ function descargarXLSX(informe, nombre) {
   wsPortada.addRow(['Ejercicio', informe.meta.ejercicioNombre]);
   wsPortada.addRow(['Duración', informe.meta.duracionLegible]);
   wsPortada.addRow([]);
-
-  wsPortada.addRow(['PUNTUACIÓN AUTOMÁTICA']).font = { bold: true, size: 12 };
-  wsPortada.addRow(['Aciertos automáticos', informe.puntuacion.aciertosAuto]);
-  wsPortada.addRow(['Pendiente corrección manual', informe.puntuacion.pendienteManual]);
-  wsPortada.addRow(['Total máximo', informe.puntuacion.totalMaximo]);
+  wsPortada.addRow(['PUNTUACIÓN']).font = { bold: true, size: 12 };
+  wsPortada.addRow(['Aciertos automáticos', informe.puntuacion.aciertosAuto + ' / ' + informe.puntuacion.totalMaximo]);
+  wsPortada.addRow(['Nota del alumno (autoevaluación)', (informe.puntuacion.notaAlumno ?? '—') + ' / ' + (informe.puntuacion.notaMaxima ?? 50)]);
   wsPortada.addRow([]);
 
   wsPortada.addRow(['PRESUPUESTO']).font = { bold: true, size: 12 };
@@ -297,9 +298,13 @@ function descargarXLSX(informe, nombre) {
 async function generarInforme() {
   const nombre = document.getElementById('informeNombre').value.trim();
   const iniciales = document.getElementById('informeIniciales').value.trim().toUpperCase();
+  const notaRaw = document.getElementById('informeNota').value.trim();
   const grupo = document.getElementById('informeGrupo').value.trim();
   const email = document.getElementById('informeEmail').value.trim();
   const err = document.getElementById('informeError');
+
+  const notaMax = ESCALA_AUDITORIA.puntosPorEjercicio;
+  const notaAlumno = Number(notaRaw);
 
   if (!nombre) {
     err.textContent = '❌ El nombre es obligatorio.';
@@ -313,14 +318,26 @@ async function generarInforme() {
     return;
   }
 
-  // Recordar iniciales para constancias y JSON de Colocar aparatos
+  if (notaRaw === '' || !Number.isFinite(notaAlumno) || notaAlumno < 0 || notaAlumno > notaMax) {
+    err.textContent = `❌ Escribe tu puntuación en este ejercicio (de 0 a ${notaMax} puntos).`;
+    err.classList.add('show');
+    return;
+  }
+
+  // Recordar iniciales y nota para próximos envíos
   try { localStorage.setItem('dashboard_iniciales', iniciales); } catch (e) {}
+  try {
+    localStorage.setItem(
+      `dashboard_nota_alumno_${state.auditoria.ejercicio}`,
+      String(notaAlumno)
+    );
+  } catch (e) {}
 
   err.classList.remove('show');
 
-  const informe = construirInformeJSON(nombre, grupo, email, iniciales);
+  const informe = construirInformeJSON(nombre, grupo, email, iniciales, notaAlumno);
 
-  // 1. Descargar JSON
+  // 1. Descargar JSON (el archivo que se sube a Moodle)
   descargarJSON(informe, nombre);
 
   // 2. Descargar XLSX
@@ -342,6 +359,27 @@ async function generarInforme() {
 
   cerrarModalInforme();
 
-  // Mensaje final
-  alert(`✅ Informe descargado:\n\n· ${generarNombreBase(nombre, 'json')}\n· ${generarNombreBase(nombre, 'xlsx')}\n\nEntrega estos archivos al profesor.`);
+  // 4. Abrir la tarea de Moodle para que suba el JSON
+  const url = urlMoodleTarea();
+  if (url) window.open(url, '_blank', 'noopener');
+
+  const base = generarNombreBase(nombre, 'json');
+  if (url) {
+    alert(
+      `✅ Informe descargado:\n\n· ${base}\n· ${generarNombreBase(nombre, 'xlsx')}\n\n` +
+      `Se ha abierto Moodle. Sube el archivo\n«${base}»\na la tarea de entrega.`
+    );
+  } else {
+    alert(
+      `✅ Informe descargado:\n\n· ${base}\n· ${generarNombreBase(nombre, 'xlsx')}\n\n` +
+      `Sube el archivo «${base}» a la tarea de Moodle.\n` +
+      `(El profesor todavía no ha configurado la URL de la tarea.)`
+    );
+  }
+}
+
+// URL de la tarea de Moodle (configurada por el profesor en js/config.js)
+function urlMoodleTarea() {
+  if (typeof MOODLE === 'undefined' || !MOODLE.urlTarea) return '';
+  return String(MOODLE.urlTarea).trim();
 }

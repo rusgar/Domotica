@@ -158,6 +158,7 @@ function cerrarSesion() {
   document.getElementById('modalInforme').classList.remove('show');
   document.getElementById('informeNombre').value = '';
   document.getElementById('informeIniciales').value = '';
+  document.getElementById('informeNota').value = '';
   document.getElementById('informeGrupo').value = '';
   document.getElementById('informeEmail').value = '';
   document.getElementById('informeError').classList.remove('show');

@@ -3,7 +3,11 @@
    ============================================================ */
 
 const STORAGE_KEY = () => `dashboard_progreso_${state.usuario || 'anon'}`;
-const STORAGE_KEY_AUDITORIA = () => `dashboard_auditoria_${state.usuario || 'anon'}`;
+// Clave ANTERIOR (un solo ejercicio): se conserva solo para migrar progresos viejos
+const STORAGE_KEY_AUDITORIA_LEGACY = () => `dashboard_auditoria_${state.usuario || 'anon'}`;
+// Clave por ejercicio: cada ejercicio guarda su progreso por separado
+const STORAGE_KEY_AUDITORIA = (ejercicio) =>
+  `dashboard_auditoria_${state.usuario || 'anon'}_${ejercicio || state.auditoria?.ejercicio || 'x'}`;
 
 // ============================================================
 // MÓDULO COLOCAR APARATOS
@@ -54,20 +58,40 @@ function guardarProgresoAuditoria() {
     timestamp: Date.now()
   };
   try {
-    localStorage.setItem(STORAGE_KEY_AUDITORIA(), JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY_AUDITORIA(a.ejercicio), JSON.stringify(data));
   } catch (e) { /* ignorar */ }
+}
+
+function leerAuditoria(clave) {
+  try {
+    const raw = localStorage.getItem(clave);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
 }
 
 function cargarProgresoAuditoria() {
   if (!state.usuario) return false;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_AUDITORIA());
-    if (!raw) return false;
-    const data = JSON.parse(raw);
+    const ejActual = state.auditoria.ejercicio;
+    if (!ejActual) return false;
 
-    if (!data.ejercicio || !data.tarjetasIds) return false;
+    let data = leerAuditoria(STORAGE_KEY_AUDITORIA(ejActual));
 
-    // Restaurar solo si el ejercicio coincide con el actual
+    // Migración: progreso guardado con la clave antigua (un solo ejercicio)
+    if (!data) {
+      const legacy = leerAuditoria(STORAGE_KEY_AUDITORIA_LEGACY());
+      if (legacy && legacy.ejercicio === ejActual) {
+        data = legacy;
+        try {
+          localStorage.setItem(STORAGE_KEY_AUDITORIA(ejActual), JSON.stringify(data));
+          localStorage.removeItem(STORAGE_KEY_AUDITORIA_LEGACY());
+        } catch (e) { /* ignorar */ }
+      }
+    }
+
+    if (!data || data.ejercicio !== ejActual || !data.tarjetasIds) return false;
+
     const config = EJERCICIOS[data.ejercicio];
     if (!config) return false;
 
@@ -104,9 +128,24 @@ function cargarProgresoAuditoria() {
   }
 }
 
-function borrarProgresoAuditoria() {
+// Borra el progreso de un ejercicio (por defecto, el actual)
+function borrarProgresoAuditoria(ejercicio) {
   if (!state.usuario) return;
-  try { localStorage.removeItem(STORAGE_KEY_AUDITORIA()); } catch (e) {}
+  const ej = ejercicio || state.auditoria.ejercicio;
+  if (ej) {
+    try { localStorage.removeItem(STORAGE_KEY_AUDITORIA(ej)); } catch (e) { /* ignorar */ }
+  }
+  try { localStorage.removeItem(STORAGE_KEY_AUDITORIA_LEGACY()); } catch (e) { /* ignorar */ }
+}
+
+// Borra el progreso de TODOS los ejercicios (cierre de sesión)
+function borrarTodoProgresoAuditoria() {
+  if (!state.usuario) return;
+  const ids = typeof EJERCICIOS !== 'undefined' ? Object.keys(EJERCICIOS) : [];
+  ids.forEach(id => {
+    try { localStorage.removeItem(STORAGE_KEY_AUDITORIA(id)); } catch (e) { /* ignorar */ }
+  });
+  try { localStorage.removeItem(STORAGE_KEY_AUDITORIA_LEGACY()); } catch (e) { /* ignorar */ }
 }
 
 // ============================================================
@@ -114,5 +153,5 @@ function borrarProgresoAuditoria() {
 // ============================================================
 function borrarTodoProgreso() {
   borrarProgreso();
-  borrarProgresoAuditoria();
+  borrarTodoProgresoAuditoria();
 }

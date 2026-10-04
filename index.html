@@ -198,14 +198,14 @@
             <div class="ejercicio-num">Ejercicio 6</div>
             <div class="ejercicio-nombre">3 zonas aleatorias</div>
             <div class="ejercicio-desc">Auditoría de 3 zonas asignadas al azar · Presupuesto 1.500 €</div>
-            <div class="ejercicio-badge">Recomendado</div>
+            <div class="ejercicio-badge">Asignado · 50 pts</div>
           </div>
 
-          <div class="ejercicio-card deshabilitado">
+          <div class="ejercicio-card activo" onclick="iniciarEjercicio('global')">
             <div class="ejercicio-num">Ejercicio Global</div>
             <div class="ejercicio-nombre">2 zonas + integración</div>
-            <div class="ejercicio-desc">Auditoría completa con sensores, protocolos y envolvente</div>
-            <div class="ejercicio-badge pronto">Próximamente</div>
+            <div class="ejercicio-desc">Auditoría completa con 2 zonas asignadas al azar</div>
+            <div class="ejercicio-badge">Asignado · 50 pts</div>
           </div>
 
           <div class="ejercicio-card deshabilitado">
@@ -222,6 +222,13 @@
             <div class="ejercicio-badge pronto">Próximamente</div>
           </div>
         </div>
+
+        <p class="aviso-nota">
+          📌 <strong>Trabajo:</strong> son <strong>2 ejercicios asignados</strong> (Ejercicio 6 + Global),
+          cada uno vale hasta <strong>50 puntos</strong> (100 en total). Al terminar cada uno descargas tu
+          <strong>JSON</strong> y lo subes a la tarea de Moodle. Las soluciones modelo te las deja el
+          profesor en Moodle para autoevaluarte.
+        </p>
       </div>
     </div>
 
@@ -276,7 +283,7 @@
 
       <p class="informe-texto">Rellena tus datos para generar el informe. Se descargarán dos archivos:</p>
       <ul class="informe-lista">
-        <li>📄 <strong>JSON</strong> · datos completos del ejercicio</li>
+        <li>📄 <strong>JSON</strong> · datos completos del ejercicio → <strong>lo subes a Moodle</strong></li>
         <li>📊 <strong>XLSX</strong> · informe tabulado con rúbrica</li>
       </ul>
 
@@ -288,6 +295,12 @@
         <label>
           Iniciales <span class="obligatorio">*</span>
           <input type="text" id="informeIniciales" placeholder="Ej: AGL" maxlength="4" autocomplete="off">
+        </label>
+        <label>
+          Tu puntuación en este ejercicio <span class="obligatorio">*</span>
+          <input type="number" id="informeNota" min="0" max="50" step="1"
+            placeholder="0 a 50 puntos" autocomplete="off">
+          <span class="campo-ayuda">Autoevalúate con las soluciones del profesor: este ejercicio vale <strong>50 puntos</strong>.</span>
         </label>
         <label>
           Grupo / clase
@@ -310,7 +323,7 @@
 
       <div class="informe-acciones">
         <button class="btn-cerrar-informe" onclick="cerrarModalInforme()">Cancelar</button>
-        <button class="btn-enviar-informe" onclick="generarInforme()">📥 Descargar informe</button>
+        <button class="btn-enviar-informe" onclick="generarInforme()">📥 Descargar y enviar a Moodle</button>
       </div>
     </div>
   </div>
