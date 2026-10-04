@@ -44,8 +44,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     const modalPregunta = document.getElementById('modalPregunta');
     const modalInforme = document.getElementById('modalInforme');
+    const panelResultados = document.getElementById('panelResultados');
     if (modalPregunta?.classList.contains('show')) cerrarPregunta();
     if (modalInforme?.classList.contains('show')) cerrarModalInforme();
+    if (panelResultados?.classList.contains('show')) cerrarPanelResultados();
   }
 });
 

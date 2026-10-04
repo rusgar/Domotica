@@ -140,10 +140,17 @@ function calcularPuntuacionFicha(respuestas, tarjeta, variacion) {
   total += 40;
 
   const porcentaje = total === 0 ? 0 : (obtenido / total) * 100;
+  // Parte auto-calificable (sin los 40 puntos manuales):
+  // Gimnasio → 40 (no tiene cálculo) · Resto → 60
+  const autoMax = total - 40;
+  const porcentajeAuto = autoMax === 0 ? 0 : (obtenido / autoMax) * 100;
+
   return {
     obtenido: redondear(obtenido, 2),
     total,
     porcentaje: redondear(porcentaje, 1),
+    autoMax,
+    porcentajeAuto: redondear(porcentajeAuto, 1),
     aciertosAuto: redondear(obtenido, 2),
     pendienteManual: 40
   };

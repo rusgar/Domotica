@@ -30,8 +30,9 @@ function actualizarScore() {
   document.getElementById('score').textContent = aciertos;
   document.getElementById('total').textContent = APARATOS.length;
 
+  // El marcador de aciertos solo lo ve el PROFESOR (el alumno no ve notas)
   const cont = document.querySelector('.toolbar .score');
-  if (cont) cont.style.display = aciertos > 0 ? '' : 'none';
+  if (cont) cont.style.display = (state.usuario === 'profe' && aciertos > 0) ? '' : 'none';
 }
 
 function zonasCompletas() {
@@ -176,6 +177,10 @@ function mostrarVictoria() {
       ¡TODO CORRECTO!
       <div class="detalle">Has colocado los ${total} aparatos en su zona correcta.<br>
       Tiempo: <strong>${formatearTiempo(state.cronometro.segundos)}</strong></div>
+      <div class="victoria-acciones">
+        <button class="btn-constancia" onclick="descargarConstanciaColocar()">📥 Descargar constancia (PNG)</button>
+        <button class="btn-json" onclick="descargarJSONColocar()">📄 Descargar resultado (JSON)</button>
+      </div>
     `;
   detenerCronometro();
   document.body.style.background = 'linear-gradient(135deg, #052e16 0%, #14532d 100%)';
@@ -319,12 +324,13 @@ function verificarTodo() {
     mostrarVictoria();
   } else {
     res.className = 'resultado-final show mal';
+    // El alumno no ve la nota: solo qué falta. El profesor ve el desglose.
+    const esProfe = state.usuario === 'profe';
     res.innerHTML = `
       <span class="icono-grande">⚠️</span>
       Aún hay errores
       <div class="detalle">
-        Aciertos: <strong>${aciertos}</strong> / ${total} ·
-        Sin colocar: <strong>${faltan}</strong><br>
+        ${esProfe ? `Aciertos: <strong>${aciertos}</strong> / ${total} · ` : ''}Sin colocar: <strong>${faltan}</strong><br>
         Los aparatos en <span style="color:#f87171">rojo</span> están mal colocados.
       </div>
     `;

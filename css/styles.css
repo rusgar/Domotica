@@ -505,3 +505,82 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 ::-webkit-scrollbar-track { background: #0f172a; }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #475569; }
+/* ============================================================
+   CONSTANCIAS Y DESCARGAS (JSON / PNG)
+   ============================================================ */
+.btn-resultados {
+  background: #38bdf8; color: #0f172a;
+  padding: 6px 12px; border: none; border-radius: 8px;
+  cursor: pointer; font-weight: 700; font-size: 0.8rem;
+}
+.btn-resultados:hover { background: #0ea5e9; }
+
+.btn-constancia {
+  background: #38bdf8; color: #0f172a;
+  padding: 9px 16px; border: none; border-radius: 8px;
+  cursor: pointer; font-weight: 600; font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.btn-constancia:hover { background: #0ea5e9; }
+
+.victoria-acciones {
+  display: flex; gap: 10px; justify-content: center;
+  flex-wrap: wrap; margin-top: 16px;
+}
+.victoria-acciones button {
+  padding: 10px 16px; border: none; border-radius: 8px;
+  cursor: pointer; font-weight: 600; font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.victoria-acciones .btn-constancia { background: #38bdf8; color: #0f172a; }
+.victoria-acciones .btn-constancia:hover { background: #0ea5e9; }
+.victoria-acciones .btn-json { background: #a855f7; color: #fff; }
+.victoria-acciones .btn-json:hover { background: #9333ea; }
+
+/* ============================================================
+   PANEL DE PROFESOR · RESULTADOS
+   ============================================================ */
+.panel-profesor { max-width: 980px; max-height: 90vh; overflow-y: auto; }
+
+.panel-carga {
+  align-items: flex-end !important;
+  gap: 16px;
+}
+.panel-carga-label { flex: 1; }
+.panel-resumen {
+  font-size: 0.85rem; color: #94a3b8;
+  padding-bottom: 8px; white-space: nowrap;
+}
+
+.panel-tabla-wrap { overflow-x: auto; margin-top: 8px; }
+.panel-tabla {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem; margin-top: 8px;
+}
+.panel-tabla th, .panel-tabla td {
+  padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid #334155;
+}
+.panel-tabla th {
+  background: rgba(56,189,248,0.1);
+  color: #38bdf8; font-weight: 700;
+  white-space: nowrap;
+}
+.panel-tabla td { color: #cbd5e1; }
+.panel-tabla tbody tr:hover { background: rgba(148,163,184,0.06); }
+.panel-pequena { font-size: 0.75rem; color: #94a3b8; }
+.panel-nota { color: #4ade80 !important; white-space: nowrap; }
+.panel-na { color: #475569; }
+
+.input-manual {
+  width: 74px; padding: 5px 7px;
+  background: #0f172a; color: #e2e8f0;
+  border: 1px solid #475569; border-radius: 6px;
+  font-family: inherit; font-size: 0.82rem;
+}
+.input-manual:focus { outline: none; border-color: #38bdf8; }
+
+.panel-vacio {
+  padding: 24px; text-align: center;
+  color: #64748b; font-size: 0.9rem;
+}

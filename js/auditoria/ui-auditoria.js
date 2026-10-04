@@ -29,6 +29,8 @@ function iniciarEjercicio(tipo) {
   } else {
     document.getElementById('tarjetasLista').innerHTML =
       '<div class="tarjeta-vacia">Pulsa "🎲 Repartir tarjetas" para empezar</div>';
+    const btn = document.getElementById('btnConstanciaAuditoria');
+    if (btn) btn.style.display = 'none';
   }
 }
 
@@ -72,7 +74,12 @@ function renderTarjetasAuditoria() {
 // Actualizar progreso global
 function actualizarProgresoGlobal() {
   const { fichas, config } = state.auditoria;
-  if (!fichas || !config) return;
+  const btn = document.getElementById('btnConstanciaAuditoria');
+
+  if (!fichas || !config) {
+    if (btn) btn.style.display = 'none';
+    return;
+  }
 
   const totalValidadas = fichas.filter(f => f.validado).length;
   const total = fichas.length;
@@ -81,6 +88,9 @@ function actualizarProgresoGlobal() {
   if (el && config) {
     el.textContent = `${totalValidadas} / ${total} fichas validadas · Presupuesto ${config.presupuesto} €`;
   }
+
+  // La constancia aparece al terminar TODAS las fichas (una por ejercicio)
+  if (btn) btn.style.display = (total > 0 && totalValidadas === total) ? 'inline-block' : 'none';
 }
 
 // Reset del ejercicio
@@ -198,6 +208,12 @@ function mostrarModalInforme() {
   }
   document.getElementById('modalInforme').classList.add('show');
   document.getElementById('informeError').classList.remove('show');
+
+  // Prefill de iniciales (si ya se usaron en una constancia)
+  const campoIni = document.getElementById('informeIniciales');
+  if (campoIni && !campoIni.value.trim()) {
+    campoIni.value = getIniciales();
+  }
 }
 
 function cerrarModalInforme() {

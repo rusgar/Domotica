@@ -42,6 +42,8 @@
     <div class="header-right">
       <div class="timer-box" id="timerBox">00:00</div>
       <span class="user-badge alumno" id="userBadge">👤 Alumno</span>
+      <button class="btn-resultados" id="btnResultados" style="display:none;"
+        onclick="abrirPanelResultados()">📊 Resultados</button>
       <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
     </div>
   </header>
@@ -233,6 +235,8 @@
         <div class="auditoria-acciones">
           <button class="btn-check" onclick="repartirTarjetas()">🎲 Repartir tarjetas</button>
           <button class="btn-auto" onclick="mostrarModalInforme()">📤 Enviar informe</button>
+          <button class="btn-constancia" id="btnConstanciaAuditoria" style="display:none;"
+            onclick="descargarConstanciaAuditoria()">🖼️ Constancia (PNG)</button>
           <button class="btn-reset" onclick="resetearAuditoria()">🔄 Reiniciar</button>
         </div>
       </div>
@@ -282,6 +286,10 @@
           <input type="text" id="informeNombre" placeholder="Ej: Ana García López" autocomplete="off">
         </label>
         <label>
+          Iniciales <span class="obligatorio">*</span>
+          <input type="text" id="informeIniciales" placeholder="Ej: AGL" maxlength="4" autocomplete="off">
+        </label>
+        <label>
           Grupo / clase
           <input type="text" id="informeGrupo" placeholder="Ej: 2º STI" autocomplete="off">
         </label>
@@ -308,6 +316,82 @@
   </div>
 
   <!-- ============================================================ -->
+  <!-- PANEL DE PROFESOR (resultados de la clase)                   -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="panelResultados">
+    <div class="modal-informe panel-profesor">
+
+      <!-- Pantalla 1: contraseña -->
+      <div id="panelLock">
+        <div class="modal-header">
+          <h3>📊 Resultados</h3>
+          <button class="btn-cerrar-modal" onclick="cerrarPanelResultados()">✕</button>
+        </div>
+        <p class="informe-texto">🔒 Zona privada del profesor. Introduce la contraseña para ver los resultados de la clase.</p>
+        <div class="informe-campos">
+          <label>
+            Contraseña
+            <input type="password" id="panelPass" autocomplete="off" placeholder="••••••">
+          </label>
+        </div>
+        <div class="informe-error" id="panelError"></div>
+        <div class="informe-acciones">
+          <button class="btn-cerrar-informe" onclick="cerrarPanelResultados()">Cancelar</button>
+          <button class="btn-enviar-informe" onclick="desbloquearPanel()">🔓 Desbloquear</button>
+        </div>
+      </div>
+
+      <!-- Pantalla 2: tabla de resultados -->
+      <div id="panelContenido" style="display:none;">
+        <div class="modal-header">
+          <h3>📊 Resultados de la clase</h3>
+          <button class="btn-cerrar-modal" onclick="cerrarPanelResultados()">✕</button>
+        </div>
+
+        <p class="informe-texto">
+          Carga los <strong>JSON</strong> entregados por el alumno (Colocar o Auditoría).
+          Introduce la nota manual (0–40 por ficha) y verás la nota final.
+        </p>
+
+        <div class="informe-campos panel-carga">
+          <label class="panel-carga-label">
+            📂 Cargar JSON
+            <input type="file" id="panelFiles" multiple accept=".json,application/json"
+              onchange="cargarResultadosPanel(this.files)">
+          </label>
+          <div class="panel-resumen" id="panelResumen">Ningún resultado cargado</div>
+        </div>
+
+        <div class="panel-tabla-wrap">
+          <table class="panel-tabla" id="panelTabla">
+            <thead>
+              <tr>
+                <th>Iniciales</th>
+                <th>Nombre</th>
+                <th>Módulo</th>
+                <th>Fecha</th>
+                <th>Tiempo</th>
+                <th>Auto</th>
+                <th>Manual máx.</th>
+                <th>Nota manual</th>
+                <th>Nota final</th>
+              </tr>
+            </thead>
+            <tbody id="panelTablaBody"></tbody>
+          </table>
+          <div class="panel-vacio" id="panelVacio">Carga un JSON para empezar.</div>
+        </div>
+
+        <div class="informe-acciones">
+          <button class="btn-reset" onclick="vaciarPanel()">🗑 Vaciar</button>
+          <button class="btn-cerrar-informe" onclick="cerrarPanelResultados()">Cerrar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
   <!-- SCRIPTS (orden importa)                                      -->
   <!-- ============================================================ -->
 
@@ -318,6 +402,7 @@
   <script src="js/estado.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/cronometro.js"></script>
+  <script src="js/constancia.js"></script>
 
   <!-- Módulo colocar aparatos -->
   <script src="js/login.js"></script>
@@ -337,6 +422,7 @@
   <script src="js/auditoria/storage-carpeta.js"></script>
   <script src="js/auditoria/informe.js"></script>
   <script src="js/auditoria/ui-auditoria.js"></script>
+  <script src="js/panel-profesor.js"></script>
 
   <!-- Arranque final -->
   <script src="js/main.js"></script>
@@ -353,6 +439,7 @@
       if (typeof state === 'undefined') faltan.push('estado.js');
       if (typeof guardarProgreso === 'undefined') faltan.push('storage.js');
       if (typeof actualizarTimerUI === 'undefined') faltan.push('cronometro.js');
+      if (typeof descargarConstanciaColocar === 'undefined') faltan.push('constancia.js');
       if (typeof entrarComoAlumno === 'undefined') faltan.push('login.js');
       if (typeof abrirPregunta === 'undefined') faltan.push('dragdrop.js');
       if (typeof verificarTodo === 'undefined') faltan.push('validacion.js');
@@ -369,6 +456,7 @@
       if (typeof guardarEnCarpetaResultados === 'undefined') faltan.push('auditoria/storage-carpeta.js');
       if (typeof generarInforme === 'undefined') faltan.push('auditoria/informe.js');
       if (typeof iniciarEjercicio === 'undefined') faltan.push('auditoria/ui-auditoria.js');
+      if (typeof abrirPanelResultados === 'undefined') faltan.push('panel-profesor.js');
 
       if (faltan.length > 0) {
         document.body.innerHTML = `

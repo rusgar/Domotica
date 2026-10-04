@@ -393,11 +393,14 @@ function validarFicha(indice) {
   ficha.validado = true;
   ficha.puntuacion = puntuacion;
 
+  const esProfe = state.usuario === 'profe';
+
   // Actualizar estado de la tarjeta
   const estado = document.getElementById(`estado-tarjeta-${indice}`);
   if (estado) {
     estado.className = 'tarjeta-estado completa';
-    estado.textContent = `✓ ${puntuacion.porcentaje}% auto`;
+    // La puntuación solo la ve el profesor
+    estado.textContent = esProfe ? `✓ ${puntuacion.porcentajeAuto}% auto` : '✓ Validada';
   }
   const card = document.querySelector(`.tarjeta-auditoria[data-indice="${indice}"]`);
   if (card) card.classList.add('completa');
@@ -406,12 +409,23 @@ function validarFicha(indice) {
   const res = document.getElementById(`ficha-resultado-${indice}`);
   if (res) {
     res.className = 'calculo-resultado show ok';
-    res.innerHTML = `
-      <strong>Ficha ${indice + 1} validada.</strong><br>
-      Aciertos automáticos: <strong>${puntuacion.aciertosAuto}</strong> puntos de ${puntuacion.total}.<br>
-      Pendiente de corrección manual (campos abiertos): <strong>${puntuacion.pendienteManual}</strong> puntos.<br>
-      Porcentaje auto: <strong>${puntuacion.porcentaje}%</strong>
-    `;
+    if (esProfe) {
+      // Redacción clara: la parte auto-calificable y la parte manual se separan.
+      // (Antes decía "40 de 80 · 50 %", que confundía: los 40 manuales
+      //  nunca se otorgan automáticamente.)
+      res.innerHTML = `
+        <strong>Ficha ${indice + 1} validada.</strong><br>
+        Aciertos automáticos: <strong>${puntuacion.aciertosAuto} / ${puntuacion.autoMax}</strong>
+        (${puntuacion.porcentajeAuto} % de la parte auto).<br>
+        Corrección manual pendiente: <strong>${puntuacion.pendienteManual}</strong> puntos (campos abiertos).<br>
+        Nota final posible: <strong>${puntuacion.aciertosAuto + puntuacion.pendienteManual} / ${puntuacion.total}</strong>
+      `;
+    } else {
+      res.innerHTML = `
+        <strong>Ficha ${indice + 1} validada ✓</strong><br>
+        Guarda tu constancia cuando completes todas las fichas.
+      `;
+    }
   }
 
   guardarProgresoAuditoria();

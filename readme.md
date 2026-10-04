@@ -23,6 +23,9 @@ El material cubre los temas del curso:
 - Comprender la cadena sensor → gateway → controlador → actuador.
 - **Responder correctamente una pregunta teórica por zona** para desbloquearla.
 - **Validar cada zona con su botón «✓ Validar»**: si está completa y correcta se marca en verde; si tiene errores se reinicia todo el ejercicio.
+- **Ganar = constancia**: al colocar todo correctamente aparecen dos botones:
+  - **📥 Descargar constancia (PNG)**: imagen con iniciales, tiempo y fecha (sin notas).
+  - **📄 Descargar resultado (JSON)**: archivo con iniciales y aciertos para entregar al profesor.
 
 ### Módulo 2 · Auditoría
 - Analizar zonas del edificio a partir de tarjetas con datos didácticos.
@@ -31,6 +34,7 @@ El material cubre los temas del curso:
 - Investigar con fuentes oficiales (CTE DB-HE, RITE, REBT) y técnicas.
 - Priorizar actuaciones con presupuesto limitado.
 - Razonar sin inventar datos: qué medir, con qué instrumento y para qué.
+- **Al validar todas las fichas aparece 🖼️ Constancia (PNG)** para descargar y entregar.
 
 ## 🚀 Cómo usarlo
 
@@ -46,7 +50,10 @@ El material cubre los temas del curso:
 - Se desbloquean:
   - Botón **🤖 Auto-colocar** (solución rápida).
   - Botón **🎓 Modo examen** (bloquea pistas, reset y auto-colocación, añade cuenta atrás).
+  - Botón **📊 Resultados** (panel privado con contraseña): carga los JSON entregados por la clase y apunta la **nota manual de 0 a 40** para calcular la nota final.
   - Atajo de teclado `Ctrl + Shift + A` para auto-colocar.
+
+> 🔒 **Las notas solo las ve el profesor.** El alumno no ve aciertos, porcentajes ni puntuaciones: solo sabe si ha completado el ejercicio y qué le falta.
 
 ## 📁 Estructura del proyecto
 
@@ -62,11 +69,13 @@ dashboard-domotica/
 │ ├── estado.js ← estado global
 │ ├── storage.js ← persistencia en localStorage
 │ ├── cronometro.js ← cronómetro compartido
+│ ├── constancia.js ← constancias PNG + JSON con iniciales
 │ ├── login.js ← login alumno/profesor + cambio de módulo
 │ ├── dragdrop.js ← arrastrar y soltar + preguntas
 │ ├── validacion.js ← verificación, pistas, reset
 │ ├── examen.js ← modo examen (ambos módulos)
 │ ├── ui.js ← renderizado del banco
+│ ├── panel-profesor.js ← panel de resultados (solo profesor)
 │ ├── main.js ← arranque y atajos
 │ └── auditoria/
 │ ├── tarjetas.js ← 10 tarjetas con variaciones aleatorias
@@ -79,6 +88,8 @@ dashboard-domotica/
 │ ├── ui-auditoria.js ← interfaz del módulo auditoría
 │ ├── informe.js ← generación JSON + XLSX
 │ └── storage-carpeta.js ← guardado en carpeta "resultados"
+├── soluciones/
+│ └── 01_aula.md … 10_salon_de_actos.md ← soluciones modelo de auditoría
 ├── documentacion/
 │ ├── pasos_1.md
 │ ├── pasos_2.md
@@ -93,11 +104,19 @@ dashboard-domotica/
 
 Al terminar un ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
 
-1. Rellena tu nombre (obligatorio), grupo y email.
+1. Rellena tu nombre y **tus iniciales** (obligatorios), grupo y email.
 2. Se descargan **dos archivos**:
-   - `informe_[nombre]_[fecha].json` → datos completos.
+   - `informe_[nombre]_[fecha].json` → datos completos **con tus iniciales** (este es el que carga el profesor en 📊 Resultados).
    - `informe_[nombre]_[fecha].xlsx` → informe tabulado con rúbrica.
 3. **En Chrome/Edge** puedes pulsar además **"📁 Elegir carpeta resultados"** para que los siguientes informes se guarden ahí automáticamente sin pasar por Descargas.
+
+## 📊 Cómo corrige el profesor
+
+1. Entra como profesor y pulsa **📊 Resultados** en la cabecera.
+2. Introduce la **contraseña del profesor**.
+3. **Carga los JSON** entregados (varios a la vez): aparecen los iniciales, el módulo, el tiempo y los aciertos automáticos.
+4. Escribe la **nota manual (0 a 40 por ficha)** tras corregir la redacción: la **nota final** se calcula sola = automática + manual. Las notas quedan guardadas en el navegador.
+5. 🗑 Vaciar borra la tabla y las notas manuales.
 
 ## 🔧 Personalización rápida
 
@@ -121,7 +140,7 @@ Al terminar un ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
 - [ ] **Paso 6** — Ejercicio Global (2 zonas + sensores + protocolos + envolvente)
 - [ ] **Paso 7** — Ejercicio 3 (detectives de ineficiencias, 10 casos)
 - [ ] **Paso 8** — Ejercicio 4 (auditoría de un aula real con mediciones)
-- [ ] **Paso 9** — Panel del profesor para ver todos los informes
+- [x] **Paso 9** — Panel del profesor (carga de JSON + nota manual 0-40)
 - [ ] **Paso 10** — Exportación a PDF con rúbrica automática
 
 ## 📄 Licencia

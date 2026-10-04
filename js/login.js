@@ -36,11 +36,13 @@ function iniciarDashboard() {
     badge.textContent = '👨‍🏫 Profesor';
     document.getElementById('btnAuto').style.display = 'inline-block';
     document.getElementById('btnExamen').style.display = 'inline-block';
+    document.getElementById('btnResultados').style.display = 'inline-block';
   } else {
     badge.className = 'user-badge alumno';
     badge.textContent = '👤 Alumno';
     document.getElementById('btnAuto').style.display = 'none';
     document.getElementById('btnExamen').style.display = 'none';
+    document.getElementById('btnResultados').style.display = 'none';
   }
 
   // Restaurar módulo activo
@@ -155,9 +157,16 @@ function cerrarSesion() {
   // Reset modal informe
   document.getElementById('modalInforme').classList.remove('show');
   document.getElementById('informeNombre').value = '';
+  document.getElementById('informeIniciales').value = '';
   document.getElementById('informeGrupo').value = '';
   document.getElementById('informeEmail').value = '';
   document.getElementById('informeError').classList.remove('show');
+
+  // Reset panel del profesor
+  if (typeof cerrarPanelResultados === 'function') cerrarPanelResultados();
+  if (typeof cerrarPanelSesion === 'function') cerrarPanelSesion();
+  const btnConstancia = document.getElementById('btnConstanciaAuditoria');
+  if (btnConstancia) btnConstancia.style.display = 'none';
 
   // Reset login
   document.getElementById('loginOverlay').classList.remove('hidden');

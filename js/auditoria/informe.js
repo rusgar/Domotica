@@ -3,7 +3,7 @@
    ============================================================ */
 
 // Generar el objeto JSON con todos los datos del alumno
-function construirInformeJSON(nombre, grupo, email) {
+function construirInformeJSON(nombre, grupo, email, iniciales) {
   const { ejercicio, config, tarjetas, variaciones, fichas } = state.auditoria;
   const ahora = new Date();
 
@@ -25,6 +25,7 @@ function construirInformeJSON(nombre, grupo, email) {
     },
     alumno: {
       nombre: nombre.trim(),
+      iniciales: (iniciales || '').trim().toUpperCase(),
       grupo: grupo.trim(),
       email: email.trim()
     },
@@ -295,6 +296,7 @@ function descargarXLSX(informe, nombre) {
 // ============================================================
 async function generarInforme() {
   const nombre = document.getElementById('informeNombre').value.trim();
+  const iniciales = document.getElementById('informeIniciales').value.trim().toUpperCase();
   const grupo = document.getElementById('informeGrupo').value.trim();
   const email = document.getElementById('informeEmail').value.trim();
   const err = document.getElementById('informeError');
@@ -305,9 +307,18 @@ async function generarInforme() {
     return;
   }
 
+  if (!/^[A-ZÑ]{2,4}$/.test(iniciales)) {
+    err.textContent = '❌ Introduce tus iniciales (2 a 4 letras).';
+    err.classList.add('show');
+    return;
+  }
+
+  // Recordar iniciales para constancias y JSON de Colocar aparatos
+  try { localStorage.setItem('dashboard_iniciales', iniciales); } catch (e) {}
+
   err.classList.remove('show');
 
-  const informe = construirInformeJSON(nombre, grupo, email);
+  const informe = construirInformeJSON(nombre, grupo, email, iniciales);
 
   // 1. Descargar JSON
   descargarJSON(informe, nombre);
