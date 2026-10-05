@@ -71,6 +71,9 @@ function renderTarjetasAuditoria() {
   });
 }
 
+// Último número de fichas validadas visto (para detectar el paso a "todas")
+let fichasValidadasAntes = -1;
+
 // Actualizar progreso global
 function actualizarProgresoGlobal() {
   const { fichas, config } = state.auditoria;
@@ -78,6 +81,7 @@ function actualizarProgresoGlobal() {
 
   if (!fichas || !config) {
     if (btn) btn.style.display = 'none';
+    fichasValidadasAntes = -1;
     return;
   }
 
@@ -90,7 +94,23 @@ function actualizarProgresoGlobal() {
   }
 
   // La constancia aparece al terminar TODAS las fichas (una por ejercicio)
-  if (btn) btn.style.display = (total > 0 && totalValidadas === total) ? 'inline-block' : 'none';
+  const todoValidado = total > 0 && totalValidadas === total;
+  if (btn) btn.style.display = todoValidado ? 'inline-block' : 'none';
+
+  // Al validar la ÚLTIMA ficha → se abre el modal para descargar el JSON
+  // y subirlo a Moodle. Solo en la transición (no al recargar la página).
+  const transicion = fichasValidadasAntes >= 0 &&
+    fichasValidadasAntes < total && totalValidadas === total;
+  fichasValidadasAntes = totalValidadas;
+
+  if (transicion) {
+    setTimeout(() => {
+      if (typeof mostrarModalInforme === 'function' &&
+          !document.getElementById('modalInforme').classList.contains('show')) {
+        mostrarModalInforme();
+      }
+    }, 800);
+  }
 }
 
 // Reset del ejercicio

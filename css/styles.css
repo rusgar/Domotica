@@ -584,3 +584,32 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   padding: 24px; text-align: center;
   color: #64748b; font-size: 0.9rem;
 }
+
+/* Botón de informe .md en el panel del profesor */
+.btn-md {
+  background: #22c55e; color: #0f172a;
+  padding: 5px 10px; border: none; border-radius: 6px;
+  cursor: pointer; font-weight: 700; font-size: 0.78rem;
+  white-space: nowrap;
+}
+.btn-md:hover { background: #16a34a; }
+
+.panel-resumen .linea-resumen {
+  font-size: 0.8rem; color: #cbd5e1;
+  padding: 3px 0; white-space: normal;
+}
+
+/* Ayuda bajo los campos del informe */
+.campo-ayuda {
+  display: block; font-size: 0.75rem;
+  color: #94a3b8; margin-top: 4px; font-weight: 400;
+}
+
+/* Aviso de puntuación en la pantalla de inicio de auditoría */
+.aviso-nota {
+  margin-top: 18px; padding: 14px 16px;
+  background: rgba(56,189,248,0.08);
+  border: 1px solid rgba(56,189,248,0.3);
+  border-radius: 12px;
+  font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;
+}
