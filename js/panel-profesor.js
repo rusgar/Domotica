@@ -2,15 +2,18 @@
    PANEL DE PROFESOR · Resultados de la clase
    · Se abre con 📊 Resultados (solo visible para el profe)
    · Pide la contraseña de CREDENCIALES_PROFE
-   · Carga los JSON que entrega el alumno por Moodle
-     (Ejercicio 6 + Ejercicio Global → 50 + 50 = 100)
-   · Nota del alumno (la que él autoevalúa) y nota del profesor
-   · Botón por fila: descarga el JSON convertido en .md
+   · Carga los JSON subidos por los alumnos a Moodle
+     (Ejercicio 6 + Global → 5 + 5 = 10 puntos)
+   · El alumno NO se puntúa: puntuación automática de sus
+     respuestas + nota del profesor (0-5 por ejercicio)
+   · Botón ⬇ .md por fila: JSON convertido a Markdown CON la
+     solución modelo incrustada para verificarla
    ============================================================ */
 
 const CLAVE_NOTAS_MANUALES = 'dashboard_notas_manuales';
 
-// Solución modelo de cada tarjeta (carpeta NO publicada en la web)
+// Solución modelo de cada tarjeta (carpeta repartida por Moodle;
+// en la web se usa para incrustarla en el informe .md)
 const SOLUCIONES_POR_TARJETA = {
   'AULA': 'soluciones/01_aula.md',
   'PASILLO': 'soluciones/02_pasillo.md',
@@ -26,6 +29,12 @@ const SOLUCIONES_POR_TARJETA = {
 
 let panelDesbloqueado = false;
 let panelRegistros = [];
+
+const escala = () => (typeof ESCALA_AUDITORIA !== 'undefined' ? ESCALA_AUDITORIA : {
+  ejerciciosAsignados: ['6', 'global'], puntosPorEjercicio: 5, puntosPorTarjeta: 2.5, puntosTotales: 10
+});
+
+const red2 = n => Math.round(n * 100) / 100;
 
 // ------------------------------------------------------------
 // Apertura / cierre / desbloqueo
@@ -84,8 +93,7 @@ function esc(texto) {
 }
 
 function normalizarRegistro(json, nombreFichero) {
-  const notaMax = (typeof ESCALA_AUDITORIA !== 'undefined')
-    ? ESCALA_AUDITORIA.puntosPorEjercicio : 50;
+  const e = escala();
 
   // 1) JSON de Colocar aparatos
   if (json && json.tipo === 'colocar') {
@@ -100,8 +108,8 @@ function normalizarRegistro(json, nombreFichero) {
       tiempo: json.tiempoLegible || '',
       auto: aciertos,
       autoMax: total,
-      notaMax: 0,          // este módulo no entra en la escala 50+50
-      notaAlumno: '',
+      autoEscala: null,       // fuera de la escala 0-5
+      notaMax: 0,
       json: json
     };
   }
@@ -110,11 +118,13 @@ function normalizarRegistro(json, nombreFichero) {
   if (json && json.alumno && json.puntuacion) {
     const p = json.puntuacion;
     const autoMax = (p.totalMaximo || 0) - (p.pendienteManual || 0);
+    const autoEscala = autoMax > 0 ? red2((p.aciertosAuto || 0) / autoMax * e.puntosPorEjercicio) : 0;
     const ejId = (json.meta && json.meta.ejercicio) ? String(json.meta.ejercicio) : '';
     const ejNombre = (json.meta && json.meta.ejercicioNombre) || '';
     const etiqueta = ejId
       ? `Ejercicio ${ejId === 'global' ? 'Global' : ejId}${ejNombre ? ' · ' + ejNombre : ''}`
       : (ejNombre || 'Auditoría');
+
     return {
       modulo: 'Auditoría',
       ejercicio: etiqueta,
@@ -124,8 +134,8 @@ function normalizarRegistro(json, nombreFichero) {
       tiempo: (json.meta && json.meta.duracionLegible) || '',
       auto: typeof p.aciertosAuto === 'number' ? p.aciertosAuto : 0,
       autoMax: autoMax,
-      notaMax: p.notaMaxima || notaMax,
-      notaAlumno: typeof p.notaAlumno === 'number' ? p.notaAlumno : '',
+      autoEscala: autoEscala,                     // 0 a 5
+      notaMax: p.notaMaxima || e.puntosPorEjercicio,
       json: json
     };
   }
@@ -155,9 +165,7 @@ function cargarResultadosPanel(files) {
 
         reg.key = key;
         reg.fichero = f.name;
-        const notas = leerNotas(key);
-        reg.notaAlumno = notas.alumno !== null ? notas.alumno : reg.notaAlumno;
-        reg.notaProfe = notas.profe;
+        reg.notaProfe = leerNotaProfe(key);
         panelRegistros.push(reg);
       } catch (e) {
         errores.push(`${f.name}: JSON inválido`);
@@ -175,33 +183,23 @@ function cargarResultadosPanel(files) {
 }
 
 // ------------------------------------------------------------
-// Notas persistidas: { clave: { alumno: n, profe: n } }
-// (migra el formato antiguo: { clave: n } → nota del profesor)
+// Nota del profesor persistida por registro
 // ------------------------------------------------------------
 function leerTodasLasNotas() {
   try { return JSON.parse(localStorage.getItem(CLAVE_NOTAS_MANUALES) || '{}'); } catch (e) { return {}; }
 }
 
-function leerNotas(key) {
-  const todas = leerTodasLasNotas();
-  const v = todas[key];
-  if (typeof v === 'number') return { profe: v, alumno: null };   // formato antiguo
-  if (v && typeof v === 'object') {
-    return {
-      profe: typeof v.profe === 'number' ? v.profe : null,
-      alumno: typeof v.alumno === 'number' ? v.alumno : null
-    };
-  }
-  return { profe: null, alumno: null };
+function leerNotaProfe(key) {
+  const v = leerTodasLasNotas()[key];
+  if (typeof v === 'number') return v;                    // formato antiguo
+  if (v && typeof v === 'object' && typeof v.profe === 'number') return v.profe;
+  return null;
 }
 
-function guardarNotas(key, alumno, profe) {
+function guardarNotaProfe(key, valor) {
   const todas = leerTodasLasNotas();
-  const limpia = {};
-  if (typeof alumno === 'number') limpia.alumno = alumno;
-  if (typeof profe === 'number') limpia.profe = profe;
-  if (Object.keys(limpia).length === 0) delete todas[key];
-  else todas[key] = limpia;
+  if (typeof valor === 'number') todas[key] = { profe: valor };
+  else delete todas[key];
   try { localStorage.setItem(CLAVE_NOTAS_MANUALES, JSON.stringify(todas)); } catch (e) {}
 }
 
@@ -209,22 +207,14 @@ function limpiarNota(valor, max) {
   if (valor === '' || valor === null || valor === undefined) return null;
   const n = parseFloat(valor);
   if (isNaN(n)) return null;
-  return Math.max(0, Math.min(max, n));
-}
-
-function cambiarNotaAlumno(indice, valor) {
-  const reg = panelRegistros[indice];
-  if (!reg || !reg.notaMax) return;
-  reg.notaAlumno = limpiarNota(valor, reg.notaMax);
-  guardarNotas(reg.key, reg.notaAlumno, reg.notaProfe);
-  renderPanel();
+  return Math.max(0, Math.min(max, red2(n)));
 }
 
 function cambiarNotaProfe(indice, valor) {
   const reg = panelRegistros[indice];
   if (!reg || !reg.notaMax) return;
   reg.notaProfe = limpiarNota(valor, reg.notaMax);
-  guardarNotas(reg.key, reg.notaAlumno, reg.notaProfe);
+  guardarNotaProfe(reg.key, reg.notaProfe);
   renderPanel();
 }
 
@@ -235,13 +225,12 @@ function vaciarPanel() {
   renderPanel();
 }
 
-// ------------------------------------------------------------
-// Nota final de una fila: manda la del profesor si la hay
-// ------------------------------------------------------------
+// Nota final: la del profesor si existe; si no, la automática
 function notaFinalDe(reg) {
   if (!reg.notaMax) return null;
-  const nota = (typeof reg.notaProfe === 'number') ? reg.notaProfe : reg.notaAlumno;
-  return typeof nota === 'number' ? nota : null;
+  if (typeof reg.notaProfe === 'number') return reg.notaProfe;
+  if (reg.autoEscala !== null && typeof reg.autoEscala === 'number') return reg.autoEscala;
+  return null;
 }
 
 // ------------------------------------------------------------
@@ -258,13 +247,18 @@ function renderPanel() {
   if (vacio) vacio.style.display = hayDatos ? 'none' : 'block';
 
   panelRegistros.forEach((reg, i) => {
-    const final = notaFinalDe(reg);
     const auditoria = reg.notaMax > 0;
+    const final = notaFinalDe(reg);
 
-    const celdaNota = (valor, max, fn) => auditoria
-      ? `<input type="number" class="input-manual" min="0" max="${max}" step="1"
-           value="${typeof valor === 'number' ? valor : ''}" placeholder="0-${max}"
-           onchange="${fn}(${i}, this.value)">`
+    const celdaAuto = auditoria
+      ? `${reg.autoEscala} / ${reg.notaMax}`
+      : `${reg.auto} / ${reg.autoMax}`;
+
+    const celdaProfe = auditoria
+      ? `<input type="number" class="input-manual" min="0" max="${reg.notaMax}" step="0.1"
+           value="${typeof reg.notaProfe === 'number' ? reg.notaProfe : ''}"
+           placeholder="0-${reg.notaMax}"
+           onchange="cambiarNotaProfe(${i}, this.value)">`
       : '<span class="panel-na">—</span>';
 
     const tr = document.createElement('tr');
@@ -274,9 +268,8 @@ function renderPanel() {
       <td>${esc(reg.ejercicio)}</td>
       <td class="panel-pequena">${esc(reg.fecha)}</td>
       <td>${esc(reg.tiempo) || '—'}</td>
-      <td>${reg.auto} / ${reg.autoMax}</td>
-      <td>${celdaNota(reg.notaAlumno, reg.notaMax, 'cambiarNotaAlumno')}</td>
-      <td>${celdaNota(reg.notaProfe, reg.notaMax, 'cambiarNotaProfe')}</td>
+      <td>${celdaAuto}</td>
+      <td>${celdaProfe}</td>
       <td class="panel-nota">${final !== null ? `<strong>${final} / ${reg.notaMax}</strong>` : '—'}</td>
       <td><button class="btn-md" onclick="descargarMarkdown(${i})">⬇ .md</button></td>
     `;
@@ -286,17 +279,19 @@ function renderPanel() {
   renderResumen(hayDatos, resumen);
 }
 
-// Resumen por alumno: total de sus ejercicios (50 + 50 = 100)
+// Resumen por alumno: total de sus ejercicios (5 + 5 = 10)
 function renderResumen(hayDatos, elResumen) {
   if (!elResumen) return;
 
+  const e = escala();
   const auditoria = panelRegistros.filter(r => r.notaMax > 0);
+
   if (!hayDatos) {
     elResumen.textContent = 'Ningún resultado cargado';
     return;
   }
   if (auditoria.length === 0) {
-    elResumen.textContent = `${panelRegistros.length} resultado(s) de Colocar aparatos (fuera de la escala 50+50)`;
+    elResumen.textContent = `${panelRegistros.length} resultado(s) de Colocar aparatos (fuera de la escala 0-10)`;
     return;
   }
 
@@ -305,46 +300,37 @@ function renderResumen(hayDatos, elResumen) {
     const id = `${reg.iniciales || '?'}|${reg.nombre}`;
     if (!grupos[id]) {
       grupos[id] = {
-        iniciales: reg.iniciales,
-        nombre: reg.nombre,
-        ejercicios: 0,
-        alumno: 0,
-        profe: 0,
-        max: 0,
-        alumnoCompleto: true,
-        profeCompleto: true
+        iniciales: reg.iniciales, nombre: reg.nombre,
+        ejercicios: 0, max: 0, auto: 0, profe: 0, profeCompleto: true
       };
     }
     const g = grupos[id];
     g.ejercicios++;
     g.max += reg.notaMax;
-    if (typeof reg.notaAlumno === 'number') g.alumno += reg.notaAlumno;
-    else g.alumnoCompleto = false;
+    g.auto += reg.autoEscala || 0;
     if (typeof reg.notaProfe === 'number') g.profe += reg.notaProfe;
     else g.profeCompleto = false;
   });
 
   const lineas = Object.values(grupos).map(g => {
-    const alumno = `${g.alumno}${g.alumnoCompleto ? '' : '?'} / ${g.max}`;
     const profe = g.profeCompleto
-      ? ` · Profesor: ${g.profe} / ${g.max}`
-      : '';
-    return `${g.iniciales || '?'} ${g.nombre ? '· ' + g.nombre : ''} → ${g.ejercicios} ejer. · Alumno: ${alumno}${profe}`;
+      ? ` · Profesor: ${red2(g.profe)} / ${g.max}`
+      : ` · Profesor: ${red2(g.profe)}${g.ejercicios > 1 ? '' : ''} / ${g.max} (incompleta)`;
+    return `${g.iniciales || '?'} ${g.nombre ? '· ' + g.nombre : ''} → ${g.ejercicios} ejer. · Auto: ${red2(g.auto)}${profe}`;
   });
 
-  const asignados = (typeof ESCALA_AUDITORIA !== 'undefined')
-    ? ESCALA_AUDITORIA.ejerciciosAsignados.length : 2;
+  const asignados = e.ejerciciosAsignados.length;
   const pendientes = Object.values(grupos).filter(g => g.ejercicios < asignados).length;
 
   elResumen.innerHTML =
     `<strong>${Object.keys(grupos).length} alumno(s)</strong> · ` +
-    `${auditoria.length} entrega(s)` +
+    `${auditoria.length} entrega(s) · Escala ${e.puntosPorEjercicio} + ${e.puntosPorEjercicio} = ${e.puntosTotales}` +
     (pendientes ? ` · ⚠️ ${pendientes} sin entregar los ${asignados} ejercicios` : '') +
     `<br>${lineas.map(l => `<div class="linea-resumen">${esc(l)}</div>`).join('')}`;
 }
 
 // ------------------------------------------------------------
-// INFORME .md · JSON del alumno convertido a Markdown
+// Utilidades de descarga
 // ------------------------------------------------------------
 function descargarTexto(texto, nombreArchivo) {
   const blob = new Blob([texto], { type: 'text/markdown;charset=utf-8' });
@@ -368,28 +354,56 @@ function slug(texto) {
 
 function txt(valor, vacio) {
   const v = Array.isArray(valor) ? valor.join(', ') : valor;
-  const t = (v === null || v === undefined || v === '' || (Array.isArray(v) && v.length === 0))
+  const t = (v === null || v === undefined || v === '' || (Array.isArray(valor) && valor.length === 0))
     ? (vacio || '—') : String(v);
-  // Markdown multi-línea: sangría de bloque
   return t.replace(/\r?\n/g, '\n> ');
 }
 
-function descargarMarkdown(indice) {
+// Carga una solución modelo desde la web (si no, deja la ruta)
+async function cargarSolucion(nombreTarjeta) {
+  const ruta = SOLUCIONES_POR_TARJETA[nombreTarjeta];
+  if (!ruta) return { ruta: '', texto: null };
+  try {
+    const resp = await fetch(ruta, { cache: 'no-store' });
+    if (!resp.ok) return { ruta, texto: null };
+    const cuerpo = await resp.text();
+    const limpio = cuerpo.replace(/^#[^\n]*\n+/, '').trim();
+    return { ruta, texto: limpio || null };
+  } catch (e) {
+    return { ruta, texto: null };
+  }
+}
+
+async function descargarMarkdown(indice) {
   const reg = panelRegistros[indice];
   if (!reg || !reg.json) {
     alert('Este registro no tiene el JSON original. Vuelve a cargar el archivo.');
     return;
   }
-  const texto = generarInformeMarkdown(reg);
+
+  const soluciones = {};
+  if (Array.isArray(reg.json.tarjetas)) {
+    const nombres = [...new Set(reg.json.tarjetas.map(t => t.tarjetaNombre))];
+    const cargadas = await Promise.all(nombres.map(cargarSolucion));
+    nombres.forEach((n, i) => { soluciones[n] = cargadas[i]; });
+  }
+
+  const texto = generarInformeMarkdown(reg, soluciones);
   const nombre = `informe_md_${slug(reg.iniciales || 'sin')}_${slug(reg.ejercicio)}.md`;
   descargarTexto(texto, nombre);
 }
 
-function generarInformeMarkdown(reg) {
+// ------------------------------------------------------------
+// INFORME .md · JSON del alumno + solución modelo incrustada
+// ------------------------------------------------------------
+function generarInformeMarkdown(reg, soluciones) {
+  soluciones = soluciones || {};
   const json = reg.json;
+  const e = escala();
   const notas = reg.notaMax > 0;
   const final = notaFinalDe(reg);
   const esAuditoria = !!(json && json.alumno && json.tarjetas);
+  const nTarjetas = (json.tarjetas || []).length;
 
   let md = '';
 
@@ -406,22 +420,20 @@ function generarInformeMarkdown(reg) {
 
   if (notas) {
     md += `## Puntuación (hasta ${reg.notaMax} puntos en este ejercicio)\n\n`;
+    md += `Cada tarjeta vale **${e.puntosPorTarjeta} puntos** (${nTarjetas} tarjetas → ${reg.notaMax}).\n\n`;
     md += `| Bloque | Puntos |\n|---|---:|\n`;
-    md += `| Automática (calculada por la app) | ${reg.auto} / ${reg.autoMax} |\n`;
-    md += `| **Nota del alumno (autoevaluación)** | ${typeof reg.notaAlumno === 'number' ? reg.notaAlumno : '—'} / ${reg.notaMax} |\n`;
-    md += `| **Nota del profesor** | ${typeof reg.notaProfe === 'number' ? reg.notaProfe : '—'} / ${reg.notaMax} |\n`;
-    md += `| **Nota final (manda la del profe)** | ${final !== null ? final : '—'} / ${reg.notaMax} |\n\n`;
+    md += `| Automática (de las respuestas escritas) | ${reg.autoEscala} / ${reg.notaMax} |\n`;
+    md += `| **Nota del profesor (verificada con la solución)** | ${typeof reg.notaProfe === 'number' ? reg.notaProfe : '—'} / ${reg.notaMax} |\n`;
+    md += `| **Nota final** | ${final !== null ? final : '—'} / ${reg.notaMax} |\n\n`;
 
-    // Otros ejercicios del mismo alumno → total sobre 100
     const otros = panelRegistros.filter(r => r !== reg && r.notaMax > 0 &&
       r.iniciales === reg.iniciales && r.nombre === reg.nombre);
-    if (otros.length) {
-      const todos = [reg, ...otros];
-      const totalMax = todos.reduce((s, r) => s + r.notaMax, 0);
-      const totalAlumno = todos.reduce((s, r) => s + (typeof r.notaAlumno === 'number' ? r.notaAlumno : 0), 0);
-      md += `> **Total del alumno en los ${todos.length} ejercicios: ${totalAlumno} / ${totalMax}**\n\n`;
-    }
-    md += `> Las soluciones modelo están en la carpeta \`soluciones/\` (no publicada en la web).\n\n`;
+    const todos = otros.length ? [reg, ...otros] : [reg];
+    const totalMax = todos.reduce((s, r) => s + r.notaMax, 0);
+    const totalProfe = todos.reduce((s, r) => s + (typeof r.notaProfe === 'number' ? r.notaProfe : 0), 0);
+    const completo = todos.every(r => typeof r.notaProfe === 'number');
+    md += `> **Total de la auditoría (${todos.length} de ${e.ejerciciosAsignados.length} ejercicios): ` +
+          `${completo ? red2(totalProfe) : red2(totalProfe) + '?'} / ${totalMax === e.puntosTotales ? e.puntosTotales : totalMax}**\n\n`;
   }
 
   if (!esAuditoria) {
@@ -431,52 +443,44 @@ function generarInformeMarkdown(reg) {
     return md;
   }
 
-  // ---- Rúbrica en blanco para corregir
-  md += `## ✅ Corrección (comparar con la solución modelo)\n\n`;
+  // ---- Corrección
+  md += `## ✅ Verificación (comparar respuestas con la solución incrustada)\n\n`;
   md += `- [ ] Apartados de la ficha correctos\n`;
   md += `- [ ] Clasificación D/O/I/H correcta\n`;
   md += `- [ ] Cálculo correcto\n`;
-  md += `- [ ] Medidas de mejora y verificación adecuadas\n`;
+  md += `- [ ] Medidas y verificación adecuadas\n`;
   md += `- [ ] Fuentes oficiales/técnicas citadas bien\n`;
   md += `- [ ] Presupuesto justificado\n`;
   md += `- [ ] **Nota propuesta: ______ / ${reg.notaMax}**\n\n`;
 
-  // ---- Respuestas tarjeta a tarjeta
+  // ---- Respuestas tarjeta a tarjeta con solución incrustada
   json.tarjetas.forEach((t, idx) => {
     const f = t.ficha || {};
-    const solucion = SOLUCIONES_POR_TARJETA[t.tarjetaNombre] || '(sin solución asignada)';
+    const sol = soluciones[t.tarjetaNombre] || { ruta: SOLUCIONES_POR_TARJETA[t.tarjetaNombre] || '', texto: null };
 
-    md += `---\n\n## ${idx + 1} · ${t.tarjetaNombre}\n\n`;
-    md += `📂 Solución modelo: \`${solucion}\`\n\n`;
+    md += `---\n\n## ${idx + 1} · ${t.tarjetaNombre} (${e.puntosPorTarjeta} pts)\n\n`;
 
-    md += `### Datos y evidencias\n\n`;
+    md += `### 📝 Respuestas del alumno\n\n`;
     md += `- **Condiciones interiores:** ${txt(f.condicionesInteriores)}\n`;
     md += `- **Factores exteriores:** ${txt(f.factoresExteriores)}\n`;
     md += `- **Problema principal:** ${txt(f.problemaPrincipal)}\n`;
     md += `- **Evidencia:** ${txt(f.evidencia)}\n`;
     md += `- **Causa probable:** ${txt(f.causaProbable)}\n\n`;
 
-    // DOIH: con el JSON no se puede recorrer TARJETAS de forma fiable si
-    // cambió el reparto, así que se muestra lo que respondió el alumno.
-    md += `### Clasificación D / O / I / H\n\n`;
+    md += `**Clasificación D / O / I / H**\n\n`;
     const doih = f.doih || {};
     const claves = Object.keys(doih);
-    if (claves.length) {
-      claves.forEach(k => {
-        md += `- Frase ${Number(k) + 1}: **${doih[k]}**\n`;
-      });
-    } else {
-      md += `- —\n`;
-    }
+    if (claves.length) claves.forEach(k => { md += `- Frase ${Number(k) + 1}: **${doih[k]}**\n`; });
+    else md += `- —\n`;
     md += `- **Frase propia:** ${txt(f.frasesPropias)}\n\n`;
 
-    md += `### Medidas de mejora y verificación\n\n`;
+    md += `**Medidas de mejora y verificación**\n\n`;
     md += `- **Medida 1:** ${txt(f.medida1)}\n`;
     md += `- **Medida 2:** ${txt(f.medida2)}\n`;
     md += `- **Qué medirías:** ${txt(f.queMedirias)}\n`;
     md += `- **Con qué instrumento:** ${txt(f.conQueInstrumento)}\n\n`;
 
-    md += `### Cálculo\n\n`;
+    md += `**Cálculo**\n\n`;
     if (f.calculo !== null && f.calculo !== undefined && f.calculo !== '') {
       md += `- **Valor del alumno:** ${f.calculo}\n`;
       const tarjetaObj = (typeof TARJETAS !== 'undefined') ? TARJETAS.find(x => x.id === t.tarjetaId) : null;
@@ -488,19 +492,19 @@ function generarInformeMarkdown(reg) {
           md += `- **Fórmula esperada:** ${tarjetaObj.calculo.formula}\n`;
           md += `- **Respuesta esperada:** ${v.correcto} ${tarjetaObj.calculo.unidad}\n`;
           md += `- **¿Correcto?** ${v.ok ? '✅ SÍ' : '❌ NO'}\n`;
-        } catch (e) { /* sin cálculo */ }
+        } catch (err) { /* sin cálculo */ }
       }
     } else {
       md += `- **Valor del alumno:** — (sin cálculo)\n`;
     }
     md += `- **Ahorro estimado (texto):** ${txt(f.ahorroEstimado)}\n\n`;
 
-    md += `### Valoración de la actuación\n\n`;
+    md += `**Valoración de la actuación**\n\n`;
     md += `- **Coste estimado:** ${f.costeEstimado || f.coste || '—'} € · ${txt(f.costeJustificacion, '(sin justificar)')}\n`;
     md += `- **Impacto:** ${txt(f.impacto)} · ${txt(f.impactoJustificacion, '(sin justificar)')}\n`;
     md += `- **Dificultad:** ${txt(f.dificultad)} · ${txt(f.dificultadJustificacion, '(sin justificar)')}\n\n`;
 
-    md += `### Investigación (fuentes)\n\n`;
+    md += `**Investigación (fuentes)**\n\n`;
     md += `- **Fuente oficial:** ${txt(f.fuenteOficial && f.fuenteOficial.id)} · apartado: ${txt(f.fuenteOficial && f.fuenteOficial.apartado)}\n`;
     md += `  - Dato encontrado: ${txt(f.fuenteOficial && f.fuenteOficial.datoEncontrado)}\n`;
     md += `  - Aplicación: ${txt(f.fuenteOficial && f.fuenteOficial.aplicacion)}\n`;
@@ -509,9 +513,17 @@ function generarInformeMarkdown(reg) {
     md += `  - Aplicación: ${txt(f.fuenteTecnica && f.fuenteTecnica.aplicacion)}\n\n`;
 
     if (typeof f.justificacionPresupuesto !== 'undefined') {
-      md += `### Presupuesto justificado\n\n`;
+      md += `**Presupuesto justificado**\n\n`;
       md += `- **Coste:** ${f.costeEstimado || 0} €\n`;
       md += `- **Justificación:** ${txt(f.justificacionPresupuesto)}\n\n`;
+    }
+
+    // ---- Solución modelo incrustada
+    md += `### 📚 Solución modelo — \`${sol.ruta || 'solución no disponible'}\`\n\n`;
+    if (sol.texto) {
+      md += sol.texto.split('\n').map(l => '> ' + l).join('\n') + '\n\n';
+    } else {
+      md += `_No se pudo incrustar automáticamente. Ábrela en \`${sol.ruta || 'soluciones/'}\`._\n\n`;
     }
   });
 
@@ -525,7 +537,9 @@ function generarInformeMarkdown(reg) {
     md += `| Restante | ${json.presupuesto.restante} € |\n\n`;
   }
 
-  md += `---\n\n*Generado desde el panel del profesor · Dashboard Domótica*\n`;
+  md += `---\n\n*Generado desde el panel del profesor · Dashboard Domótica · ` +
+        `Escala: ${e.puntosPorTarjeta} pts/tarjeta · ${e.puntosPorEjercicio} pts/ejercicio · ` +
+        `${e.puntosTotales} pts totales*\n`;
   return md;
 }
 

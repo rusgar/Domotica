@@ -28,7 +28,7 @@ El material cubre los temas del curso:
   - **📄 Descargar resultado (JSON)**: archivo con iniciales y aciertos para entregar al profesor.
 
 ### Módulo 2 · Auditoría
-- **2 ejercicios asignados**: **Ejercicio 6** (3 zonas) y **Ejercicio Global** (2 zonas) → **50 + 50 = 100 puntos**.
+- **2 ejercicios asignados**: **Ejercicio 6** (2 zonas) y **Ejercicio Global** (2 zonas). Cada uno reparte **2 tarjetas aleatorias** de las 10 → **5 puntos por ejercicio** (2,5 por tarjeta) → **10 puntos en total**.
 - Analizar zonas del edificio a partir de tarjetas con datos didácticos.
 - Distinguir entre **dato, observación, inferencia e hipótesis** (D / O / I / H).
 - Realizar cálculos de ahorro energético con unidades correctas.
@@ -36,7 +36,7 @@ El material cubre los temas del curso:
 - Priorizar actuaciones con presupuesto limitado.
 - Razonar sin inventar datos: qué medir, con qué instrumento y para qué.
 - **Al validar todas las fichas aparece 🖼️ Constancia (PNG)** para descargar y entregar.
-- Al terminar, el alumno **autoevalúa su nota (0-50)** comparándose con las soluciones modelo y descarga el **JSON** para subirlo a **Moodle**.
+- Al terminar, el alumno descarga su **JSON** y lo sube a **Moodle** con su propio usuario. **No se autoevalúa**: la nota sale de sus respuestas y la verifica el profesor con las soluciones modelo.
 
 ## 🚀 Cómo usarlo
 
@@ -52,7 +52,7 @@ El material cubre los temas del curso:
 - Se desbloquean:
   - Botón **🤖 Auto-colocar** (solución rápida).
   - Botón **🎓 Modo examen** (bloquea pistas, reset y auto-colocación, añade cuenta atrás).
-  - Botón **📊 Resultados** (panel privado con contraseña): carga los JSON subidos a Moodle, muestra la **nota del alumno (0-50)** y permite poner la **nota del profesor (0-50)** → total 100. Además convierte cada JSON en un **informe `.md`** legible.
+  - Botón **📊 Resultados** (panel privado con contraseña): carga los JSON descargados de Moodle, muestra la **puntuación automática (0-5)** de cada ejercicio y permite poner la **nota del profesor (0-5)** → **10 en total**. Además convierte cada JSON en un **informe `.md`** con las respuestas del alumno **y la solución modelo incrustada**.
   - Atajo de teclado `Ctrl + Shift + A` para auto-colocar.
 
 > 🔒 **Las notas solo las ve el profesor.** El alumno no ve aciertos, porcentajes ni puntuaciones: solo sabe si ha completado el ejercicio y qué le falta.
@@ -91,8 +91,8 @@ dashboard-domotica/
 │ ├── informe.js ← generación JSON + XLSX
 │ └── storage-carpeta.js ← guardado en carpeta "resultados"
 ├── soluciones/
-│ └── 01_aula.md … 10_salon_de_actos.md ← soluciones modelo (se reparten por Moodle,
-│ se autocomprueba el alumno, NO se enlazan desde la web)
+│ └── 01_aula.md … 10_salon_de_actos.md ← soluciones modelo (el .md del profesor las
+│ incrusta al corregir; también se pueden repartir en Moodle)
 ├── documentacion/
 │ ├── pasos_1.md
 │ ├── pasos_2.md
@@ -107,27 +107,27 @@ dashboard-domotica/
 
 Al terminar cada ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
 
-1. Rellena tu nombre, **tus iniciales** y **tu puntuación en este ejercicio (0-50)**: autoevalúate comparando tus respuestas con las soluciones modelo que te deja el profesor en **Moodle**.
+1. Rellena tu nombre y **tus iniciales**. (La puntuación **no la escribes tú**: sale de tus respuestas y la verifica el profesor.)
 2. Se descargan **dos archivos**:
    - `informe_[nombre]_[fecha].json` → **el archivo que subes a la tarea de Moodle**.
    - `informe_[nombre]_[fecha].xlsx` → informe tabulado con rúbrica.
-3. Se abre **Moodle** en otra pestaña (si el profesor ha configurado la URL en `js/config.js`) para que subas el JSON.
+3. Se abre **Moodle** en otra pestaña (si el profesor ha configurado la URL en `js/config.js`): entras con **tu usuario de Moodle** y subes el JSON.
 4. **En Chrome/Edge** puedes pulsar además **"📁 Elegir carpeta resultados"** para que los siguientes informes se guarden ahí automáticamente sin pasar por Descargas.
 
 > El progreso de cada ejercicio se guarda por separado: puedes hacer el Ejercicio 6 y después el Global sin perder nada.
 
-> ⚠️ **Soluciones**: la carpeta `soluciones/` está pensada para repartirse por Moodle. Si no quieres que sea accesible por URL en la web desplegada, dilo y la quitamos del repositorio (los archivos se quedan en tu PC).
+> ⚠️ **Soluciones**: el informe `.md` del profesor incrusta el contenido de `soluciones/NN_*.md` (se lee de la web desplegada). Si abres `index.html` con doble clic (`file://`) el navegador bloquea esa lectura y el `.md` solo dejará la ruta del archivo.
 
 ## 📊 Cómo corrige el profesor
 
 1. Entra como profesor y pulsa **📊 Resultados** en la cabecera.
 2. Introduce la **contraseña del profesor**.
-3. **Carga los JSON** que han subido los alumnos (varios a la vez, Ejercicio 6 y Global).
-   - Aparecen iniciales, ejercicio, fecha, tiempo, aciertos automáticos y la **nota que se autoevaluó el alumno (0-50)**.
-   - El resumen por alumno avisa de quién **no ha entregado los 2 ejercicios**.
-4. Escribe la **nota del profesor (0-50)**: la **nota final** de cada ejercicio es la del profesor si la hay, si no, la del alumno. Total de clase = 50 + 50 = **100**. Las notas quedan guardadas en el navegador.
-5. Pulsa **⬇ .md** en la fila del alumno: se descarga un informe **Markdown** con sus respuestas, la comprobación del cálculo, su nota y una checklist para compararlo con `soluciones/`.
-6. 🗑 Vaciar borra la tabla y las notas.
+3. **Carga los JSON** que has descargado de Moodle (varios a la vez, Ejercicio 6 y Global).
+   - Aparecen iniciales, ejercicio, fecha, tiempo y su **puntuación automática (0-5)** calculada de las respuestas.
+   - El resumen por alumno avisa de quién **no ha entregado los 2 ejercicios** y suma su nota sobre **10**.
+4. Escribe la **nota del profesor (0-5)** por ejercicio tras verificarlo: la **nota final** es la del profesor si la hay, si no, la automática. Las notas quedan guardadas en el navegador.
+5. Pulsa **⬇ .md** en la fila del alumno: se descarga un informe **Markdown** con sus respuestas, la comprobación del cálculo, una checklist de corrección y **la solución modelo incrustada justo debajo de cada tarjeta** para comparar.
+6. Si coincide → pones la nota que corresponde (5 + 5 = **10**). 🗑 Vaciar borra la tabla y las notas.
 
 ## 🔧 Personalización rápida
 
@@ -135,7 +135,7 @@ Al terminar cada ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
 |---|---|
 | Usuario y contraseña del profesor | `js/config.js` |
 | URL de la tarea de Moodle | `js/config.js` → `MOODLE.urlTarea` |
-| Puntos por ejercicio (50) y ejercicios asignados | `js/config.js` → `ESCALA_AUDITORIA` |
+| Escala: puntos por tarjeta/ejercicio y ejercicios asignados | `js/config.js` → `ESCALA_AUDITORIA` |
 | Duración del examen | `js/config.js` → `CONFIG.duracionExamenSegundos` |
 | Precio kWh | `js/config.js` → `CONFIG_AUDITORIA.precioKWh` |
 | Añadir/quitar aparatos | `js/datos.js` → array `APARATOS` |
@@ -153,7 +153,7 @@ Al terminar cada ejercicio de auditoría, pulsa **"📤 Enviar informe"**:
 - [x] **Paso 6** — Ejercicio Global (2 zonas) habilitado como segundo ejercicio asignado
 - [ ] **Paso 7** — Ejercicio 3 (detectives de ineficiencias, 10 casos)
 - [ ] **Paso 8** — Ejercicio 4 (auditoría de un aula real con mediciones)
-- [x] **Paso 9** — Panel del profesor (JSON → .md, nota alumno 0-50 + nota profe 0-50, total 100)
+- [x] **Paso 9** — Panel del profesor (JSON → .md con solución incrustada, auto 0-5 + profe 0-5, total 10)
 - [ ] **Paso 10** — Exportación a PDF con rúbrica automática
 
 ## 📄 Licencia

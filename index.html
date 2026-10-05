@@ -196,16 +196,16 @@
         <div class="ejercicios-disponibles">
           <div class="ejercicio-card activo" onclick="iniciarEjercicio('6')">
             <div class="ejercicio-num">Ejercicio 6</div>
-            <div class="ejercicio-nombre">3 zonas aleatorias</div>
-            <div class="ejercicio-desc">Auditoría de 3 zonas asignadas al azar · Presupuesto 1.500 €</div>
-            <div class="ejercicio-badge">Asignado · 50 pts</div>
+            <div class="ejercicio-nombre">2 zonas aleatorias</div>
+            <div class="ejercicio-desc">Auditoría de 2 zonas asignadas al azar · Presupuesto 1.500 €</div>
+            <div class="ejercicio-badge">Asignado · 5 pts</div>
           </div>
 
           <div class="ejercicio-card activo" onclick="iniciarEjercicio('global')">
             <div class="ejercicio-num">Ejercicio Global</div>
             <div class="ejercicio-nombre">2 zonas + integración</div>
             <div class="ejercicio-desc">Auditoría completa con 2 zonas asignadas al azar</div>
-            <div class="ejercicio-badge">Asignado · 50 pts</div>
+            <div class="ejercicio-badge">Asignado · 5 pts</div>
           </div>
 
           <div class="ejercicio-card deshabilitado">
@@ -225,9 +225,10 @@
 
         <p class="aviso-nota">
           📌 <strong>Trabajo:</strong> son <strong>2 ejercicios asignados</strong> (Ejercicio 6 + Global),
-          cada uno vale hasta <strong>50 puntos</strong> (100 en total). Al terminar cada uno descargas tu
-          <strong>JSON</strong> y lo subes a la tarea de Moodle. Las soluciones modelo te las deja el
-          profesor en Moodle para autoevaluarte.
+          cada uno reparte <strong>2 tarjetas aleatorias</strong> (5 puntos el ejercicio → 2,5 por tarjeta).
+          La auditoría vale <strong>10 puntos</strong> en total. Al terminar cada uno descargas tu
+          <strong>JSON</strong> y lo subes a la tarea de Moodle: el profesor lo verifica con las
+          soluciones modelo y asigna la nota.
         </p>
       </div>
     </div>
@@ -236,7 +237,7 @@
     <div id="auditoriaTrabajo" class="auditoria-trabajo" style="display:none;">
       <div class="auditoria-header">
         <div>
-          <h2 id="auditoriaTitulo">Ejercicio 6 · 3 zonas aleatorias</h2>
+          <h2 id="auditoriaTitulo">Ejercicio 6 · 2 zonas aleatorias</h2>
           <div class="auditoria-sub" id="auditoriaSubtitulo">Presupuesto 1.500 € · Datos didácticos</div>
         </div>
         <div class="auditoria-acciones">
@@ -281,11 +282,15 @@
         <button class="btn-cerrar-modal" onclick="cerrarModalInforme()">✕</button>
       </div>
 
-      <p class="informe-texto">Rellena tus datos para generar el informe. Se descargarán dos archivos:</p>
-      <ul class="informe-lista">
-        <li>📄 <strong>JSON</strong> · datos completos del ejercicio → <strong>lo subes a Moodle</strong></li>
-        <li>📊 <strong>XLSX</strong> · informe tabulado con rúbrica</li>
-      </ul>
+        <p class="informe-texto">Rellena tus datos para generar el informe. Se descargarán dos archivos:</p>
+        <ul class="informe-lista">
+          <li>📄 <strong>JSON</strong> · respuestas completas del ejercicio → <strong>lo subes a Moodle</strong></li>
+          <li>📊 <strong>XLSX</strong> · informe tabulado con rúbrica</li>
+        </ul>
+        <p class="campo-ayuda">
+          La puntuación no la pones tú: sale de tus respuestas y la verifica el profesor
+          comparando con las soluciones modelo.
+        </p>
 
       <div class="informe-campos">
         <label>
@@ -295,12 +300,6 @@
         <label>
           Iniciales <span class="obligatorio">*</span>
           <input type="text" id="informeIniciales" placeholder="Ej: AGL" maxlength="4" autocomplete="off">
-        </label>
-        <label>
-          Tu puntuación en este ejercicio <span class="obligatorio">*</span>
-          <input type="number" id="informeNota" min="0" max="50" step="1"
-            placeholder="0 a 50 puntos" autocomplete="off">
-          <span class="campo-ayuda">Autoevalúate con las soluciones del profesor: este ejercicio vale <strong>50 puntos</strong>.</span>
         </label>
         <label>
           Grupo / clase
@@ -362,10 +361,12 @@
         </div>
 
         <p class="informe-texto">
-          Carga los <strong>JSON</strong> que el alumno ha subido a Moodle (Ejercicio 6 y Ejercicio Global).
-          Verás la <strong>nota que se autoevalúa</strong> (0-50) y podrás poner la <strong>nota del profesor</strong>
-          (0-50) → 100 en total. Con el botón <strong>⬇ .md</strong> conviertes cada JSON en un informe legible
-          para compararlo con las soluciones modelo.
+          Descarga los <strong>JSON</strong> de la tarea de Moodle (los que han subido los alumnos con su
+          usuario) y cárgalos aquí (Ejercicio 6 y Ejercicio Global).
+          Verás lo que <strong>respondió el alumno</strong>, su puntuación automática en la escala 0-5
+          y podrás poner la <strong>nota del profesor (0-5)</strong> → <strong>10 en total</strong>
+          (5 + 5). Con el botón <strong>⬇ .md</strong> conviertes cada JSON en un informe con las
+          respuestas del alumno <strong>y la solución modelo incrustada</strong> para verificarlas.
         </p>
 
         <div class="informe-campos panel-carga">
@@ -386,9 +387,8 @@
                 <th>Ejercicio</th>
                 <th>Fecha</th>
                 <th>Tiempo</th>
-                <th>Auto</th>
-                <th>Nota alumno (0-50)</th>
-                <th>Nota profesor (0-50)</th>
+                <th>Auto (0-5)</th>
+                <th>Nota profesor (0-5)</th>
                 <th>Nota final</th>
                 <th>Informe</th>
               </tr>

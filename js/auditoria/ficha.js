@@ -418,7 +418,8 @@ function validarFicha(indice) {
         Aciertos automáticos: <strong>${puntuacion.aciertosAuto} / ${puntuacion.autoMax}</strong>
         (${puntuacion.porcentajeAuto} % de la parte auto).<br>
         Corrección manual pendiente: <strong>${puntuacion.pendienteManual}</strong> puntos (campos abiertos).<br>
-        Nota final posible: <strong>${puntuacion.aciertosAuto + puntuacion.pendienteManual} / ${puntuacion.total}</strong>
+        Nota final posible: <strong>${puntuacion.aciertosAuto + puntuacion.pendienteManual} / ${puntuacion.total}</strong><br>
+        En la nota del examen esta ficha vale <strong>2,5 puntos</strong> (2 tarjetas por ejercicio = 5)
       `;
     } else {
       res.innerHTML = `

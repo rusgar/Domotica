@@ -415,8 +415,8 @@ const EJERCICIOS = {
   6: {
     id: '6',
     nombre: 'Auditoría por zonas',
-    descripcion: '3 zonas aleatorias · Presupuesto 1.500 €',
-    numTarjetas: 3,
+    descripcion: '2 zonas aleatorias · Presupuesto 1.500 €',
+    numTarjetas: 2,
     presupuesto: 1500,
     diasMes: 20,
     precioKWh: 0.18

@@ -17,10 +17,14 @@ const MOODLE = {
   urlTarea: ''
 };
 
-// Escalación de la auditoría: 2 ejercicios asignados de 50 puntos cada uno
+// Escalación de la auditoría:
+// 2 ejercicios asignados (Ejercicio 6 + Global), 5 puntos cada uno = 10 en total.
+// Cada ejercicio reparte 2 tarjetas aleatorias → 2,5 puntos por tarjeta.
 const ESCALA_AUDITORIA = {
-  ejerciciosAsignados: ['6', 'global'], // Ejercicio 6 + Ejercicio Global
-  puntosPorEjercicio: 50
+  ejerciciosAsignados: ['6', 'global'],
+  puntosPorEjercicio: 5,
+  puntosPorTarjeta: 2.5,
+  puntosTotales: 10
 };
 
 // Configuración del módulo de auditoría

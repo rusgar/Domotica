@@ -87,6 +87,9 @@
 
 ## Puntuación esperada de la ficha
 
+> **Escala que cuenta:** la tabla de abajo es el detalle interno de la ficha (100 = 60 automático + 40 manual), pero la nota real es **2,5 puntos por tarjeta**: cada ejercicio reparte 2 tarjetas → **5 puntos por ejercicio**, y los 2 ejercicios asignados suman **10 puntos** en total. El profesor convierte el detalle en 2,5 proporcionalmente al verificarlo con este mismo archivo.
+
+
 | Bloque | Puntos | Tipo |
 |---|---|---|
 | 1 · Condiciones interiores | 10 | Automática |
