@@ -44,6 +44,14 @@ const FUENTES_OFICIALES = [
 
 const FUENTES_TECNICAS = [
   {
+    id: 'faen',
+    nombre: 'FAEN · Fundación Asturiana de la Energía (Principado de Asturias)',
+    tipo: 'Agencia energética autonómica',
+    url: 'https://faen.es/',
+    descripcion: 'Fuente de Asturias: estudios e informes sobre energía en el Principado. Primera opción si el dato está en la región.',
+    aplica: ['consumo', 'ahorro', 'eficiencia', 'edificios', 'casos_practicos']
+  },
+  {
     id: 'idiae',
     nombre: 'IDAE · Instituto para la Diversificación y Ahorro de la Energía',
     tipo: 'Organismo público',
@@ -96,7 +104,7 @@ const FUENTES_TECNICAS = [
     nombre: 'Fundación de la Energía de la Comunidad de Madrid',
     tipo: 'Fundación pública',
     url: 'https://www.fenercom.com/',
-    descripcion: 'Guías técnicas y casos prácticos de eficiencia energética.',
+    descripcion: 'Guías técnicas y casos prácticos de eficiencia energética (fuente de Madrid: válida si no existe el dato en Asturias).',
     aplica: ['ahorro', 'casos_practicos', 'edificios']
   }
 ];

@@ -690,3 +690,93 @@
 }
 .btn-enviar-informe:hover { background: #16a34a; }
 @media (max-width: 700px) { .ficha-fija { padding-right: 150px; } }
+
+/* ============================================================
+   PRESUPUESTO POR TARJETA (apartado 8) · precio obligatorio
+   ============================================================ */
+.ficha-campo label .obligatorio {
+  font-size: 0.7rem; font-weight: 800; color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  padding: 1px 6px; border-radius: 999px;
+  margin-left: 6px; vertical-align: middle;
+}
+.ficha-campo label .tope {
+  font-size: 0.7rem; color: #94a3b8; font-weight: 600; margin-left: 6px;
+}
+.presupuesto-aviso {
+  font-size: 0.8rem; margin-top: 6px; padding: 7px 10px;
+  border-radius: 8px; line-height: 1.45;
+}
+.presupuesto-aviso.mal {
+  background: rgba(248, 113, 113, 0.12); color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+.presupuesto-aviso.aviso {
+  background: rgba(251, 191, 36, 0.12); color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+.presupuesto-aviso.ok {
+  background: rgba(74, 222, 128, 0.12); color: #86efac;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+}
+.presupuesto-ayuda {
+  font-size: 0.75rem; color: #94a3b8; margin: 8px 0 0; line-height: 1.5;
+}
+
+/* 💰 Presupuesto siempre visible en la tarjeta activa (barra fija) */
+.ficha-fija-presupuesto {
+  border-top: 1px dashed #334155;
+  padding-top: 6px; margin-top: 4px;
+  font-size: 0.82rem; color: #e2e8f0;
+}
+
+/* ⏱ Tiempo del ejercicio en la cabecera (rojo al pasar de 60 min) */
+#tiempoEjercicio.penalizado { color: #f87171; }
+
+/* ============================================================
+   🧰 LISTA DE APARATOS (apartado 8) · desplegable del catálogo
+   ============================================================ */
+.materiales-picker {
+  display: flex; gap: 8px; align-items: stretch; margin-top: 4px;
+}
+.materiales-picker select {
+  flex: 1; min-width: 0; padding: 8px 10px; border-radius: 8px;
+  background: #0f172a; color: #e2e8f0; border: 1px solid #334155;
+  font-size: 0.85rem;
+}
+.materiales-picker select:focus { outline: none; border-color: #38bdf8; }
+.btn-mini {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;
+  background: #1e293b; color: #e2e8f0; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+}
+.btn-mini:hover { background: #334155; }
+.materiales-lista {
+  margin-top: 8px; padding: 4px 8px;
+  border: 1px solid #334155; border-radius: 8px;
+  background: rgba(15, 23, 42, 0.55);
+}
+.materiales-vacio {
+  font-size: 0.78rem; color: #94a3b8; padding: 6px 2px;
+}
+.materiales-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 2px; font-size: 0.82rem; color: #e2e8f0;
+  border-bottom: 1px dashed #334155;
+}
+.materiales-item:last-child { border-bottom: none; }
+.mat-nombre { flex: 1; min-width: 0; }
+.mat-cant { display: flex; align-items: center; gap: 6px; }
+.mat-cant button {
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 1px solid #334155; background: #1e293b; color: #e2e8f0;
+  cursor: pointer; font-weight: 700; line-height: 1; padding: 0;
+}
+.mat-cant button:hover { background: #334155; }
+.mat-ud { color: #94a3b8; font-size: 0.75rem; min-width: 64px; text-align: right; }
+.mat-sub { min-width: 56px; text-align: right; font-weight: 700; }
+.mat-quitar { border: none; background: transparent; cursor: pointer; font-size: 0.9rem; padding: 2px; }
+.materiales-total { font-size: 0.78rem; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+.materiales-total strong { color: #e2e8f0; }
+.mat-excede { color: #f87171; font-weight: 700; }

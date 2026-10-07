@@ -260,6 +260,17 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   position: absolute; bottom: 8px; right: 12px;
   color: #22c55e; font-size: 1.4rem; font-weight: 700;
 }
+/* Zona dada por buena con el pop-up «¿Quieres dejarlo así o poner más?»:
+   imperfecta (incompleta o con algún aparato mal colocado) pero aceptada */
+.zona.aceptada {
+  border-color: #f59e0b; border-style: solid;
+  background: rgba(245, 158, 11, 0.07);
+}
+.zona.aceptada::after {
+  content: '📌';
+  position: absolute; bottom: 8px; right: 12px;
+  font-size: 1.1rem;
+}
 .zona .titulo-zona {
   display: flex; align-items: center; gap: 8px;
   font-size: 0.85rem; font-weight: 700; color: #cbd5e1;
@@ -344,6 +355,13 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   opacity: 1;
   animation: pop 0.3s ease;
 }
+/* Botón de una zona aceptada (📌): se puede volver a validar */
+.btn-validar.aceptada {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: #f59e0b;
+  opacity: 1;
+}
 
 .zona-estado {
   font-size: 0.7rem;
@@ -354,6 +372,7 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 }
 .zona-estado.bloqueada { background: rgba(239,68,68,0.15); color: #f87171; }
 .zona-estado.desbloqueada { background: rgba(34,197,94,0.15); color: #4ade80; }
+.zona-estado.aceptada { background: rgba(245,158,11,0.15); color: #fbbf24; }
 
 /* ============================================================
    DROP ZONE
@@ -490,6 +509,20 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 }
 .opcion:disabled { cursor: not-allowed; opacity: 0.7; }
 
+/* Pop-up «¿Quieres dejarlo así o poner más?» (módulo Colocar) */
+.opcion-dejar {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  font-weight: 700;
+}
+.opcion-seguir {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.10);
+  color: #7dd3fc;
+  font-weight: 700;
+}
+
 .feedback {
   margin-top: 16px;
   padding: 12px;
@@ -583,14 +616,13 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 .panel-pequena { font-size: 0.75rem; color: #94a3b8; }
 .panel-nota { color: #4ade80 !important; white-space: nowrap; }
 .panel-na { color: #475569; }
-
-.input-manual {
-  width: 74px; padding: 5px 7px;
-  background: #0f172a; color: #e2e8f0;
-  border: 1px solid #475569; border-radius: 6px;
-  font-family: inherit; font-size: 0.82rem;
+.panel-tiempo-malo {
+  display: inline-block; margin-left: 4px; padding: 1px 6px;
+  font-size: 0.7rem; font-weight: 800; color: #fca5a5;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 999px; cursor: help; white-space: nowrap;
 }
-.input-manual:focus { outline: none; border-color: #38bdf8; }
 
 .panel-vacio {
   padding: 24px; text-align: center;
@@ -624,4 +656,67 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   border: 1px solid rgba(56,189,248,0.3);
   border-radius: 12px;
   font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;
+}
+
+/* ============================================================
+   COLOCAR · RELOJ DEL EJERCICIO Y CAPTURA DE PANTALLA
+   ============================================================ */
+.tiempo-ejercicio {
+  padding: 7px 14px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  border-radius: 999px;
+  font-size: 0.85rem; color: #cbd5e1; font-weight: 600;
+  white-space: nowrap;
+}
+.tiempo-ejercicio strong {
+  color: #38bdf8; font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.tiempo-ejercicio #tiempoColocar.penalizado { color: #fca5a5; }
+
+/* Instrucciones de entrega (captura → Moodle) en la pantalla de éxito */
+.captura-instrucciones {
+  margin-top: 14px; padding: 12px 14px;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.35);
+  border-radius: 12px;
+  font-size: 0.85rem; color: #fde68a; line-height: 1.6;
+  text-align: left;
+}
+.captura-instrucciones strong { color: #fbbf24; }
+.captura-instrucciones ol { margin: 6px 0 0 18px; }
+
+/* Nota automática de Colocar en el marcador (solo la ve el profesor) */
+#scoreNota { color: #fbbf24; font-weight: 700; margin-left: 4px; }
+
+/* Panel del profesor: captura de pantalla (Colocar) */
+.btn-captura {
+  background: #38bdf8; color: #0f172a;
+  padding: 5px 9px; border: none; border-radius: 6px;
+  cursor: pointer; font-weight: 700; font-size: 0.78rem;
+  white-space: nowrap;
+}
+.btn-captura:hover { background: #0ea5e9; }
+.btn-captura-add { background: #475569; color: #cbd5e1; }
+.btn-captura-add:hover { background: #334155; }
+
+/* Visor a pantalla completa de la captura */
+.visor-captura {
+  display: none; position: fixed; inset: 0; z-index: 1300;
+  background: rgba(2,6,23,0.94);
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+  padding: 24px; cursor: zoom-out;
+}
+.visor-captura.show { display: flex; }
+.visor-captura img {
+  max-width: 92vw; max-height: 80vh;
+  object-fit: contain; background: #fff;
+  border-radius: 10px; border: 1px solid #334155;
+}
+.visor-captura-cerrar {
+  padding: 6px 16px; border-radius: 999px;
+  background: #334155; color: #e2e8f0;
+  font-size: 0.8rem; font-weight: 700;
 }

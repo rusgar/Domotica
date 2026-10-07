@@ -64,10 +64,11 @@ El objeto `zonasDesbloqueadas` se guarda en `localStorage` junto al resto del pr
 
 ## 🧹 Reset
 
-Al pulsar `🔄 Reiniciar` (o al fallar una validación, que reinicia todo):
+Al pulsar `🔄 Reiniciar` (el reinicio total; **validar una zona ya no hace esto**: validar mal
+solo abre el pop-up «¿Quieres dejarlo así o poner más?» y no toca nada):
 
-- Se vacían `colocados`, `zonasDesbloqueadas` y `zonasVerificadas`.
-- Todas las zonas vuelven a estado bloqueado.
+- Se vacían `colocados`, `zonasDesbloqueadas`, `zonasVerificadas` y `zonasTerminadas`.
+- Todas las zonas vuelven a estado bloqueado (desaparecen ✅ y 📌).
 - Los botones de pregunta se reactivan y los de «✓ Validar» se deshabilitan.
 - Se conserva `ultimaPregunta`: la próxima pregunta de cada zona **no se repetirá**.
 

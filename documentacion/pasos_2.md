@@ -45,6 +45,10 @@ El botón **"Salir"** vuelve a la pantalla de login, borra el progreso guardado 
 - Se actualiza cada segundo y se muestra en la cabecera con formato `MM:SS`.
 - Se pausa cuando el alumno acierta todos los aparatos.
 - Se guarda en `localStorage` junto al resto del progreso.
+- **Reloj del Ejercicio Colocar** (`state.colocar.segundos`, `#tiempoColocar`,
+  `iniciarCronometroColocar` / `detenerCronometroColocar`): corre **solo mientras el módulo
+  Colocar está activo** (se pausa al cambiar de pestaña o de módulo y se reinicia al cerrar
+  sesión). Es el tiempo que cuenta para la nota: **> 60 min → −0,1** sobre los 1,0 ponderados.
 
 ## 💾 Persistencia (`localStorage`)
 
@@ -57,14 +61,19 @@ El botón **"Salir"** vuelve a la pantalla de login, borra el progreso guardado 
     "plc": "control"
   },
   "segundos": 245,
+  "segundosEjercicioColocar": 1512,
   "zonasDesbloqueadas": { "interior": true },
   "zonasVerificadas": { "interior": true },
+  "zonasTerminadas": {},
   "ultimaPregunta": { "interior": 3 },
   "timestamp": 1732354821000
 }
 ```
 
-- `zonasVerificadas`: zonas a las que el alumno ha pulsado «✓ Validar» y están correctas.
+- `segundosEjercicioColocar`: tiempo **solo** del módulo Colocar (el que aplica la penalización de 60 min).
+- `zonasVerificadas`: zonas **perfectas** (✅) que el alumno validó con «✓ Validar».
+- `zonasTerminadas`: zonas dadas por buenas con el pop-up «¿Quieres dejarlo así o poner más?» (📌,
+  pueden estar incompletas o con algún aparato mal colocado). Las ✅ también quedan aquí.
 - `ultimaPregunta`: índice de la última pregunta mostrada por zona (para no repetir tras un reinicio).
 
 ### Cuándo se guarda
@@ -145,7 +154,8 @@ Durante el examen se aplican estas restricciones:
 | Acción | Estado |
 |---|---|
 | Colocar / quitar aparatos | ✅ Permitido |
-| Botón "✓ Validar" de cada zona | ✅ Permitido (y obligatorio para puntuar) |
+| Botón "✓ Validar" de cada zona | ✅ Permitido (y obligatorio para dar la zona por buena) |
+| Pop-up «¿Quieres dejarlo así o poner más?» | ✅ Permitido (no da pistas de qué falta) |
 | Botón "✓ Verificar colocación" (barra) | ❌ Deshabilitado |
 | Botón "💡 Pista" | ❌ Bloqueado |
 | Botón "🔄 Reiniciar" | ❌ Deshabilitado |

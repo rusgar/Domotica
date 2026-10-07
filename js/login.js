@@ -45,9 +45,8 @@ function iniciarDashboard() {
     document.getElementById('btnResultados').style.display = 'none';
   }
 
-  // Restaurar módulo activo
-  const moduloGuardado = localStorage.getItem('dashboard_modulo_activo') || 'colocar';
-  cambiarModulo(moduloGuardado);
+  // La web SIEMPRE arranca en Colocar aparatos (independiente de lo guardado)
+  cambiarModulo('colocar');
 
   // Inicializar módulo colocar
   renderBanco();
@@ -57,8 +56,11 @@ function iniciarDashboard() {
   state.colocados = {};
   state.zonasDesbloqueadas = {};
   state.zonasVerificadas = {};
+  state.zonasTerminadas = {};
   state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
+  state.colocar.segundos = 0;
+  state.colocar.completado = false;
 
   // Restaurar progreso colocar
   const progreso = cargarProgreso();
@@ -66,8 +68,11 @@ function iniciarDashboard() {
     state.colocados = progreso.colocados || {};
     state.zonasDesbloqueadas = progreso.zonasDesbloqueadas || {};
     state.zonasVerificadas = progreso.zonasVerificadas || {};
+    state.zonasTerminadas = progreso.zonasTerminadas || {};
     state.ultimaPregunta = progreso.ultimaPregunta || {};
     state.cronometro.segundos = progreso.segundos || 0;
+    state.colocar.segundos = progreso.segundosEjercicioColocar || 0;
+    actualizarTiempoColocarUI();
 
     Object.keys(state.zonasDesbloqueadas).forEach(zonaId => {
       if (state.zonasDesbloqueadas[zonaId]) desbloquearZona(zonaId, true);
@@ -99,6 +104,8 @@ function iniciarDashboard() {
 
 function cerrarSesion() {
   detenerCronometro();
+  detenerCronometroAuditoria();
+  detenerCronometroColocar();
   detenerExamen();
   borrarTodoProgreso();
 
@@ -106,8 +113,10 @@ function cerrarSesion() {
   state.colocados = {};
   state.zonasDesbloqueadas = {};
   state.zonasVerificadas = {};
+  state.zonasTerminadas = {};
   state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
+  state.colocar = { segundos: 0, intervalo: null, corriendo: false, completado: false };
   state.examen.activo = false;
   state.examen.segundosRestantes = CONFIG.duracionExamenSegundos;
   state.preguntaActual = null;
@@ -118,14 +127,17 @@ function cerrarSesion() {
     tarjetas: [],
     variaciones: [],
     fichas: [],
-    presupuesto: null
+    presupuesto: null,
+    segundos: 0,
+    intervalo: null,
+    corriendo: false
   };
 
   // Reset UI colocar
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => {
     z.classList.add('bloqueada');
-    z.classList.remove('correcta', 'over');
+    z.classList.remove('correcta', 'aceptada', 'over');
   });
   document.querySelectorAll('.zona-estado').forEach(e => {
     e.className = 'zona-estado bloqueada';
@@ -173,6 +185,7 @@ function cerrarSesion() {
   document.getElementById('btnExamen').classList.remove('activo');
   document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
   document.getElementById('modalPregunta').classList.remove('show');
+  document.getElementById('modalDecision').classList.remove('show');
 
   // Reset pestañas
   cambiarModulo('colocar');
@@ -186,6 +199,17 @@ function cerrarSesion() {
 function cambiarModulo(modulo) {
   state.moduloActivo = modulo;
   try { localStorage.setItem('dashboard_modulo_activo', modulo); } catch (e) {}
+
+  // Reloj del ejercicio de Colocar: solo corre mientras este módulo
+  // está activo (se pausa al irse a Auditoría y al terminar).
+  if (typeof iniciarCronometroColocar === 'function') {
+    if (modulo === 'colocar' && state.usuario && !(state.colocar && state.colocar.completado)) {
+      iniciarCronometroColocar();
+    } else {
+      detenerCronometroColocar();
+    }
+    actualizarTiempoColocarUI();
+  }
 
   // Actualizar pestañas
   document.querySelectorAll('.tab-modulo').forEach(t => t.classList.remove('active'));

@@ -247,6 +247,165 @@ const TARJETAS = [
     fuenteSugerida: 'CTE DB-HE · RITE'
   },
 
+  {
+    id: 'vestibulo',
+    nombre: 'VESTÍBULO',
+    icono: '🚪',
+    descripcion: 'Vestíbulo con puerta automática que abre frecuentemente',
+    variaciones: [
+      { ciclos: 15, minutosFranja: 30, segundosApertura: 45, tempExt: 6, tempInt: 21 },
+      { ciclos: 20, minutosFranja: 30, segundosApertura: 40, tempExt: 5, tempInt: 20 },
+      { ciclos: 12, minutosFranja: 30, segundosApertura: 50, tempExt: 8, tempInt: 22 }
+    ],
+    escenario: (v) => `Acceso exterior. En entradas/salidas la puerta automática abre repetidamente y comunica con zonas climatizadas. Exterior ${v.tempExt} °C, interior ${v.tempInt} °C.`,
+    datosTrabajo: (v) => `En ${v.minutosFranja} min: ${v.ciclos} ciclos; ${v.segundosApertura} s abierta por ciclo.`,
+    focoAnalisis: 'Infiltraciones, acceso, climatización y control.',
+    condicionesInteriores: ['temperatura', 'humedad', 'calidad_aire', 'iluminacion', 'velocidad_aire', 'ruido'],
+    condicionesInterioresCorrectas: ['temperatura', 'velocidad_aire'],
+    factoresExteriores: ['temperatura_ext', 'humedad_ext', 'radiacion_solar', 'viento', 'lluvia', 'calidad_aire_ext'],
+    factoresExterioresCorrectos: ['temperatura_ext', 'viento'],
+    frasesDOIH: [
+      { texto: `La puerta se abre ${15} veces en 30 minutos.`, correcta: 'D' },
+      { texto: 'Se observa corriente cerca de la entrada.', correcta: 'O' },
+      { texto: 'Puede haber pérdidas de calor por las aperturas.', correcta: 'I' },
+      { texto: 'Instalar un vestíbulo de aire reduciría el consumo un 30%.', correcta: 'H' }
+    ],
+    calculo: {
+      formula: 'Ciclos × Segundos / 60 = Minutos · / Franja × 100 = %',
+      enunciado: (v) => `Calcula qué porcentaje de la franja de ${v.minutosFranja} min permanece abierta la puerta (${v.ciclos} ciclos × ${v.segundosApertura} s).`,
+      valor: (v) => ((v.ciclos * v.segundosApertura) / 60) / v.minutosFranja * 100,
+      unidad: '% franja',
+      decimales: 1,
+      tolerancia: 0.02
+    },
+    medidasSugeridas: [
+      'Vestíbulo de aire (cortina de aire)',
+      'Puerta doble de acceso',
+      'Reducir tiempo de apertura'
+    ],
+    costeImpacto: 'Alto · Impacto alto · Dificultad media',
+    fuenteSugerida: 'RITE · CTE DB-HE'
+  },
+
+  {
+    id: 'comedor',
+    nombre: 'COMEDOR / CAFETERÍA',
+    icono: '🍽️',
+    descripcion: 'Comedor con pico de ocupación y ventilación constante',
+    variaciones: [
+      { picoPersonas: 120, duracionPico: 45, ocupacionBaja: 15, potenciaVentilacion: 1.2, horasReducir: 1, horasIguales: '12:00–16:00', diasMes: 20 },
+      { picoPersonas: 100, duracionPico: 60, ocupacionBaja: 10, potenciaVentilacion: 1.5, horasReducir: 1.5, horasIguales: '12:00–16:00', diasMes: 20 },
+      { picoPersonas: 140, duracionPico: 45, ocupacionBaja: 20, potenciaVentilacion: 1.0, horasReducir: 1, horasIguales: '11:30–15:30', diasMes: 22 }
+    ],
+    escenario: (v) => `Pico de ${v.picoPersonas} personas durante ${v.duracionPico} min. El resto del tiempo hay menos de ${v.ocupacionBaja}. Ventilación y climatización mantienen el mismo régimen de ${v.horasIguales}.`,
+    datosTrabajo: (v) => `Ventilación: ${v.potenciaVentilacion} kW. Se plantea reducir ${v.horasReducir} h/día a máximo nivel si las condiciones lo permiten.`,
+    focoAnalisis: 'Ventilación, ocupación y horarios.',
+    condicionesInteriores: ['temperatura', 'humedad', 'calidad_aire', 'iluminacion', 'velocidad_aire', 'ruido'],
+    condicionesInterioresCorrectas: ['calidad_aire', 'temperatura'],
+    factoresExteriores: ['temperatura_ext', 'humedad_ext', 'radiacion_solar', 'viento', 'lluvia', 'calidad_aire_ext'],
+    factoresExterioresCorrectos: ['temperatura_ext'],
+    frasesDOIH: [
+      { texto: 'El pico de ocupación es de 120 personas.', correcta: 'D' },
+      { texto: 'La ventilación mantiene el mismo régimen toda la franja.', correcta: 'O' },
+      { texto: 'Se podría reducir la ventilación fuera del pico.', correcta: 'I' },
+      { texto: 'Reducir la ventilación 1 h/día ahorraría 24 kWh/mes.', correcta: 'H' }
+    ],
+    calculo: {
+      formula: 'Potencia × Horas × Días = kWh/mes',
+      enunciado: (v) => `Calcula el ahorro mensual reduciendo ${v.horasReducir} h/día la ventilación de máximo nivel (${v.potenciaVentilacion} kW).`,
+      valor: (v) => v.potenciaVentilacion * v.horasReducir * v.diasMes,
+      unidad: 'kWh/mes',
+      decimales: 2,
+      tolerancia: 0.02
+    },
+    medidasSugeridas: [
+      'Ventilación bajo demanda según ocupación',
+      'Sensores de CO₂',
+      'Programación horaria por franjas'
+    ],
+    costeImpacto: 'Medio · Impacto alto · Dificultad media',
+    fuenteSugerida: 'RITE'
+  },
+
+  {
+    id: 'aseo',
+    nombre: 'ASEO',
+    icono: '🚻',
+    descripcion: 'Aseo con luminarias encendidas largos periodos',
+    variaciones: [
+      { luminarias: 6, potenciaLuminaria: 18, horasEvitar: 2.5, diasMes: 20 },
+      { luminarias: 8, potenciaLuminaria: 15, horasEvitar: 3, diasMes: 20 },
+      { luminarias: 5, potenciaLuminaria: 20, horasEvitar: 2, diasMes: 22 }
+    ],
+    escenario: (v) => `Uso intermitente. ${v.luminarias} luminarias de ${v.potenciaLuminaria} W permanecen encendidas largos periodos. Se estima posible evitar ${v.horasEvitar} h/día con presencia.`,
+    datosTrabajo: (v) => `${v.luminarias}×${v.potenciaLuminaria} W.`,
+    focoAnalisis: 'Iluminación, presencia y temporización.',
+    condicionesInteriores: ['temperatura', 'humedad', 'calidad_aire', 'iluminacion', 'velocidad_aire', 'ruido'],
+    condicionesInterioresCorrectas: ['iluminacion'],
+    factoresExteriores: ['temperatura_ext', 'humedad_ext', 'radiacion_solar', 'viento', 'lluvia', 'calidad_aire_ext'],
+    factoresExterioresCorrectos: ['radiacion_solar'],
+    frasesDOIH: [
+      { texto: 'El aseo tiene 6 luminarias de 18 W.', correcta: 'D' },
+      { texto: 'Las luces permanecen encendidas largos periodos.', correcta: 'O' },
+      { texto: 'Un sensor de presencia podría reducir 2,5 h/día.', correcta: 'I' },
+      { texto: 'El ahorro anual supera los 30 €.', correcta: 'H' }
+    ],
+    calculo: {
+      formula: 'Potencia × Horas × Días = kWh/mes',
+      enunciado: (v) => `Calcula el ahorro mensual evitando ${v.horasEvitar} h/día de encendido (${v.luminarias}×${v.potenciaLuminaria} W).`,
+      valor: (v) => (v.luminarias * v.potenciaLuminaria / 1000) * v.horasEvitar * v.diasMes,
+      unidad: 'kWh/mes',
+      decimales: 2,
+      tolerancia: 0.02
+    },
+    medidasSugeridas: [
+      'Sensor de presencia con temporización',
+      'Iluminación LED con detector de movimiento',
+      'Cartelería de concienciación'
+    ],
+    costeImpacto: 'Bajo · Impacto bajo · Dificultad baja',
+    fuenteSugerida: 'CTE DB-HE · REBT'
+  },
+
+  {
+    id: 'salonActos',
+    nombre: 'SALÓN DE ACTOS',
+    icono: '🎭',
+    descripcion: 'Salón de actos con iluminación sin sectorizar',
+    variaciones: [
+      { luminarias: 12, potenciaLuminaria: 60, horasApagar: 2, diasMes: 10, usoMensual: '2 días/semana' },
+      { luminarias: 15, potenciaLuminaria: 55, horasApagar: 2.5, diasMes: 8, usoMensual: '2 días/semana' },
+      { luminarias: 10, potenciaLuminaria: 65, horasApagar: 1.5, diasMes: 12, usoMensual: '3 días/semana' }
+    ],
+    escenario: (v) => `Uso puntual (${v.usoMensual}) y varias zonas de iluminación. Antes de un acto se encienden todas aunque solo se necesita escenario y parte del patio. Exterior 18 °C, interior 22 °C. Grandes superficies acristaladas. Ruido exterior perceptible durante un acto.`,
+    datosTrabajo: (v) => `${v.luminarias} luminarias de ${v.potenciaLuminaria} W pueden quedar apagadas ${v.horasApagar} h/día durante ${v.diasMes} días/mes.`,
+    focoAnalisis: 'Sectorización, escenas y gestión.',
+    condicionesInteriores: ['temperatura', 'humedad', 'calidad_aire', 'iluminacion', 'velocidad_aire', 'ruido'],
+    condicionesInterioresCorrectas: ['iluminacion', 'ruido'],
+    factoresExteriores: ['temperatura_ext', 'humedad_ext', 'radiacion_solar', 'viento', 'lluvia', 'calidad_aire_ext'],
+    factoresExterioresCorrectos: ['radiacion_solar', 'ruido'],
+    frasesDOIH: [
+      { texto: 'El salón tiene 12 luminarias de 60 W.', correcta: 'D' },
+      { texto: 'Se encienden todas aunque solo se use el escenario.', correcta: 'O' },
+      { texto: 'La sectorización reduciría el consumo.', correcta: 'I' },
+      { texto: 'Instalar escenas de iluminación cuesta menos de 500 €.', correcta: 'H' }
+    ],
+    calculo: {
+      formula: 'Potencia × Luminarias × Horas × Días = kWh/mes',
+      enunciado: (v) => `Calcula el ahorro mensual apagando ${v.luminarias} luminarias de ${v.potenciaLuminaria} W durante ${v.horasApagar} h en ${v.diasMes} días/mes.`,
+      valor: (v) => (v.luminarias * v.potenciaLuminaria / 1000) * v.horasApagar * v.diasMes,
+      unidad: 'kWh/mes',
+      decimales: 2,
+      tolerancia: 0.02
+    },
+    medidasSugeridas: [
+      'Sectorización de la iluminación',
+      'Escenas programables',
+      'Control por zonas con pulsadores'
+    ],
+    costeImpacto: 'Medio · Impacto medio · Dificultad baja',
+    fuenteSugerida: 'CTE DB-HE'
+  }
 ];
 
 /* ============================================================
@@ -256,9 +415,10 @@ const EJERCICIOS = {
   6: {
     id: '6',
     nombre: 'Auditoría por zonas',
-    descripcion: '2 zonas aleatorias de las 6 · Presupuesto 1.500 €',
+    descripcion: '2 zonas aleatorias de las 10 · 750 € por tarjeta',
     numTarjetas: 2,
-    presupuesto: 1500,
+    presupuestoPorTarjeta: ESCALA_AUDITORIA.presupuestoPorTarjeta,   // 750 € (obligatorio, apartado 8)
+    presupuesto: ESCALA_AUDITORIA.presupuestoPorTarjeta * 2,         // 1.500 € en total
     diasMes: 20,
     precioKWh: 0.18
   }

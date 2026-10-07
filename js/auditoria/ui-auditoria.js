@@ -12,14 +12,13 @@ function iniciarEjercicio(tipo) {
 
   state.auditoria.ejercicio = tipo;
   state.auditoria.config = config;
+  state.auditoria.segundos = 0;   // se restaura abajo si hay progreso guardado
 
   document.getElementById('auditoriaInicio').style.display = 'none';
   document.getElementById('auditoriaTrabajo').style.display = 'block';
 
   document.getElementById('auditoriaTitulo').textContent =
-    `Ejercicio ${tipo} · ${config.nombre}`;
-  document.getElementById('auditoriaSubtitulo').textContent =
-    `${config.numTarjetas} tarjetas de 6 · Presupuesto ${config.presupuesto} € · Precio kWh ${config.precioKWh} €`;
+    `Ejercicio Auditoría · ${config.numTarjetas} zonas aleatorias`;
 
   // Intentar restaurar progreso guardado
   const ok = cargarProgresoAuditoria();
@@ -32,7 +31,11 @@ function iniciarEjercicio(tipo) {
     const btn = document.getElementById('btnConstanciaAuditoria');
     if (btn) btn.style.display = 'none';
     ocultarFichaFija();
+    renderCabeceraAuditoria();
   }
+
+  // El tiempo del ejercicio corre desde que se entra (es el que penaliza)
+  iniciarCronometroAuditoria();
 }
 
 // Repartir tarjetas aleatorias
@@ -40,7 +43,7 @@ function repartirTarjetas() {
   const config = state.auditoria.config;
   if (!config) return;
 
-  if (!confirm(`Se van a repartir ${config.numTarjetas} tarjetas aleatorias.\nSe borrará el progreso actual.\n¿Continuar?`)) {
+  if (!confirm(`Se van a repartir ${config.numTarjetas} tarjetas aleatorias (zonas distintas) de las ${TARJETAS.length}.\nSe borrará el progreso actual.\n¿Continuar?`)) {
     return;
   }
 
@@ -49,6 +52,10 @@ function repartirTarjetas() {
   state.auditoria.tarjetas = repartidas.map(r => r.tarjeta);
   state.auditoria.variaciones = repartidas.map(r => r.variacion);
   state.auditoria.fichas = repartidas.map(() => crearFichaVacia());
+
+  // Al repartir empieza a contar el tiempo del ejercicio (0 → 60 min sin penalización)
+  state.auditoria.segundos = 0;
+  iniciarCronometroAuditoria();
 
   renderTarjetasAuditoria();
   actualizarProgresoGlobal();
@@ -88,8 +95,38 @@ function actualizarFichaFija(indice) {
     cuerpo.innerHTML = `
       <div class="ficha-fija-dato"><strong>Escenario:</strong> ${tarjeta.escenario(variacion)}</div>
       <div class="ficha-fija-dato"><strong>Datos para trabajar:</strong> ${tarjeta.datosTrabajo(variacion)}</div>
-      <div class="ficha-fija-dato"><strong>Foco de análisis:</strong> ${tarjeta.focoAnalisis}</div>`;
+      <div class="ficha-fija-dato"><strong>Foco de análisis:</strong> ${tarjeta.focoAnalisis}</div>
+      ${presupuestoFijaHTML(fichaFijaIndice)}`;
   }
+}
+
+// 💰 Presupuesto de la tarjeta activa (visible siempre en la barra fija)
+function presupuestoFijaHTML(indice) {
+  const config = state.auditoria.config || {};
+  const fichas = state.auditoria.fichas || [];
+  const tope = config.presupuestoPorTarjeta || 0;
+  const ficha = fichas[indice];
+
+  const costeBruto = ficha ? ficha.costeEstimado : '';
+  const coste = parseFloat(costeBruto);
+  const relleno = costeBruto !== '' && costeBruto !== null && costeBruto !== undefined && !isNaN(coste);
+  const excede = relleno && coste > tope;
+  const coherente = relleno && !excede && precioCoherenteCatalogo(coste, ficha ? ficha.materiales : null);
+
+  const totalGastado = fichas.reduce((s, f) => s + (parseFloat(f.costeEstimado) || 0), 0);
+  const topeTotal = tope * fichas.length;
+
+  let estado;
+  if (!relleno) estado = `<span style="color:#f87171;">❌ falta el precio (obligatorio · tope ${tope} €)</span>`;
+  else if (excede) estado = `<span style="color:#f87171;">❌ te pasas ${formatearNumero(coste - tope, 0)} € del tope</span>`;
+  else if (!coherente) estado = `<span style="color:#fbbf24;">⚠️ precio fuera del catálogo (±20 %)</span>`;
+  else estado = `<span style="color:#4ade80;">✅ dentro del tope y coherente con el catálogo</span>`;
+
+  return `<div class="ficha-fija-dato ficha-fija-presupuesto">
+      <strong>💰 Presupuesto tarjeta:</strong>
+      <strong>${relleno ? formatearNumero(coste, 2) : 0} / ${formatearNumero(tope, 0)} €</strong> · ${estado}
+      · Total: <strong>${formatearNumero(totalGastado, 0)} / ${formatearNumero(topeTotal, 0)} €</strong>
+    </div>`;
 }
 
 function ocultarFichaFija() {
@@ -155,10 +192,7 @@ function actualizarProgresoGlobal() {
   const totalValidadas = fichas.filter(f => f.validado).length;
   const total = fichas.length;
 
-  const el = document.getElementById('auditoriaSubtitulo');
-  if (el && config) {
-    el.textContent = `${totalValidadas} / ${total} fichas validadas · Presupuesto ${config.presupuesto} €`;
-  }
+  renderCabeceraAuditoria();
 
   // La constancia aparece al terminar TODAS las fichas (una por ejercicio)
   const todoValidado = total > 0 && totalValidadas === total;
@@ -180,6 +214,216 @@ function actualizarProgresoGlobal() {
   }
 }
 
+// ============================================================
+// CABECERA · progreso + presupuesto en vivo + tiempo del ejercicio
+// ============================================================
+function renderCabeceraAuditoria() {
+  const el = document.getElementById('auditoriaSubtitulo');
+  const { fichas, config } = state.auditoria;
+  if (!el || !config || !fichas) return;
+
+  const total = fichas.length;
+  const validadas = fichas.filter(f => f.validado).length;
+  const tope = config.presupuestoPorTarjeta || 0;
+  const minutos = (typeof ESCALA_AUDITORIA !== 'undefined' && ESCALA_AUDITORIA.limiteTiempoMinutos) || 60;
+
+  if (total === 0) {
+    el.innerHTML =
+      `Sin tarjetas repartidas · 💰 tope <strong>${formatearNumero(tope, 0)} €</strong> por tarjeta · ` +
+      `⏱ Ejercicio <strong id="tiempoEjercicio">00:00</strong> / ${minutos} min`;
+    actualizarTiempoEjercicioUI();
+    return;
+  }
+
+  const topeTotal = tope * total;
+  const gastado = fichas.reduce((s, f) => s + (parseFloat(f.costeEstimado) || 0), 0);
+
+  el.innerHTML =
+    `${validadas} / ${total} fichas validadas · ` +
+    `💰 <strong>${formatearNumero(gastado, 0)} / ${formatearNumero(topeTotal, 0)} €</strong> ` +
+    `(tope ${formatearNumero(tope, 0)} € por tarjeta) · ` +
+    `⏱ Ejercicio <strong id="tiempoEjercicio">00:00</strong> / ${minutos} min`;
+
+  actualizarTiempoEjercicioUI();
+}
+
+// ============================================================
+// PRECIO DE LA ACTUACIÓN (apartado 8) · obligatorio y coherente
+// ============================================================
+function actualizarCosteTarjeta(indice, valor) {
+  const ficha = state.auditoria.fichas[indice];
+  if (!ficha) return;
+
+  ficha.costeEstimado = (valor === '' || valor === null) ? '' : parseFloat(valor);
+
+  guardarProgresoAuditoria();
+  pintarAvisoPresupuesto(indice);
+  renderCabeceraAuditoria();
+  if (typeof actualizarFichaFija === 'function') actualizarFichaFija(indice);
+}
+
+// ============================================================
+// LISTA DE APARATOS (apartado 8) · desplegable del catálogo con cantidades
+// ============================================================
+function opcionesCatalogoHTML() {
+  return catalogoAgrupado().map(g =>
+    `<optgroup label="${g.nombre}">` +
+    g.items.map(a =>
+      `<option value="${a.id}">${a.emoji} ${a.nombre} — ${formatearNumero(a.precio, 0)} €</option>`
+    ).join('') +
+    `</optgroup>`
+  ).join('');
+}
+
+function materialesListaHTML(indice) {
+  const ficha = (state.auditoria.fichas || [])[indice];
+  const mats = materialesDeFicha(ficha);
+  if (!mats.length) {
+    return '<div class="materiales-vacio">Aún no has añadido aparatos: elige uno del desplegable y pulsa «➕ Añadir».</div>';
+  }
+
+  return mats.map(m => {
+    const ap = (typeof APARATOS !== 'undefined' && APARATOS) ? APARATOS.find(a => a.id === m.id) : null;
+    if (!ap) return '';
+    const cant = parseInt(m.cantidad, 10) || 0;
+    const sub = (parseFloat(ap.precio) || 0) * cant;
+    return `<div class="materiales-item">
+      <span class="mat-emoji">${ap.emoji}</span>
+      <span class="mat-nombre">${ap.nombre}</span>
+      <span class="mat-cant">
+        <button type="button" aria-label="Quitar uno" onclick="cambiarCantidadMaterial(${indice}, '${m.id}', -1)">−</button>
+        <strong>${cant}</strong>
+        <button type="button" aria-label="Añadir uno" onclick="cambiarCantidadMaterial(${indice}, '${m.id}', 1)">+</button>
+      </span>
+      <span class="mat-ud">${formatearNumero(ap.precio, 0)} €/ud</span>
+      <span class="mat-sub">${formatearNumero(sub, 0)} €</span>
+      <button type="button" class="mat-quitar" title="Eliminar de la lista" onclick="eliminarMaterial(${indice}, '${m.id}')">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function materialesTotalHTML(indice) {
+  const ficha = (state.auditoria.fichas || [])[indice];
+  const mats = materialesDeFicha(ficha);
+  const suma = sumaMateriales(ficha);
+  const tope = (state.auditoria.config && state.auditoria.config.presupuestoPorTarjeta) || 0;
+
+  if (!mats.length) {
+    return '<span>También puedes escribir el precio a mano en el campo de abajo.</span>';
+  }
+  const excede = suma > tope;
+  return `Suma de la lista: <strong>${formatearNumero(suma, 0)} €</strong> / ${formatearNumero(tope, 0)} € ` +
+    `<span class="${excede ? 'mat-excede' : ''}">${excede ? '· ❌ supera el tope de la tarjeta' : '· ✅ dentro del tope'}</span> ` +
+    `— el precio de abajo se actualiza con esta suma.`;
+}
+
+function refrescarMateriales(indice) {
+  const lista = document.getElementById(`materiales-lista-${indice}`);
+  if (lista) lista.innerHTML = materialesListaHTML(indice);
+
+  const total = document.getElementById(`materiales-total-${indice}`);
+  if (total) total.innerHTML = materialesTotalHTML(indice);
+
+  const ficha = (state.auditoria.fichas || [])[indice];
+  const mats = materialesDeFicha(ficha);
+  const valor = mats.length ? String(Math.round(sumaMateriales(ficha) * 100) / 100) : '';
+
+  const input = document.getElementById(`precio-actuacion-${indice}`);
+  if (input) input.value = valor;
+
+  actualizarCosteTarjeta(indice, valor);
+}
+
+function anadirMaterial(indice) {
+  const sel = document.getElementById(`sel-material-${indice}`);
+  if (!sel || !sel.value) return;
+  cambiarCantidadMaterial(indice, sel.value, 1);
+}
+
+function cambiarCantidadMaterial(indice, id, delta) {
+  const ficha = (state.auditoria.fichas || [])[indice];
+  if (!ficha) return;
+  if (!Array.isArray(ficha.materiales)) ficha.materiales = [];
+
+  const item = ficha.materiales.find(m => m.id === id);
+  if (item) {
+    item.cantidad = (parseInt(item.cantidad, 10) || 0) + delta;
+    if (item.cantidad <= 0) ficha.materiales = ficha.materiales.filter(m => m.id !== id);
+  } else if (delta > 0) {
+    ficha.materiales.push({ id, cantidad: 1 });
+  }
+
+  refrescarMateriales(indice);
+}
+
+function eliminarMaterial(indice, id) {
+  const ficha = (state.auditoria.fichas || [])[indice];
+  if (!ficha || !Array.isArray(ficha.materiales)) return;
+  ficha.materiales = ficha.materiales.filter(m => m.id !== id);
+  refrescarMateriales(indice);
+}
+
+function avisoPresupuestoEstado(indice) {
+  const ficha = state.auditoria.fichas[indice];
+  const config = state.auditoria.config || {};
+  const tope = config.presupuestoPorTarjeta || 0;
+  const valor = ficha ? ficha.costeEstimado : '';
+  const coste = parseFloat(valor);
+  const relleno = valor !== '' && valor !== null && valor !== undefined && !isNaN(coste);
+  const mats = materialesDeFicha(ficha);
+  const suma = sumaMateriales(ficha);
+
+  if (!relleno) {
+    return {
+      cls: 'mal',
+      texto: mats.length
+        ? `❌ Falta el precio: usa la suma de tu lista (${formatearNumero(suma, 0)} €) o escríbelo.`
+        : '❌ El precio es obligatorio para poder entregar el ejercicio. Elige arriba los aparatos (se suma solo) o escribe el importe.'
+    };
+  }
+  if (coste > tope) {
+    return { cls: 'mal', texto: `❌ Te pasas ${formatearNumero(coste - tope, 0)} € del tope de ${tope} € de esta tarjeta.` };
+  }
+
+  // Con lista de aparatos: el precio debe cuadrar con la suma
+  if (mats.length) {
+    if (Math.abs(coste - suma) <= 1) {
+      return {
+        cls: 'ok',
+        texto: `✅ ${formatearNumero(coste, 0)} € dentro del tope · cuadra con tu lista (${mats.length} aparato${mats.length === 1 ? '' : 's'}, ${formatearNumero(suma, 0)} €).`
+      };
+    }
+    return {
+      cls: 'aviso',
+      texto: `⚠️ Tu precio (${formatearNumero(coste, 0)} €) no coincide con la suma de tu lista (${formatearNumero(suma, 0)} €). Si es un ajuste manual, justifícalo abajo.`
+    };
+  }
+
+  // Sin lista: coherencia con un artículo del catálogo (±20 %)
+  if (!precioCoherenteCatalogo(coste)) {
+    const c = articuloCatalogoCercano(coste);
+    return {
+      cls: 'aviso',
+      texto: c && c.articulo
+        ? `⚠️ No se parece a ningún artículo del catálogo (±20 %). El más cercano es «${c.articulo.nombre}» a ${c.articulo.precio} €. Puedes escribir tu precio si lo justificas.`
+        : '⚠️ No se parece a ningún artículo del catálogo (±20 %). Puedes escribir tu precio si lo justificas.'
+    };
+  }
+  const c = articuloCatalogoCercano(coste);
+  return {
+    cls: 'ok',
+    texto: `✅ ${formatearNumero(coste, 0)} € dentro del tope${c && c.articulo ? ` · coherente con «${c.articulo.nombre}» (${c.articulo.precio} €)` : ''}.`
+  };
+}
+
+function pintarAvisoPresupuesto(indice) {
+  const aviso = document.getElementById(`presupuesto-aviso-${indice}`);
+  if (!aviso) return;
+  const est = avisoPresupuestoEstado(indice);
+  aviso.className = `presupuesto-aviso ${est.cls}`;
+  aviso.textContent = est.texto;
+}
+
 // Reset del ejercicio
 function resetearAuditoria() {
   if (state.examen.activo) {
@@ -192,6 +436,8 @@ function resetearAuditoria() {
   state.auditoria.variaciones = [];
   state.auditoria.fichas = [];
   state.auditoria.presupuesto = null;
+  state.auditoria.segundos = 0;
+  detenerCronometroAuditoria();
 
   document.getElementById('tarjetasLista').innerHTML =
     '<div class="tarjeta-vacia">Pulsa "🎲 Repartir tarjetas" para empezar</div>';
@@ -199,90 +445,6 @@ function resetearAuditoria() {
 
   borrarProgresoAuditoria();
   actualizarProgresoGlobal();
-}
-
-// ============================================================
-// PRESUPUESTO INTERACTIVO (al final del ejercicio)
-// ============================================================
-
-function renderPresupuesto() {
-  const config = state.auditoria.config;
-  const fichas = state.auditoria.fichas;
-  if (!config || !fichas || fichas.length === 0) return;
-
-  const cont = document.getElementById('tarjetasLista');
-
-  const div = document.createElement('div');
-  div.className = 'tarjeta-auditoria abierta';
-  div.style.borderColor = '#fbbf24';
-
-  const actuaciones = fichas
-    .map((f, i) => ({
-      indice: i,
-      zona: state.auditoria.tarjetas[i]?.nombre || `Tarjeta ${i + 1}`,
-      medida: f.medida1 || '(sin definir)',
-      coste: parseFloat(f.costeEstimado) || 0,
-      impacto: f.impacto || 'Medio',
-      dificultad: f.dificultad || 'Media'
-    }));
-
-  const total = actuaciones.reduce((s, a) => s + a.coste, 0);
-  const dentro = total <= config.presupuesto;
-  const restante = config.presupuesto - total;
-
-  div.innerHTML = `
-    <div class="tarjeta-cabecera">
-      <div class="tarjeta-titulo">
-        <div class="tarjeta-icono">💰</div>
-        <div>
-          <div class="tarjeta-nombre">Presupuesto limitado</div>
-          <div class="tarjeta-resumen">Elige UNA actuación prioritaria por zona · Máximo ${config.presupuesto} €</div>
-        </div>
-      </div>
-    </div>
-    <div class="tarjeta-cuerpo">
-      ${fichas.map((f, i) => `
-        <div class="ficha-bloque">
-          <div class="ficha-titulo"><span class="num">${i + 1}</span> ${state.auditoria.tarjetas[i]?.nombre || 'Tarjeta ' + (i + 1)}</div>
-          <div class="ficha-campo">
-            <label>Coste estimado de la actuación prioritaria (€)</label>
-            <input type="number" min="0" step="10" placeholder="Ej: 450" onchange="actualizarCosteEstimado(${i}, this.value)" value="${f.costeEstimado || ''}">
-          </div>
-          <div class="ficha-campo">
-            <label>Justificación de la prioridad</label>
-            <textarea placeholder="¿Por qué esta actuación y no otra?" onchange="actualizarCampo(${i}, 'justificacionPresupuesto', this.value)">${f.justificacionPresupuesto || ''}</textarea>
-          </div>
-        </div>
-      `).join('')}
-
-      <div class="calculo-box" style="margin-top:20px;">
-        <div style="font-size:1rem;font-weight:700;color:${dentro ? '#4ade80' : '#f87171'};">
-          Total: ${formatearNumero(total, 2)} € / ${config.presupuesto} €
-        </div>
-        <div style="font-size:0.85rem;color:#94a3b8;margin-top:6px;">
-          ${dentro
-            ? `✅ Dentro del presupuesto. Te quedan ${formatearNumero(restante, 2)} €.`
-            : `❌ Te has pasado ${formatearNumero(Math.abs(restante), 2)} € del límite.`}
-        </div>
-      </div>
-    </div>
-  `;
-
-  cont.appendChild(div);
-}
-
-function actualizarCosteEstimado(indice, valor) {
-  const ficha = state.auditoria.fichas[indice];
-  if (!ficha) return;
-  ficha.costeEstimado = valor === '' ? 0 : parseFloat(valor);
-  guardarProgresoAuditoria();
-  // Re-renderizar bloque de presupuesto
-  const bloques = document.querySelectorAll('#tarjetasLista .tarjeta-auditoria');
-  const ultimo = bloques[bloques.length - 1];
-  if (ultimo && ultimo.textContent.includes('Presupuesto limitado')) {
-    ultimo.remove();
-    renderPresupuesto();
-  }
 }
 
 // ============================================================

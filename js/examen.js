@@ -86,13 +86,17 @@ function finalizarExamenPorTiempo() {
 
 // Reset silencioso de auditoría (sin confirmación, para uso interno del examen)
 function resetearAuditoriaSilencioso() {
+  detenerCronometroAuditoria();
   state.auditoria = {
     ejercicio: null,
     config: null,
     tarjetas: [],
     variaciones: [],
     fichas: [],
-    presupuesto: null
+    presupuesto: null,
+    segundos: 0,
+    intervalo: null,
+    corriendo: false
   };
   borrarProgresoAuditoria();
 

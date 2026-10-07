@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Rúbrica de evaluación · Dashboard Domótica</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; color:#1f2937; max-width: 980px;
+         margin: 24px auto; padding: 0 18px; line-height: 1.5; font-size: 14px; }
+  h1 { font-size: 24px; border-bottom: 3px solid #0ea5e9; padding-bottom: 6px; }
+  h2 { font-size: 19px; margin-top: 30px; border-left: 5px solid #0ea5e9; padding-left: 8px; }
+  h3 { font-size: 16px; margin-top: 22px; color: #0369a1; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 18px; font-size: 13px; }
+  th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #e0f2fe; }
+  td.num, th.num { text-align: right; }
+  blockquote { margin: 10px 0; padding: 8px 12px; background: #f8fafc;
+               border-left: 4px solid #38bdf8; color: #334155; }
+  code, pre { font-family: Consolas, monospace; }
+  pre { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px;
+        white-space: pre-wrap; }
+  .meta td:first-child { background: #f8fafc; font-weight: 600; width: 210px; }
+  .nivel { background: #f8fafc; }
+  .total { font-weight: 700; background: #f1f5f9; }
+  .pie { margin-top: 28px; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;
+         padding-top: 8px; }
+  @media print { body { margin: 0; font-size: 12px; } h2 { page-break-after: avoid; }
+                 table { page-break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>Rúbrica de evaluación · Dashboard Domótica (Conectores DCampus)</h1>
+
+<table class="meta">
+  <tr><td>Módulo</td><td>Práctica de Domótica · Dashboard de Monitorización</td></tr>
+  <tr><td>Plataforma</td><td>https://conectoresdicampus.netlify.app/ (repo <code>rusgar/Domotica</code>)</td></tr>
+  <tr><td>Pruebas evaluadas</td><td>1 · <b>Ejercicio Auditoría</b> (pondera <b>2,5</b>) · 2 · <b>Colocar aparatos</b> (pondera <b>1,0</b>)</td></tr>
+  <tr><td>Entregas</td><td>Archivos <b>JSON</b> descargados desde la web + <b>captura de pantalla</b> (Colocar) subidos a la tarea de <b>Moodle</b></td></tr>
+  <tr><td>Corrección</td><td><b>100 % automática</b> en la web (panel 📊 Resultados); esta rúbrica y las soluciones de <code>soluciones/</code> sirven para <b>revisar y justificar</b> la nota</td></tr>
+  <tr><td>Versión</td><td>1.0 · vigente para la convocatoria actual</td></tr>
+</table>
+
+<blockquote><b>Principio de la corrección:</b> ninguna nota se escribe a mano en la plataforma. La
+nota sale exclusivamente de las respuestas del alumno (JSON) y del reloj de cada ejercicio. Este
+documento documenta <b>qué se evalúa, cómo se calcula y con qué evidencias</b> para poder sostener
+ante el centro la nota asignada a cada alumno.</blockquote>
+
+<h2>Resumen de la ponderación</h2>
+<table>
+  <tr><th>Prueba</th><th class="num">Puntos crudos</th><th class="num">Sobre la nota del examen</th><th>Entregable</th></tr>
+  <tr><td><b>A · Ejercicio Auditoría</b> (2 tarjetas × 5 pts)</td><td class="num">10</td><td class="num"><b>0 – 2,5</b></td><td><code>JSON</code> de las 2 tarjetas (+ constancia PNG)</td></tr>
+  <tr><td><b>B · Colocar aparatos</b> (8 zonas × 0,125)</td><td class="num">10 (0–10)</td><td class="num"><b>0 – 1,0</b></td><td><code>JSON</code> + <b>captura de pantalla</b> (+ constancia PNG)</td></tr>
+  <tr class="total"><td>Total de estas pruebas</td><td class="num">—</td><td class="num">0 – 3,5</td><td>El resto de la nota del examen corresponde a otras pruebas del centro</td></tr>
+</table>
+
+<h2>A · Rúbrica del Ejercicio Auditoría</h2>
+<p><b>Enunciado:</b> se reparten <b>2 tarjetas aleatorias distintas</b> de las 10 zonas del banco; en
+cada tarjeta el alumno analiza el escenario (condiciones, factores, clasificación D/O/I/H, cálculo
+de ahorro, medidas y presupuesto) y entrega <b>un único JSON</b> con las dos.</p>
+
+<h3>A.1 · Criterios y ponderación (máximo 5 puntos por tarjeta)</h3>
+<table>
+  <tr><th>#</th><th>Criterio (bloque de la ficha)</th><th class="num">Puntos</th><th>Tipo de corrección</th><th>Se comprueba con</th></tr>
+  <tr><td>1</td><td><b>Condiciones interiores</b> seleccionadas correctamente</td><td class="num">10</td><td>Automática (checkboxes)</td><td>JSON · panel 📊</td></tr>
+  <tr><td>2</td><td><b>Factores exteriores</b> seleccionados correctamente</td><td class="num">10</td><td>Automática (checkboxes)</td><td>JSON · panel 📊</td></tr>
+  <tr><td>3</td><td><b>Clasificación D / O / I / H</b> de las frases</td><td class="num">20</td><td>Automática (frases fijas)</td><td>JSON · panel 📊</td></tr>
+  <tr><td>4</td><td><b>Cálculo de ahorro/medidas</b> con tolerancia <b>±2 %</b> y unidades correctas</td><td class="num">20</td><td>Automática</td><td>JSON · panel 📊</td></tr>
+  <tr><td>5</td><td><b>Campos abiertos</b> (problema, causa, medidas propias, justificación, fuentes)</td><td class="num">40</td><td><b>Revisión con rúbrica</b> → <b>no puntúan</b></td><td>Informe <b>.md</b> con la solución incrustada</td></tr>
+  <tr><td>—</td><td><b>Presupuesto</b> (apartado 8): importe rellenado, ≤ <b>750 €/tarjeta</b> y coherente con el catálogo (±20 %)</td><td class="num">0</td><td><b>Obligatorio</b>: vacío → <b>bloquea la entrega</b></td><td>JSON · .md</td></tr>
+  <tr class="total"><td colspan="2">Total por ficha</td><td class="num">100</td><td colspan="2">60 automáticos + 40 de revisión</td></tr>
+</table>
+<ul>
+  <li><b>Máximo automático real = 100 − 40 = 60</b> en la mayoría de fichas; si una ficha no tiene
+      bloque de cálculo (p. ej. Gimnasio), su máximo automático es <b>40</b>. La nota <b>siempre</b>
+      se calcula sobre el máximo automático real de esa ficha.</li>
+  <li><b>Nota de la tarjeta</b> = <code>aciertos automático / máximo automático × 5</code> → rango <b>0 – 5</b>.</li>
+  <li><b>Ponderación de la tarjeta</b> = <code>nota / 5 × 1,25</code> = <code>aciertos / máximo automático × 1,25</code>
+      → máximo <b>1,25</b>; las 2 tarjetas suman <b>10 puntos crudos</b> → <b>2,5 ponderados</b>.</li>
+</ul>
+
+<h3>A.2 · Niveles de desempeño (orientativo: traslado de la nota automática)</h3>
+<table>
+  <tr><th>Nivel</th><th class="num">% de acierto automático</th><th class="num">Nota por tarjeta</th><th class="num">Ponderación por tarjeta</th><th>Indicadores</th></tr>
+  <tr class="nivel"><td><b>Excelente</b></td><td class="num">≥ 90 %</td><td class="num">4,5 – 5,0</td><td class="num">1,13 – 1,25</td><td>Sin errores en DOIH ni en el cálculo; unidades y decimales correctos; campos abiertos <b>iguales o equivalentes</b> a la solución</td></tr>
+  <tr class="nivel"><td><b>Notable</b></td><td class="num">75 – 89 %</td><td class="num">3,75 – 4,45</td><td class="num">0,94 – 1,11</td><td>Cálculo correcto con errores menores; DOIH casi completo; campos abiertos próximos al modelo</td></tr>
+  <tr class="nivel"><td><b>Suficiente</b></td><td class="num">60 – 74 %</td><td class="num">3,0 – 3,70</td><td class="num">0,75 – 0,93</td><td>Bloques básicos superados; algún error de cálculo dentro de la tolerancia; campos abiertos con la idea principal</td></tr>
+  <tr class="nivel"><td><b>No alcanzado</b></td><td class="num">&lt; 60 %</td><td class="num">0 – 2,95</td><td class="num">0 – 0,74</td><td>Fallos en DOIH y/o cálculo; campos abiertos irrelevantes o vacíos</td></tr>
+</table>
+<blockquote>Los campos abiertos <b>no suman ni restan puntos</b>, pero se revisan en el informe
+<code>.md</code> (checklist: DOIH, cálculo, fuentes oficiales, presupuesto, tiempo) y sirven de
+<b>soporte</b> para confirmar que la respuesta automática no es casual ni copiada.</blockquote>
+
+<h3>A.3 · Penalizaciones y bloqueos</h3>
+<table>
+  <tr><th>Situación</th><th>Efecto</th></tr>
+  <tr><td>Superar <b>60 min</b> en el Ejercicio Auditoría (reloj propio del ejercicio)</td><td><b>−0,25</b> (1 décima de los 2,5) sobre la ponderación total</td></tr>
+  <tr><td>Precio vacío en el apartado 8 de cualquiera de las 2 tarjetas</td><td><b>No se puede entregar</b> el JSON</td></tr>
+  <tr><td>Precio &gt; 750 € por tarjeta o fuera de coherencia con el catálogo (±20 %)</td><td>Aviso y marca en el informe; revisión del profesor</td></tr>
+  <tr><td>Modo examen activo</td><td>Sin pistas, sin reinicio, sin auto-colocación; cuenta atrás de 5 min</td></tr>
+</table>
+
+<h2>B · Rúbrica del módulo Colocar aparatos</h2>
+<p><b>Enunciado:</b> hay <b>8 zonas</b> del edificio bloqueadas por una <b>pregunta teórica</b>; hay
+que colocar los aparatos del banco en su zona y validar cada zona. Hay <b>42 aparatos
+obligatorios</b> que puntúan y <b>14 de relleno</b> (<code>opcional: true</code>) que <b>no
+puntúan</b>. No se admiten aparatos repetidos.</p>
+
+<h3>B.1 · Criterio principal: puntuación parcial por zona (8 × 0,125 = 1,0)</h3>
+<p>Cada zona vale lo mismo (<b>0,125</b>) y, dentro de la zona, cada aparato vale
+<code>0,125 / nº de aparatos obligatorios de esa zona</code>:</p>
+<table>
+  <tr><th>Zona</th><th class="num">Aparatos obligatorios</th><th class="num">Puntos de la zona</th><th class="num">Valor de cada aparato</th><th>Ejemplo</th></tr>
+  <tr><td>🌤️ Exterior / Cubierta</td><td class="num">7</td><td class="num">0,125</td><td class="num"><b>0,0179</b></td><td>5 de 7 bien → 5 × 0,0179 = <b>0,089</b></td></tr>
+  <tr><td>🧱 Envolvente</td><td class="num">2</td><td class="num">0,125</td><td class="num"><b>0,0625</b></td><td>1 de 2 bien → <b>0,063</b></td></tr>
+  <tr><td>🛋️ Interior</td><td class="num">8</td><td class="num">0,125</td><td class="num"><b>0,0156</b></td><td>8 de 8 bien → <b>0,125</b></td></tr>
+  <tr><td>⚡ Eléctrico</td><td class="num">3</td><td class="num">0,125</td><td class="num"><b>0,0417</b></td><td>3 de 3 bien → <b>0,125</b></td></tr>
+  <tr><td>🚰 Hidráulico</td><td class="num">4</td><td class="num">0,125</td><td class="num"><b>0,0313</b></td><td>2 de 4 bien → <b>0,063</b></td></tr>
+  <tr><td>🌡️ Térmico</td><td class="num">5</td><td class="num">0,125</td><td class="num"><b>0,0250</b></td><td>4 de 5 bien → <b>0,100</b></td></tr>
+  <tr><td>🎛️ Control / Actuadores</td><td class="num">7</td><td class="num">0,125</td><td class="num"><b>0,0179</b></td><td>6 de 7 bien → <b>0,107</b></td></tr>
+  <tr><td>📡 Gateway / IoT</td><td class="num">6</td><td class="num">0,125</td><td class="num"><b>0,0208</b></td><td>6 de 6 bien → <b>0,125</b></td></tr>
+  <tr class="total"><td>Total</td><td class="num">42</td><td class="num">1,0</td><td class="num">—</td><td>Suma de las 8 zonas ÷ 8 = <b>nota 0–1</b></td></tr>
+</table>
+<ul>
+  <li><b>Puntos del ejercicio</b> = media de las 8 zonas → rango <b>0 – 1</b>.</li>
+  <li><b>Nota (0–10)</b> = <code>puntos × 10</code> · <b>Ponderación (0–1,0)</b> = <code>puntos × 1,0 − penalización de tiempo</code>.</li>
+  <li><b>Aparatos de relleno</b>: en zonas válidas <b>no suman ni restan</b>; los que estén en una
+      zona que no les corresponde tampoco penalizan (solo cuentan los obligatorios bien colocados).</li>
+</ul>
+
+<h3>B.2 · Reglas de validación (cómo se da por buena una zona)</h3>
+<table>
+  <tr><th>Situación al pulsar «✓ Validar»</th><th>Resultado visual</th><th>Efecto</th></tr>
+  <tr><td><b>Zona perfecta</b>: los obligatorios están todos ahí y sin intrusos</td><td>Zona <b>verde ✅</b>, botón «✅ Validada»</td><td>Zona <b>terminada</b> y puntúa al máximo</td></tr>
+  <tr><td><b>Zona imperfecta</b> (falta o sobra algo)</td><td>Pop-up <b>«¿Quieres dejarlo así o poner más?»</b> sin decir qué falta</td><td><b>📌 Dejarlo así</b> → zona terminada con lo que haya · <b>➕ Poner más</b> → se cierra y sigue editando</td></tr>
+  <tr><td>Añadir o quitar aparatos tras aceptarla</td><td>La zona se puede <b>volver a validar</b></td><td>La nota se recalcula en vivo</td></tr>
+  <tr><td><b>Fin del ejercicio</b></td><td>Pantalla «EJERCICIO TERMINADO»</td><td>Las <b>8 zonas</b> están dadas por buena (✅ o 📌): se para el reloj y aparecen los botones de entrega</td></tr>
+</table>
+<blockquote><b>No existe nota manual ni vaciado de zonas:</b> ninguna validación fallida borra el
+trabajo hecho; repetir cuesta <b>tiempo</b>, no puntos.</blockquote>
+
+<h3>B.3 · Niveles de desempeño (orientativo)</h3>
+<table>
+  <tr><th>Nivel</th><th class="num">Puntos (0–1)</th><th class="num">Nota (0–10)</th><th>Indicadores</th></tr>
+  <tr class="nivel"><td><b>Excelente</b></td><td class="num">≥ 0,90</td><td class="num">9,0 – 10</td><td>Casi todas las zonas ✅; los fallos son aparatos de relleno o alguna zona con 1 pendiente</td></tr>
+  <tr class="nivel"><td><b>Notable</b></td><td class="num">0,75 – 0,89</td><td class="num">7,5 – 8,9</td><td>Varias zonas completas y el resto muy avanzadas</td></tr>
+  <tr class="nivel"><td><b>Suficiente</b></td><td class="num">0,60 – 0,74</td><td class="num">6,0 – 7,4</td><td>Mayoría de zonas dadas por buena con faltas puntuales</td></tr>
+  <tr class="nivel"><td><b>No alcanzado</b></td><td class="num">&lt; 0,60</td><td class="num">0 – 5,9</td><td>Zonas a medias o con muchos aparatos mal colocados</td></tr>
+</table>
+
+<h3>B.4 · Penalizaciones y requisitos</h3>
+<table>
+  <tr><th>Situación</th><th>Efecto</th></tr>
+  <tr><td>Superar <b>60 min</b> en el Ejercicio Colocar (reloj propio, se pausa al cambiar de módulo)</td><td><b>−0,1</b> sobre los 1,0 ponderados</td></tr>
+  <tr><td>No terminar las 8 zonas</td><td>El ejercicio <b>no se da por terminado</b> (no hay pantalla final ni JSON automático)</td></tr>
+  <tr><td>Falta de <b>captura de pantalla</b></td><td>Falta evidencia: la fila del panel queda sin verificación visual</td></tr>
+  <tr><td>Aparatos repetidos</td><td>Imposible: la plataforma retira el chip de la zona anterior</td></tr>
+  <tr><td>Modo examen activo</td><td>Sin pistas, sin reinicio, sin auto-colocación</td></tr>
+</table>
+
+<h2>C · Cálculo de la nota final de estas pruebas</h2>
+<pre>Nota Auditoría = (aciertos auto tarjeta 1 / máx. auto × 5 / 5) × 1,25
+               + (aciertos auto tarjeta 2 / máx. auto × 5 / 5) × 1,25 − (0,25 si &gt; 60 min)
+               = aciertos auto / máx. auto × 2,5                        → 0 – 2,5
+
+Nota Colocar   = Σ(zonas) / 8                                          → 0 – 1,0
+               − (0,1 si &gt; 60 min)</pre>
+<table>
+  <tr><th>Ejemplo</th><th class="num">Auditoría</th><th class="num">Colocar</th><th class="num">Total</th></tr>
+  <tr><td>Ambas tarjetas al 100 % · Colocar sin errores y &lt; 60 min</td><td class="num">2,50</td><td class="num">1,00</td><td class="num"><b>3,50</b></td></tr>
+  <tr><td>Tarjetas al 80 % · Colocar: 80 % de los aparatos en su zona (0,80)</td><td class="num">2,00</td><td class="num">0,80</td><td class="num"><b>2,80</b></td></tr>
+  <tr><td>Tarjetas al 65 % · Colocar: 0,60 con zonas aceptadas y 65 min</td><td class="num">1,63</td><td class="num">0,50</td><td class="num"><b>2,13</b></td></tr>
+</table>
+
+<h2>D · Hoja de registro por alumno (para el acta / la revisión)</h2>
+<table>
+  <tr>
+    <th>Iniciales</th><th>Nombre</th><th>Aud. aciertos (auto/máx)</th><th>Nota t.1</th><th>Nota t.2</th>
+    <th>Penaliz. Aud.</th><th>Pond. Aud. (0–2,5)</th><th>Colocar puntos</th><th>Tiempo Col.</th>
+    <th>Penaliz. Col.</th><th>Pond. Col. (0–1,0)</th><th>Total (0–3,5)</th><th>Observaciones</th>
+  </tr>
+  <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+  <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+  <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+</table>
+
+<h2>E · Evidencias de cada alumno (qué archivar)</h2>
+<table>
+  <tr><th>Evidencia</th><th>Prueba</th><th>Dónde está</th><th>Para qué sirve</th></tr>
+  <tr><td><code>resultado_auditoria_*.json</code></td><td>Auditoría</td><td>Moodle → panel 📊</td><td>Fuente de la nota automática</td></tr>
+  <tr><td><code>resultado_colocar_*.json</code> (v2.0)</td><td>Colocar</td><td>Moodle → panel 📊</td><td>Fuente de la nota (<code>zonas</code>, <code>puntos</code>, <code>puntosEjercicio</code>)</td></tr>
+  <tr><td><b>Captura de pantalla</b> con el reloj visible</td><td>Colocar</td><td>Moodle → panel (＋ 📷 / 📷 Ver)</td><td>Comprueba que el JSON corresponde a esa sesión y el tiempo</td></tr>
+  <tr><td>Constancia PNG (iniciales + tiempo + fecha)</td><td>Ambas</td><td>Descarga del alumno</td><td>Justificante de entrega (sin notas)</td></tr>
+  <tr><td>Informe <b>.md</b> generado por el panel</td><td>Ambas</td><td>Panel 📊 · botón ⬇ .md</td><td>Respuestas + <b>solución/rúbrica incrustada</b> + checklist de revisión</td></tr>
+  <tr><td>Soluciones modelo</td><td>Ambas</td><td><code>soluciones/01_aula.md</code> … <code>10_salon_de_actos.md</code></td><td>Contraste para verificar (no se muestran al alumno)</td></tr>
+  <tr><td>Solución visual de Colocar</td><td>Colocar</td><td><code>img/Captura de pantalla 2026-10-04 094925.png</code></td><td>Los 42 obligatorios deben coincidir con esa distribución</td></tr>
+</table>
+
+<h2>F · Reglas comunes de evaluación</h2>
+<ol>
+  <li><b>Todo automático</b>: la plataforma no admite editar notas; el panel solo calcula a partir del JSON.</li>
+  <li><b>Los alumnos no ven ninguna nota ni porcentaje</b>: solo saben si han terminado el ejercicio
+      y cuántas zonas han dado por buena (Colocar). Las notas las ve únicamente el profesor.</li>
+  <li><b>Modo examen</b> (cuenta atrás de 5 min): bloquea pistas, reinicio y auto-colocación; al
+      agotarse el tiempo se verifica el estado del módulo activo.</li>
+  <li><b>Repetir no penaliza</b>: en Colocar ninguna validación fallida borra trabajo ni resta
+      puntos; el único coste es el tiempo.</li>
+  <li><b>Trazabilidad</b>: cualquier nota puede reconstruirse con el JSON del alumno + esta rúbrica
+      (panel 📊 → ⬇ .md incluye el desglose por zona de Colocar y el detalle por tarjeta de Auditoría).</li>
+</ol>
+
+<p class="pie">Documento generado para la acreditación de la práctica · los cálculos reproducen
+exactamente lo implementado en <code>js/config.js</code> (<code>ESCALA_AUDITORIA</code>,
+<code>ESCALA_COLOCAR</code>), <code>js/validacion.js</code> y <code>js/panel-profesor.js</code>.
+Versión 1.0.</p>
+
+</body>
+</html>

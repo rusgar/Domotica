@@ -2,7 +2,7 @@
 
 ## 🎯 Objetivo
 
-Añadir un **segundo módulo** dentro del mismo dashboard que permita a los alumnos realizar auditorías energéticas por zonas siguiendo los ejercicios del curso: hoy está activo **solo el Ejercicio 6**, con **2 tarjetas aleatorias de las 6 zonas disponibles**.
+Añadir un **segundo módulo** dentro del mismo dashboard que permita a los alumnos realizar auditorías energéticas por zonas siguiendo los ejercicios del curso: hoy está activo **solo el Ejercicio Auditoría**, con **2 tarjetas aleatorias de las 10 zonas disponibles**.
 
 ## 🧩 Filosofía del módulo
 
@@ -11,7 +11,7 @@ Añadir un **segundo módulo** dentro del mismo dashboard que permita a los alum
 - **Distinguir D / O / I / H**: dato, observación, inferencia e hipótesis.
 - **Cálculos con unidades**: kWh/mes, %, €, usando las fórmulas del curso.
 - **Fuentes y normativa**: el alumno debe localizar datos concretos en fuentes oficiales.
-- **Presupuesto limitado**: priorizar actuaciones con 1.500 € (o 8.000 € en otros ejercicios).
+- **Presupuesto limitado**: priorizar actuaciones con **750 € por tarjeta** (1.500 € en total; el precio es obligatorio en el apartado 8).
 - **Verificación**: qué medir, con qué instrumento y para qué.
 
 ## 📑 Pestañas dentro del dashboard
@@ -24,7 +24,7 @@ Ambas conviven en el mismo `index.html`. El módulo activo se guarda en `localSt
 ## 🎲 Aleatoriedad controlada por el profesor
 
 - El profesor (o el alumno si no hay examen activo) pulsa **"🎲 Repartir tarjetas"**.
-- Se sortean **2 tarjetas entre las 6 disponibles** (aula, pasillo, taller, despacho, biblioteca, gimnasio).
+- Se sortean **2 tarjetas entre las 10 disponibles** (aula, pasillo, taller, despacho, biblioteca, gimnasio, vestíbulo, comedor, aseo y salón de actos), **siempre zonas distintas**.
 - Cada tarjeta tiene **3-4 variaciones** de sus datos numéricos (alumnos, luminarias, horas, temperaturas…).
 - Dos alumnos con la misma tarjeta reciben números distintos → no copian.
 
@@ -46,7 +46,7 @@ Cada tarjeta tiene 9 bloques:
 5. **Medidas de mejora** (2 propuestas).
 6. **Verificación**: qué medir + con qué instrumento.
 7. **Cálculo** con validación automática.
-8. **Coste / Impacto / Dificultad** (radio + justificación).
+8. **Coste / Impacto / Dificultad** (radio + justificación) y **lista de aparatos + precio de la actuación (obligatorio)**.
 9. **Mini-investigación**: fuente oficial + fuente técnica.
 
 ## 📌 Bloque de referencia fijo
@@ -56,33 +56,48 @@ Cada tarjeta tiene 9 bloques:
 - Se oculta cuando no hay tarjetas repartidas o al reiniciar el ejercicio.
 - El **cronómetro** también está fijo (arriba a la derecha) y con letra grande para que el alumno no tenga que buscar cuánto tiempo lleva.
 
-## 🧮 Validación mixta
+## 🧮 Validación (automática) y revisión
 
-- **Automática**:
+- **Automática** (la **única que cuenta** para la nota):
   - Cálculos con tolerancia ±2%.
-  - Presupuesto total y comparación con el límite.
   - Clasificación D / O / I / H de frases fijas.
   - Checkboxes de condiciones y factores correctos.
-- **Manual** (por el profesor):
+- **Revisión** (con la rúbrica del informe `.md`, **sin nota manual**):
   - Campos abiertos (problema, causa, medidas, justificaciones, fuentes).
-  - Se dejan en blanco en la **rúbrica del informe `.md`** (nota por tarjeta 0-5).
+  - **No puntúan**: se comparan con la solución incrustada (modelo exacto o parecido).
+- **Obligatorios** (no puntúan, pero **bloquean la entrega**):
+  - Precio de la actuación en el apartado 8 de cada tarjeta (vacío o por encima del tope → no se puede descargar el JSON).
 
 La puntuación auto se calcula al pulsar **"✓ Validar ficha"**:
 
-| Bloque | Puntos auto |
+| Bloque | Puntos |
 |---|---|
 | Condiciones interiores | 10 |
 | Factores exteriores | 10 |
 | Clasificación DOIH | 20 |
 | Cálculo | 20 |
-| **Pendiente manual** | **40** |
+| **Campos abiertos (no puntúan)** | **40** |
 | **Total** | **100** |
 
-## 💰 Presupuesto interactivo
+La nota de la tarjeta = **aciertos auto / máx. auto × 5** → **× 1,25** = ponderación
+(máx. 1,25 por tarjeta; 2 tarjetas = **2,5**).
 
-- Al terminar las fichas, se muestra un bloque de **presupuesto limitado**.
-- El alumno asigna un **coste estimado** a cada actuación prioritaria.
-- Se valida automáticamente si está dentro del límite (1.500 € en Ejercicio 6).
+## 💰 Presupuesto (apartado 8 · obligatorio)
+
+- **Lista de aparatos**: un desplegable con **todo el catálogo** `APARATOS` agrupado por tipo
+  (exterior · envolvente · interior · eléctrico · hidráulico · térmico · control y actuadores · gateway/IoT).
+  El alumno añade aparatos, **repite cantidades** (botones − / +), los quita con 🗑 y la lista
+  muestra precio por unidad y subtotal.
+- **El precio se rellena solo**: al cambiar la lista, `refrescarMateriales()` escribe la **suma** en el
+  campo del precio (editable: si lo sobrescribe a mano se marca como ajuste manual).
+- **Tope por tarjeta: 750 €** (`ESCALA_AUDITORIA.presupuestoPorTarjeta`), 1.500 € en total.
+- **Obligatorio**: si está vacío o se pasa del tope, `generarInforme()` bloquea la descarga del JSON.
+- **Coherencia**: con lista → el precio debe **cuadrar con la suma** (±1 €); sin lista →
+  `precioCoherenteCatalogo()` compara con `APARATOS` con tolerancia **±20 %**. En ambos casos hay
+  aviso ámbar si no encaja (se permite escribir otro precio, pero queda marcado).
+- El estado se muestra en tres sitios: en el **apartado 8**, en la **barra fija** de la tarjeta
+  activa (`presupuestoFijaHTML`) y en la **cabecera** (`renderCabeceraAuditoria`).
+- **No puntúa**: solo es un requisito de entrega (se revisa en el `.md`, que lista los aparatos elegidos).
 - Se prioriza por ratio **impacto / coste** (función `calcularPriorizacion`).
 
 ## 📤 Envío de informe
@@ -113,8 +128,23 @@ Al pulsar **"📤 Enviar informe"**:
 
 ## ⏱️ Cronómetro y modo examen
 
-- El cronómetro sigue corriendo desde el login, sea cual sea el módulo activo.
+- El cronómetro de sesión sigue corriendo desde el login, sea cual sea el módulo activo.
 - Está **fijo** en pantalla y con tamaño grande.
+- **Cronómetro del Ejercicio Auditoría** (`state.auditoria.segundos`, `iniciarCronometroAuditoria`):
+  cuenta **solo** el tiempo del ejercicio (arranca al entrar y al repartir tarjetas, se guarda y
+  restaura en `localStorage`) y es el que aplica la penalización.
+- **Cronómetro del Ejercicio Colocar** (`state.colocar.segundos`, `iniciarCronometroColocar`,
+  `#tiempoColocar`): corre **solo con el módulo Colocar activo** (se pausa al cambiar de módulo y
+  se restaura en `localStorage` como `segundosEjercicioColocar`).
+- **Penalización por exceso de tiempo**: más de **60 min**
+  (`ESCALA_AUDITORIA.limiteTiempoMinutos`) → **−0,25** (`ESCALA_AUDITORIA.penalizacionTiempo`),
+  es decir **1 décima del total de 2,5**. Se comunica al alumno en el enunciado inicial y aparece:
+  - en la cabecera (`#tiempoEjercicio` en rojo con `⏰ … (−0,25)`),
+  - en el panel del profesor (badge `⏰ −0,25` en la columna Tiempo y en el resumen por alumno),
+  - en el `.md` (fila de tiempo, cita de penalización y checklist).
+- **Penalización en Colocar**: más de **60 min** (`ESCALA_COLOCAR.limiteTiempoMinutos`) →
+  **−0,1** (`ESCALA_COLOCAR.penalizacionTiempo`) sobre **1,0**; la aplica el panel al calcular la
+  nota del **JSON** del alumno (también en el badge `⏰ −0,1`, el resumen y el `.md`).
 - El modo examen del profesor bloquea:
   - **Pistas** (módulo colocar).
   - **Reset** (ambos módulos).
@@ -125,18 +155,33 @@ Al pulsar **"📤 Enviar informe"**:
 ## 📌 Decisiones tomadas
 
 - **Un único HTML** con pestañas → el alumno no cambia de pestaña del navegador.
-- **Cronómetro compartido** entre módulos → el examen mide el tiempo total, y está fijo y grande.
+- **Cronómetro compartido** entre módulos → el examen mide el tiempo total, y está fijo y grande;
+  cada ejercicio además lleva su **propio reloj** (Auditoría y Colocar) con su penalización.
 - **Login único** → el rol aplica a ambos módulos.
 - **Fichas por tarjeta** → cada una se valida por separado y se puede reabrir.
 - **Referencia siempre visible** → Escenario/Datos/Foco en barra fija arriba.
 - **Solo JSON** → un entregable claro para Moodle; sin Excel ni carpeta de resultados.
-- **2 tarjetas de 6** (Ejercicio 6) → **10 puntos = 2,5 ponderados** (Colocar aparatos pondera 1,5).
+- **2 tarjetas de 10** (Ejercicio Auditoría) → **10 puntos = 2,5 ponderados** (Colocar aparatos pondera 1,0).
+- **Presupuesto por tarjeta y obligatorio** → 750 € por tarjeta, precio en el apartado 8 y aviso
+  si no encaja con el catálogo (±20 %); no puntúa, pero bloquea la entrega si falta.
+- **Penalización de tiempo** → más de 60 min en el ejercicio (reloj propio) resta **0,25** de 2,5
+  en Auditoría y **0,1** de 1,0 en Colocar, indicada en el enunciado inicial.
+- **Colocar se corrige con JSON + captura** → el alumno sube ambos a Moodle; la nota es **solo
+  automática** y sale del `puntos` del JSON (**8 zonas × 0,125 = 1,0**, parcial por aparato):
+  `puntos × 1,0 − penalización`. La captura es la evidencia y se adjunta en el panel
+  (botón **＋ 📷** / **📷 Ver**).
+- **Puntuación parcial de Colocar** → cada zona vale **0,125** y cada aparato
+  `0,125 / nº de aparatos de esa zona`; **sin nota manual** y **sin bloqueos**: si la zona no
+  está perfecta, el pop-up «¿Quieres dejarlo así o poner más?» deja la zona **📌 aceptada**.
+  El ejercicio termina cuando las **8 zonas** están dadas por buena (✅ o 📌).
+- **Sin grupos en el banco** → lista alfabética y sin contadores; los aparatos de relleno
+  (`opcional: true`) no puntúan y no cambian la solución de referencia.
 
 ## 🚧 Próximos pasos
 
-- **Paso 6** — Panel del profesor **por tarjeta** (ya construido: nota 0-5 por tarjeta + `.md` con la rúbrica incrustada).
+- **Paso 6** — Panel del profesor **por tarjeta** (ya construido: nota **solo automática** = Auto/5 × 1,25 → 2,5 en total + `.md` con la rúbrica incrustada).
 - **Paso 7** — URL de la tarea de Moodle en `js/config.js` (`MOODLE.urlTarea`).
-- **Paso 8** — Revisar la visibilidad de `soluciones/` en el despliegue.
+- **Paso 8** — ✅ Decidido: `soluciones/` **sin ningún enlace** en la interfaz, accesible solo por URL directa.
 - **Paso 9** — Ampliar a más ejercicios (3 y 4) si el curso lo pide.
 - **Paso 10** — Exportación a PDF con rúbrica automática.
 

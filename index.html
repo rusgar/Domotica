@@ -74,7 +74,10 @@
       <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
       <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
       <button class="btn-reset" id="btnReset" onclick="resetear()">🔄 Reiniciar</button>
-      <div class="score">Aciertos: <span id="score">0</span> / <span id="total">0</span></div>
+      <div class="score">Aciertos: <span id="score">0</span> / <span id="total">0</span><span id="scoreNota"></span></div>
+      <div class="tiempo-ejercicio" title="Tiempo SOLO de este ejercicio (se pausa al cambiar de módulo). Más de 60 min → −0,1 sobre 1,0.">
+        ⏱ Ejercicio <strong id="tiempoColocar">00:00</strong> / 60 min
+      </div>
     </div>
 
     <div class="layout">
@@ -193,34 +196,32 @@
 
         <div class="ejercicios-disponibles">
           <div class="ejercicio-card activo" onclick="iniciarEjercicio('6')">
-            <div class="ejercicio-num">Ejercicio 6</div>
-            <div class="ejercicio-nombre">2 zonas aleatorias de las 6</div>
-            <div class="ejercicio-desc">Auditoría de 2 zonas asignadas al azar · Presupuesto 1.500 €</div>
+            <div class="ejercicio-num">Ejercicio Auditoría</div>
+            <div class="ejercicio-nombre">2 zonas aleatorias de las 10</div>
+            <div class="ejercicio-desc">Auditoría de 2 zonas asignadas al azar · 750 € por tarjeta</div>
             <div class="ejercicio-badge">Asignado · 10 pts</div>
-          </div>
-
-          <div class="ejercicio-card deshabilitado">
-            <div class="ejercicio-num">Ejercicio 3</div>
-            <div class="ejercicio-nombre">Detectives de ineficiencias</div>
-            <div class="ejercicio-desc">10 casos prácticos con presupuesto de 8.000 €</div>
-            <div class="ejercicio-badge pronto">Próximamente</div>
-          </div>
-
-          <div class="ejercicio-card deshabilitado">
-            <div class="ejercicio-num">Ejercicio 4</div>
-            <div class="ejercicio-nombre">Auditoría de un aula real</div>
-            <div class="ejercicio-desc">Con mediciones reales y prueba antes/después</div>
-            <div class="ejercicio-badge pronto">Próximamente</div>
           </div>
         </div>
 
         <p class="aviso-nota">
-          📌 <strong>Trabajo:</strong> un solo ejercicio (Ejercicio 6) con
-          <strong>2 tarjetas aleatorias</strong> de las 6 zonas. Cada tarjeta vale
-          <strong>5 puntos</strong> → <strong>10 puntos</strong> en total (ponderado
-          <strong>2,5</strong>; Colocar aparatos pondera 1,5). Al terminar descargas tu
-          <strong>JSON</strong> y lo subes a la tarea de Moodle: el profesor lo verifica con
-          la rúbrica de cada solución y pone la nota de cada tarjeta.
+          📌 <strong>Trabajo:</strong> un solo ejercicio con
+          <strong>2 tarjetas aleatorias</strong> de las 10 zonas (siempre distintas). Cada tarjeta vale
+          <strong>5 puntos crudos</strong> → <strong>10 en total = 2,5 ponderados</strong> (Colocar
+          aparatos pondera 1,0). <strong>No hay que poner nota a mano</strong>: la nota de cada tarjeta es
+          la puntuación automática transformada → <strong>Auto/5 × 1,25</strong> (máx.
+          <strong>1,25</strong> por tarjeta; las 2 = <strong>2,5</strong>).<br><br>
+          💰 <strong>Presupuesto (obligatorio):</strong> en el <strong>apartado 8</strong> de cada tarjeta
+          elige en la <strong>lista de aparatos</strong> los que vas a instalar (se repiten con cantidades
+          y el <strong>precio se rellena solo</strong> con la suma; también puedes escribirlo a mano) y
+          justifícalo. Tope de <strong>750 € por tarjeta</strong> (1.500 € en total) y el importe debe
+          encajar con esa lista o con un artículo del <strong>catálogo de Colocar aparatos</strong>
+          (±20 %); si queda fuera aparecerá un aviso.
+          <strong>No se puede entregar con el precio vacío.</strong><br><br>
+          ⏱ <strong>Tiempo:</strong> el cronómetro de arriba corre toda la sesión, pero para la nota
+          cuenta <strong>solo el tiempo del Ejercicio Auditoría</strong>: si superas los
+          <strong>60 minutos</strong> se descuenta <strong>1 décima (0,25 de 2,5)</strong>.<br><br>
+          Al terminar descargas tu <strong>JSON</strong> y lo subes a la tarea de Moodle: el profesor
+          comprueba tus respuestas con la rúbrica de cada solución (<em>modelo exacto o parecido</em>).
         </p>
       </div>
     </div>
@@ -241,8 +242,8 @@
 
       <div class="auditoria-header">
         <div>
-          <h2 id="auditoriaTitulo">Ejercicio 6 · 2 zonas aleatorias</h2>
-          <div class="auditoria-sub" id="auditoriaSubtitulo">Presupuesto 1.500 € · Datos didácticos</div>
+          <h2 id="auditoriaTitulo">Ejercicio Auditoría · 2 zonas aleatorias</h2>
+          <div class="auditoria-sub" id="auditoriaSubtitulo">Presupuesto 750 € por tarjeta · ⏱ Ejercicio <strong id="tiempoEjercicio">00:00</strong> / 60 min</div>
         </div>
         <div class="auditoria-acciones">
           <button class="btn-check" onclick="repartirTarjetas()">🎲 Repartir tarjetas</button>
@@ -273,6 +274,24 @@
       <p class="pregunta-texto" id="preguntaTexto">Cargando pregunta...</p>
       <div class="opciones" id="preguntaOpciones"></div>
       <div class="feedback" id="preguntaFeedback"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL DECISIÓN (módulo colocar): ¿dejarla así o seguir?      -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="modalDecision">
+    <div class="modal-pregunta">
+      <div class="modal-header">
+        <h3 id="decisionZona">Zona</h3>
+        <button class="btn-cerrar-modal" onclick="cerrarModalDecision()">✕</button>
+      </div>
+      <p class="pregunta-texto">¿Quieres dejarlo así o poner más?</p>
+      <div class="opciones">
+        <button class="opcion opcion-dejar" onclick="dejarZonaAsi()">📌 Dejarlo así</button>
+        <button class="opcion opcion-seguir" onclick="ponerMas()">➕ Poner más</button>
+      </div>
+      <div class="feedback"></div>
     </div>
   </div>
 
@@ -354,17 +373,24 @@
 
         <p class="informe-texto">
           Descarga los <strong>JSON</strong> de la tarea de Moodle (los que han subido los alumnos con su
-          usuario) y cárgalos aquí (Ejercicio 6). Verás una fila por <strong>tarjeta</strong>: lo que
-          <strong>respondió el alumno</strong>, su puntuación automática y la casilla para poner la
-          <strong>nota del profesor (0-5 por tarjeta)</strong> → <strong>10 en total</strong> = 2,5
-          ponderados. Con el botón <strong>⬇ .md</strong> conviertes cada JSON en un informe con las
-          respuestas del alumno <strong>y la solución/rúbrica incrustada</strong> para verificarlas.
+          usuario) y cárgalos aquí (Ejercicio Auditoría). Verás una fila por <strong>tarjeta</strong>: lo que
+          <strong>respondió el alumno</strong>, su <strong>puntuación automática (0-5)</strong> y su
+          <strong>ponderación (0-1,25)</strong>. <strong>No hay que poner nota</strong>: la nota sale solo de
+          lo automático → <strong>Auto/5 × 1,25</strong> por tarjeta; las 2 tarjetas suman
+          <strong>10</strong> = <strong>2,5 ponderados</strong>. Con el botón
+          <strong>⬇ .md</strong> conviertes cada JSON en un informe con las respuestas del alumno
+          <strong>y la solución/rúbrica incrustada</strong> para verificarlas.
+          En <strong>Colocar aparatos</strong> cargas la <strong>captura de pantalla</strong> (botón
+          <strong>＋ 📷</strong>) <strong>y el JSON</strong> del alumno: la nota sale sola del JSON
+          (<strong>8 zonas × 0,125 = 1,0</strong>, con <strong>−0,1 si el ejercicio pasó de 60 min</strong>),
+          <strong>sin nota manual</strong>. Si solo hay captura, la fila queda <strong>sin puntuación</strong>.
         </p>
 
         <div class="informe-campos panel-carga">
           <label class="panel-carga-label">
-            📂 Cargar JSON
-            <input type="file" id="panelFiles" multiple accept=".json,application/json"
+            📂 Cargar JSON / capturas
+            <input type="file" id="panelFiles" multiple
+              accept=".json,application/json,image/*"
               onchange="cargarResultadosPanel(this.files)">
           </label>
           <div class="panel-resumen" id="panelResumen">Ningún resultado cargado</div>
@@ -379,9 +405,9 @@
                 <th>Tarjeta</th>
                 <th>Fecha</th>
                 <th>Tiempo</th>
-                <th>Auto (0-5)</th>
-                <th>Nota profesor (0-5)</th>
-                <th>Nota final</th>
+                <th>Auto / Aciertos</th>
+                <th>Nota · Ponderado</th>
+                <th>Captura</th>
                 <th>Informe</th>
               </tr>
             </thead>
@@ -390,10 +416,32 @@
           <div class="panel-vacio" id="panelVacio">Carga un JSON para empezar.</div>
         </div>
 
+        <p class="informe-texto" style="font-size:0.82rem;color:#94a3b8;margin-top:10px;">
+          <strong>La nota solo es la automática (no se pone nota a mano):</strong> por tarjeta
+          <strong>Auto/5 × 1,25</strong> = <strong>máx. 1,25</strong>; las 2 tarjetas suman
+          <strong>10</strong> → <strong>2,5 ponderados</strong>.
+          <strong>Colocar aparatos pondera 1,0</strong>: la nota es <strong>solo automática</strong> y sale
+          del <strong>JSON</strong> (<strong>8 zonas × 0,125 = 1,0</strong>, parcial por aparato dentro de
+          cada zona; <strong>−0,1</strong> si el reloj del ejercicio pasa de <strong>60 min</strong>), con su
+          <strong>captura</strong> al lado. Los campos
+          abiertos de la ficha <strong>no puntúan</strong>: sirven para revisar la respuesta con la
+          solución incrustada en el informe <strong>.md</strong>.
+        </p>
+
         <div class="informe-acciones">
           <button class="btn-reset" onclick="vaciarPanel()">🗑 Vaciar</button>
           <button class="btn-cerrar-informe" onclick="cerrarPanelResultados()">Cerrar</button>
         </div>
+
+        <!-- Captura de pantalla del módulo Colocar (input oculto) -->
+        <input type="file" id="panelCapturaInput" accept="image/*" style="display:none"
+          onchange="onCapturaSeleccionada(this.files)">
+      </div>
+
+      <!-- Visor de captura -->
+      <div class="visor-captura" id="panelVisor" onclick="cerrarVisorCaptura()">
+        <img id="panelVisorImg" src="data:," alt="Captura del alumno">
+        <span class="visor-captura-cerrar">✕ Cerrar</span>
       </div>
 
     </div>
@@ -451,6 +499,8 @@
       if (typeof abrirPregunta === 'undefined') faltan.push('dragdrop.js');
       if (typeof verificarTodo === 'undefined') faltan.push('validacion.js');
       if (typeof validarZona === 'undefined') faltan.push('validacion.js (validarZona)');
+      if (typeof puntuacionTotalColocar === 'undefined') faltan.push('validacion.js (puntuación)');
+      if (typeof dejarZonaAsi === 'undefined') faltan.push('validacion.js (pop-up decisión)');
       if (typeof toggleExamen === 'undefined') faltan.push('examen.js');
       if (typeof renderBanco === 'undefined') faltan.push('ui.js');
       if (typeof TARJETAS === 'undefined') faltan.push('auditoria/tarjetas.js');

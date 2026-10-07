@@ -17,8 +17,10 @@ function guardarProgreso() {
   const data = {
     colocados: state.colocados,
     segundos: state.cronometro.segundos,
+    segundosEjercicioColocar: (state.colocar && state.colocar.segundos) || 0,  // tiempo del ejercicio
     zonasDesbloqueadas: state.zonasDesbloqueadas,
     zonasVerificadas: state.zonasVerificadas,
+    zonasTerminadas: state.zonasTerminadas,
     ultimaPregunta: state.ultimaPregunta,
     timestamp: Date.now(),
   };
@@ -55,6 +57,7 @@ function guardarProgresoAuditoria() {
     variaciones: a.variaciones,
     fichas: a.fichas,
     segundos: state.cronometro.segundos,
+    segundosEjercicio: a.segundos || 0,     // tiempo solo del ejercicio
     timestamp: Date.now()
   };
   try {
@@ -116,6 +119,7 @@ function cargarProgresoAuditoria() {
     state.auditoria.tarjetas = tarjetasRestauradas;
     state.auditoria.variaciones = variacionesRestauradas;
     state.auditoria.fichas = fichasRestauradas;
+    state.auditoria.segundos = data.segundosEjercicio || 0;
     state.cronometro.segundos = data.segundos || 0;
 
     // Reconstruir las tarjetas en el DOM

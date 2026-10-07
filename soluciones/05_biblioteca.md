@@ -1,7 +1,7 @@
 # Solución modelo · Tarjeta 5 — BIBLIOTECA 📚
 
-> **Módulo:** Auditoría por zonas · **Ejercicio 6** (3 tarjetas) y **Global** (2 tarjetas)
-> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **1.500 €**
+> **Módulo:** Auditoría por zonas · **Ejercicio Auditoría** (2 tarjetas aleatorias de las 10 zonas)
+> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **750 € por tarjeta** (1.500 € en las 2) · tiempo límite **60 min** (pasarlo resta **0,25** sobre 2,5)
 > Los datos numéricos son aleatorios: en el apartado 7 tienes el resultado de **cada variación**.
 > **Aceptación del cálculo:** ±0,01 absoluto o 2 % de margen.
 
@@ -82,6 +82,8 @@
 | **Dato encontrado** | HS3 establece los caudales mínimos de ventilación según uso y los criterios de calidad del aire (incluido control de CO₂). |
 | **Aplicación a la tarjeta** | Define el caudal que debe garantizarse con ocupación alta y justifica medir CO₂ para no ventilar «a ciegas». |
 | **Fuente técnica** | **UNE** — normas sobre calidad del aire y ventilación en edificios. |
+
+> **Fuente en Asturias:** también es válida **FAEN – Fundación Asturiana de la Energía** (agencia energética del Principado de Asturias) si localizas el dato allí; si no existe fuente asturiana para ese dato, se admite la nacional **IDAE** (Madrid).
 | **Aplicación** | Criterios de medición (posición del sensor, umbrales) para el data logger. |
 
 > Alternativa del desplegable: **RITE** (IT 1.1.4.3 · Calidad del aire interior: ventilación según ocupación).
@@ -90,7 +92,7 @@
 
 ## Puntuación esperada de la ficha
 
-> **Escala que cuenta:** la tabla de abajo es el detalle interno de la ficha (100 = 60 automático + 40 manual), pero la nota real es **2,5 puntos por tarjeta**: cada ejercicio reparte 2 tarjetas → **5 puntos por ejercicio**, y los 2 ejercicios asignados suman **10 puntos** en total. El profesor convierte el detalle en 2,5 proporcionalmente al verificarlo con este mismo archivo.
+> **Escala que cuenta:** la tabla de abajo es el **detalle interno de la ficha** (60 automáticos + 40 de campos abiertos, que **no puntúan**). La nota de la tarjeta sale SOLO de lo automático: **aciertos / máximo automático × 5 = nota (0-5)** → **× 1,25 = ponderación** (máx. 1,25 por tarjeta). El ejercicio reparte 2 tarjetas → **10 puntos = 2,5 ponderados**. Este archivo sirve para comprobar que la respuesta se parece al **modelo exacto o parecido**.
 
 
 | Bloque | Puntos | Tipo |
@@ -100,9 +102,11 @@
 | 4 · DOIH | 20 | Automática |
 | 7 · Cálculo | 20 | Automática |
 | 3, 5, 6, 8, 9 · campos abiertos | 40 | Manual (profesor) |
-| **Total** | **100** | 60 auto + 40 manual |
+| **Total** | **100** | 60 auto + 40 campos abiertos (no puntúan) |
 
-## Presupuesto (apartado final del ejercicio)
+## Presupuesto (apartado 8 · obligatorio)
 
 **Actuación prioritaria sugerida:** sensor de CO₂ para ventilación bajo demanda — **≈ 200 €** (rango 90–300 €).
-**Justificación:** primero se mide (evita ventilar de más o de menos) y es prerrequisito de cualquier otra actuación; la modulación del ventilador (coste medio-alto) se plantea si queda presupuesto de los 1.500 €.
+**Justificación:** primero se mide (evita ventilar de más o de menos) y es prerrequisito de cualquier otra actuación; la modulación del ventilador (coste medio-alto) se plantea si queda presupuesto dentro de los 750 € de esta tarjeta.
+
+> **Precios de referencia:** usa los precios del catálogo del módulo **Colocar aparatos** (p. ej. sensor de presencia 30 € · sensor de CO₂ 90 € · LDR 2 € · actuador de luz 70 € · cámara termográfica 350 €). La cifra de arriba es una estimación de mercado: en el **apartado 8** elige en la lista los aparatos que vas a instalar (se repiten con cantidades y **el precio se suma solo**) o escribe el importe a mano; debe encajar con esa lista o con un artículo del catálogo (±20 %), ser **obligatorio** y **no pasarte de 750 € en esta tarjeta** (1.500 € en total). Un precio vacío bloquea la entrega.

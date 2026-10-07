@@ -1,7 +1,7 @@
 # Solución modelo · Tarjeta 6 — GIMNASIO 🏋️
 
-> **Módulo:** Auditoría por zonas · **Ejercicio 6** (3 tarjetas) y **Global** (2 tarjetas)
-> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **1.500 €**
+> **Módulo:** Auditoría por zonas · **Ejercicio Auditoría** (2 tarjetas aleatorias de las 10 zonas)
+> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **750 € por tarjeta** (1.500 € en las 2) · tiempo límite **60 min** (pasarlo resta **0,25** sobre 2,5)
 > **Caso especial:** esta tarjeta **no tiene cálculo automático** (`valor = null`): hay que responder con el criterio de «qué medir».
 > **Aceptación del cálculo:** — (sin bloque numérico).
 
@@ -60,7 +60,7 @@
 
 **Respuesta modelo:** *No es posible calcular un ahorro fiable con los datos disponibles:* hay síntomas (condensación, corriente) pero faltan mediciones (temperatura superficial, velocidad del aire, punto de rocío). Lo correcto es indicar **qué se mediría** (temperatura superficial, velocidad del aire, humedad) y **con qué instrumento** (cámara termográfica/sonda, anemómetro, higrómetro).
 
-> El bloque 7 de la ficha muestra un campo de texto «Ahorro estimado, si procede»: se puntúa manualmente la calidad de la explicación, no un número.
+> El bloque 7 de la ficha muestra un campo de texto «Ahorro estimado, si procede»: no puntúa (es un número imposible de calcular solo); se revisa la calidad de la explicación comparándola con el modelo.
 
 ## 8 · Valoración de la actuación ✔ (según `costeImpacto` de la tarjeta)
 
@@ -79,6 +79,8 @@
 | **Dato encontrado** | IT 1 fija los rangos de temperatura, humedad y velocidad del aire para el bienestar (y UNE-EN ISO 7730 define los índices PMV/PPD). |
 | **Aplicación a la tarjeta** | Permite juzgar si 22–24 °C con 68–75 % de humedad y corriente perceptible son aceptables, y fijar objetivos de medida. |
 | **Fuente técnica** | **UNE** — normas de ergonomía del ambiente térmico y calidad del aire. |
+
+> **Fuente en Asturias:** también es válida **FAEN – Fundación Asturiana de la Energía** (agencia energética del Principado de Asturias) si localizas el dato allí; si no existe fuente asturiana para ese dato, se admite la nacional **IDAE** (Madrid).
 | **Aplicación** | Umbrales con los que comparar las medidas del sensor de humedad y el anemómetro. |
 
 > Alternativa del desplegable: **CTE DB-HE** (envolvente térmica, si el foco es el puente térmico).
@@ -87,7 +89,7 @@
 
 ## Puntuación esperada de la ficha
 
-> **Escala que cuenta:** la tabla de abajo es el detalle interno de la ficha (100 = 60 automático + 40 manual), pero la nota real es **2,5 puntos por tarjeta**: cada ejercicio reparte 2 tarjetas → **5 puntos por ejercicio**, y los 2 ejercicios asignados suman **10 puntos** en total. El profesor convierte el detalle en 2,5 proporcionalmente al verificarlo con este mismo archivo.
+> **Escala que cuenta:** la tabla de abajo es el **detalle interno de la ficha** (60 automáticos + 40 de campos abiertos, que **no puntúan**). La nota de la tarjeta sale SOLO de lo automático: **aciertos / máximo automático × 5 = nota (0-5)** → **× 1,25 = ponderación** (máx. 1,25 por tarjeta). El ejercicio reparte 2 tarjetas → **10 puntos = 2,5 ponderados**. Este archivo sirve para comprobar que la respuesta se parece al **modelo exacto o parecido**.
 
 
 | Bloque | Puntos | Tipo |
@@ -97,9 +99,11 @@
 | 4 · DOIH | 20 | Automática |
 | 7 · Cálculo | — | **No se suma** (sin valor numérico) → el total de esta ficha es **80** |
 | 3, 5, 6, 8, 9 · campos abiertos | 40 | Manual (profesor) |
-| **Total** | **80** | 40 auto + 40 manual |
+| **Total** | **80** | 40 auto + 40 campos abiertos (no puntúan) |
 
-## Presupuesto (apartado final del ejercicio)
+## Presupuesto (apartado 8 · obligatorio)
 
 **Actuación prioritaria sugerida:** cámara termográfica (o alquiler de equipo) para detectar el puente térmico — **≈ 450 €** (rango 300–800 €).
-**Justificación:** sin diagnosticar no se puede invertir en reforma; la medición primero (medida de bajo riesgo) evita gastar los 1.500 € en una solución equivocada.
+**Justificación:** sin diagnosticar no se puede invertir en reforma; la medición primero (medida de bajo riesgo) evita gastar el presupuesto en una solución equivocada.
+
+> **Precios de referencia:** usa los precios del catálogo del módulo **Colocar aparatos** (p. ej. sensor de presencia 30 € · sensor de CO₂ 90 € · LDR 2 € · actuador de luz 70 € · cámara termográfica 350 €). La cifra de arriba es una estimación de mercado: en el **apartado 8** elige en la lista los aparatos que vas a instalar (se repiten con cantidades y **el precio se suma solo**) o escribe el importe a mano; debe encajar con esa lista o con un artículo del catálogo (±20 %), ser **obligatorio** y **no pasarte de 750 € en esta tarjeta** (1.500 € en total). Un precio vacío bloquea la entrega.

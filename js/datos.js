@@ -60,6 +60,35 @@ const APARATOS = [
   { id: 'gateway_zigbee', emoji: '🔀', nombre: 'Gateway Zigbee', tipo: 'Gateway Zigbee ↔ IP', zona: 'gateway', precio: 60 },
   { id: 'gateway_lora', emoji: '🔀', nombre: 'Gateway LoRa', tipo: 'Gateway LoRa ↔ IP', zona: 'gateway', precio: 220 },
   { id: 'broker_mqtt', emoji: '☁️', nombre: 'Broker MQTT', tipo: 'Mensajería IoT', zona: 'gateway', precio: 0 },
+
+  // ============================================================
+  // APARATOS DE RELLENO · opcionales (opcional: true)
+  // Están en el banco para hacer bulto: NO son necesarios para
+  // validar ninguna zona, NO cuentan en el marcador y NO penalizan
+  // aunque se coloquen en una zona equivocada.
+  // ============================================================
+  // EXTERIOR (relleno)
+  { id: 'barometro', emoji: '📈', nombre: 'Barómetro aneroide', tipo: 'Sensor presión atmosférica', zona: 'exterior', precio: 45, opcional: true },
+  // ENVOLVENTE (relleno)
+  { id: 'humedad_muro', emoji: '🧱', nombre: 'Sensor de humedad de muro', tipo: 'Sensor humedad superficie', zona: 'envolvente', precio: 60, opcional: true },
+  // INTERIOR (relleno)
+  { id: 'sensor_ruido', emoji: '🔊', nombre: 'Sensor de ruido', tipo: 'Acústica interior', zona: 'interior', precio: 110, opcional: true },
+  { id: 'sensor_apertura', emoji: '🚪', nombre: 'Sensor de apertura', tipo: 'Detección apertura', zona: 'interior', precio: 25, opcional: true },
+  { id: 'sensor_cov', emoji: '🌿', nombre: 'Sensor de COV', tipo: 'Calidad aire interior', zona: 'interior', precio: 140, opcional: true },
+  // ELÉCTRICO (relleno)
+  { id: 'medidor_trifasico', emoji: '⚡', nombre: 'Medidor trifásico DIN', tipo: 'Medida tensión y corriente', zona: 'electrico', precio: 160, opcional: true },
+  { id: 'rele_cargas', emoji: '🔌', nombre: 'Relé de cargas DIN', tipo: 'Actuador conmutador', zona: 'electrico', precio: 70, opcional: true },
+  // HIDRÁULICO (relleno)
+  { id: 'detector_fugas', emoji: '💦', nombre: 'Detector de fugas ultrasónico', tipo: 'Detección fugas de agua', zona: 'hidraulico', precio: 480, opcional: true },
+  // TÉRMICO (relleno)
+  { id: 'presion_caldera', emoji: '🎚️', nombre: 'Sensor de presión de caldera', tipo: 'Medida presión (bar)', zona: 'termico', precio: 75, opcional: true },
+  // CONTROL (relleno)
+  { id: 'actuador_dali', emoji: '💡', nombre: 'Actuador DALI', tipo: 'Actuador regulable', zona: 'control', precio: 120, opcional: true },
+  { id: 'termostato_zona', emoji: '🌡️', nombre: 'Termostato de zona', tipo: 'Controlador de zona', zona: 'control', precio: 95, opcional: true },
+  { id: 'variador_frecuencia', emoji: '🎛️', nombre: 'Variador de frecuencia', tipo: 'Controlador industrial', zona: 'control', precio: 420, opcional: true },
+  // GATEWAY (relleno)
+  { id: 'gateway_wifi', emoji: '📶', nombre: 'Gateway Wi-Fi', tipo: 'Gateway Wi-Fi ↔ IP', zona: 'gateway', precio: 90, opcional: true },
+  { id: 'gateway_enocean', emoji: '🛰️', nombre: 'Gateway EnOcean', tipo: 'Gateway EnOcean ↔ IP', zona: 'gateway', precio: 200, opcional: true },
 ];
 
 // Nombres legibles de las zonas (sin descripción reveladora)

@@ -51,12 +51,13 @@ function colocarAparato(id, zona) {
 
   const anterior = state.colocados[id];
 
-  if (anterior) {
-    const anteriorDiv = document.querySelector(`.drop-zone[data-zona="${anterior}"] .colocado[data-id="${id}"]`);
-    if (anteriorDiv) anteriorDiv.remove();
-    // Al sacarle un aparato, la zona de origen pierde su validación
-    if (anterior !== zona) desVerificarZona(anterior);
-  }
+  // Al sacarle un aparato de otra zona, esa zona pierde su validación
+  if (anterior && anterior !== zona) desVerificarZona(anterior);
+
+  // Un aparato SOLO puede estar en UNA zona: se retira de todo el DOM
+  // (evita duplicados tipo «veleta en exterior y en envolvente»)
+  // antes de crear el chip nuevo.
+  document.querySelectorAll(`.colocado[data-id="${id}"]`).forEach(el => el.remove());
 
   state.colocados[id] = zona;
 

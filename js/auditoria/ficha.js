@@ -20,6 +20,9 @@ function crearFichaVacia() {
     ahorroEstimado: '',
     coste: '',
     costeJustificacion: '',
+    costeEstimado: '',           // precio de la actuación (€) · obligatorio · tope por tarjeta
+    materiales: [],              // lista de aparatos del catálogo [{ id, cantidad }] · suma el precio sola
+    justificacionPresupuesto: '',
     impacto: '',
     impactoJustificacion: '',
     dificultad: '',
@@ -47,6 +50,7 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
   card.dataset.indice = indice;
 
   const completa = respuestas.validado;
+  const topePresupuesto = (state.auditoria.config && state.auditoria.config.presupuestoPorTarjeta) || 0;
 
   card.innerHTML = `
     <div class="tarjeta-cabecera" onclick="toggleTarjeta(${indice})">
@@ -186,6 +190,27 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
       <!-- BLOQUE 8: Coste / Impacto / Dificultad -->
       <div class="ficha-bloque">
         <div class="ficha-titulo"><span class="num">8</span> Valoración de la actuación</div>
+
+        <div class="ficha-campo">
+          <label>Aparatos que vas a instalar <span class="tope">catálogo del módulo Colocar aparatos</span></label>
+          <div class="materiales-picker">
+            <select id="sel-material-${indice}">${opcionesCatalogoHTML()}</select>
+            <button type="button" class="btn-mini" onclick="anadirMaterial(${indice})">➕ Añadir</button>
+          </div>
+          <div class="materiales-lista" id="materiales-lista-${indice}">${materialesListaHTML(indice)}</div>
+          <div class="materiales-total" id="materiales-total-${indice}">${materialesTotalHTML(indice)}</div>
+        </div>
+
+        <div class="ficha-campo">
+          <label>Precio de la actuación que propones (€) <span class="obligatorio">obligatorio</span>
+            <span class="tope">tope de esta tarjeta: ${formatearNumero(topePresupuesto, 0)} €</span>
+          </label>
+          <input type="number" min="0" step="10" placeholder="Ej: 450" id="precio-actuacion-${indice}"
+            value="${respuestas.costeEstimado !== '' && respuestas.costeEstimado !== undefined ? respuestas.costeEstimado : ''}"
+            oninput="actualizarCosteTarjeta(${indice}, this.value)">
+          <div class="presupuesto-aviso ${avisoPresupuestoEstado(indice).cls}" id="presupuesto-aviso-${indice}">${avisoPresupuestoEstado(indice).texto}</div>
+          <p class="presupuesto-ayuda">Al añadir aparatos de la lista el precio se rellena solo con su suma; puedes sobrescribirlo a mano si ajustas algo, siempre que encaje con el catálogo (±20 %). Justifícalo abajo.</p>
+        </div>
 
         <div class="ficha-campo">
           <label>Coste</label>
@@ -400,16 +425,19 @@ function validarFicha(indice) {
   if (res) {
     res.className = 'calculo-resultado show ok';
     if (esProfe) {
-      // Redacción clara: la parte auto-calificable y la parte manual se separan.
-      // (Antes decía "40 de 80 · 50 %", que confundía: los 40 manuales
-      //  nunca se otorgan automáticamente.)
+      // La nota de la tarjeta es SOLO automática: no se pone nota a mano.
+      // (Los campos abiertos no puntúan: se revisan con la solución en el .md.)
+      const autoEn5 = redondear(puntuacion.aciertosAuto / puntuacion.autoMax * 5, 2);
+      const pond = redondear(autoEn5 / 5 * 1.25, 2);
       res.innerHTML = `
         <strong>Ficha ${indice + 1} validada.</strong><br>
         Aciertos automáticos: <strong>${puntuacion.aciertosAuto} / ${puntuacion.autoMax}</strong>
-        (${puntuacion.porcentajeAuto} % de la parte auto).<br>
-        Corrección manual pendiente: <strong>${puntuacion.pendienteManual}</strong> puntos (campos abiertos).<br>
-        Nota final posible: <strong>${puntuacion.aciertosAuto + puntuacion.pendienteManual} / ${puntuacion.total}</strong><br>
-        En la nota del examen esta tarjeta vale <strong>5 puntos</strong> (2 tarjetas = 10)
+        (${puntuacion.porcentajeAuto} % de la parte auto) → <strong>${autoEn5} / 5</strong>.<br>
+        Nota de la tarjeta = <strong>solo automática</strong>: ${autoEn5} / 5 × 1,25 =
+        <strong>${pond} de 1,25 ponderados</strong>.<br>
+        Campos abiertos (no puntúan): <strong>${puntuacion.pendienteManual}</strong> puntos →
+        se revisan con la solución en el informe .md.<br>
+        En la nota del examen esta tarjeta vale <strong>5 puntos</strong> (2 tarjetas = 10 → 2,5 ponderados)
       `;
     } else {
       res.innerHTML = `

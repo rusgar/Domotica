@@ -10,8 +10,15 @@ function construirInformeJSON(nombre, email, iniciales) {
   // Calcular puntuación automática global
   const puntGlobal = calcularPuntuacionEjercicio(fichas, tarjetas, variaciones);
 
-  // Calcular presupuesto
+  // Calcular presupuesto (tope POR TARJETA, obligatorio en el apartado 8)
+  const tope = config?.presupuestoPorTarjeta || 0;
   const totalPresupuesto = fichas.reduce((s, f) => s + (parseFloat(f.costeEstimado) || 0), 0);
+  const rellenas = fichas.filter(f => {
+    const v = f.costeEstimado;
+    const c = parseFloat(v);
+    return v !== '' && v !== null && v !== undefined && !isNaN(c) && c > 0;
+  }).length;
+  const todasRellenas = rellenas === fichas.length;
 
   return {
     meta: {
@@ -21,7 +28,10 @@ function construirInformeJSON(nombre, email, iniciales) {
       ejercicio,
       ejercicioNombre: config?.nombre || '',
       duracionSegundos: state.cronometro.segundos,
-      duracionLegible: formatearTiempo(state.cronometro.segundos)
+      duracionLegible: formatearTiempo(state.cronometro.segundos),
+      // Tiempo SOLO del ejercicio: sobre él se aplica la penalización (>60 min → −0,25)
+      duracionEjercicioSegundos: state.auditoria.segundos || 0,
+      duracionEjercicioLegible: formatearTiempo(state.auditoria.segundos || 0)
     },
     alumno: {
       nombre: nombre.trim(),
@@ -32,16 +42,19 @@ function construirInformeJSON(nombre, email, iniciales) {
       aciertosAuto: puntGlobal.aciertosAuto,
       pendienteManual: puntGlobal.pendienteManual,
       totalMaximo: puntGlobal.totalMaximo,
-      // El alumno NO se puntúa: la nota la da el profesor tras verificar con soluciones/
+      // El alumno NO ve nota en el JSON: la puntuación automática solo la
+      // calcula y muestra el panel del profesor (Auto/5 × 1,25 por tarjeta).
       notaMaxima: ESCALA_AUDITORIA.puntosPorEjercicio,        // 10 por ejercicio
       puntosPorTarjeta: ESCALA_AUDITORIA.puntosPorTarjeta,    // 5
       notaTotalAuditoria: ESCALA_AUDITORIA.puntosTotales      // 10
     },
     presupuesto: {
-      maximo: config?.presupuesto || 0,
+      maximo: tope * fichas.length,          // total de las 2 tarjetas (1.500 €)
+      porTarjeta: tope,                      // 750 € por tarjeta
+      rellenas,
       total: redondear(totalPresupuesto, 2),
-      dentro: totalPresupuesto <= (config?.presupuesto || 0),
-      restante: redondear((config?.presupuesto || 0) - totalPresupuesto, 2)
+      dentro: todasRellenas && totalPresupuesto <= (tope * fichas.length),
+      restante: redondear((tope * fichas.length) - totalPresupuesto, 2)
     },
     tarjetas: tarjetas.map((t, i) => ({
       indice: i + 1,
@@ -101,6 +114,30 @@ async function generarInforme() {
 
   if (!/^[A-ZÑ]{2,4}$/.test(iniciales)) {
     err.textContent = '❌ Introduce tus iniciales (2 a 4 letras).';
+    err.classList.add('show');
+    return;
+  }
+
+  // Presupuesto: precio obligatorio en el apartado 8 y dentro del tope de cada tarjeta
+  const cfgPres = state.auditoria.config || {};
+  const topeTarjeta = cfgPres.presupuestoPorTarjeta || 0;
+  const problemasPres = [];
+  (state.auditoria.fichas || []).forEach((f, i) => {
+    const v = f.costeEstimado;
+    const c = parseFloat(v);
+    const relleno = v !== '' && v !== null && v !== undefined && !isNaN(c) && c > 0;
+    const nombreTarjeta = ((state.auditoria.tarjetas || [])[i] || {}).nombre || `Tarjeta ${i + 1}`;
+    if (!relleno) {
+      problemasPres.push(`· ${nombreTarjeta}: falta el precio de la actuación (apartado 8, obligatorio).`);
+    } else if (c > topeTarjeta) {
+      problemasPres.push(`· ${nombreTarjeta}: ${formatearNumero(c, 0)} € supera el tope de ${topeTarjeta} € de esta tarjeta.`);
+    }
+  });
+
+  if (problemasPres.length) {
+    err.innerHTML = '❌ <strong>Revisa el presupuesto antes de entregar:</strong><br>' +
+      problemasPres.join('<br>') +
+      '<br><br>El precio va en el <strong>apartado 8</strong> de cada tarjeta.';
     err.classList.add('show');
     return;
   }

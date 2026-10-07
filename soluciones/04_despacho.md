@@ -1,7 +1,7 @@
 # Solución modelo · Tarjeta 4 — DESPACHO 💼
 
-> **Módulo:** Auditoría por zonas · **Ejercicio 6** (3 tarjetas) y **Global** (2 tarjetas)
-> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **1.500 €**
+> **Módulo:** Auditoría por zonas · **Ejercicio Auditoría** (2 tarjetas aleatorias de las 10 zonas)
+> **Parámetros del ejercicio:** precio kWh **0,18 €** · 20 días/mes · presupuesto **750 € por tarjeta** (1.500 € en las 2) · tiempo límite **60 min** (pasarlo resta **0,25** sobre 2,5)
 > Los datos numéricos son aleatorios: en el apartado 7 tienes el resultado de **cada variación**.
 > **Aceptación del cálculo:** ±0,01 absoluto o 2 % de margen.
 
@@ -80,6 +80,8 @@
 | **Dato encontrado** | ITC-BT-51 regula los sistemas de apagado automático y gestión de equipos. |
 | **Aplicación a la tarjeta** | Ampara el apagado programado de los puestos manteniendo la continuidad del equipo que la necesita (servidor). |
 | **Fuente técnica** | **AFME** — guías técnicas sobre instalaciones eléctricas y domótica. |
+
+> **Fuente en Asturias:** también es válida **FAEN – Fundación Asturiana de la Energía** (agencia energética del Principado de Asturias) si localizas el dato allí; si no existe fuente asturiana para ese dato, se admite la nacional **IDAE** (Madrid).
 | **Aplicación** | Criterios para elegir regletas con horario y estimar consumo en standby. |
 
 > Alternativa del desplegable: **CTE DB-HE** (HE2 · Rendimiento de las instalaciones).
@@ -88,7 +90,7 @@
 
 ## Puntuación esperada de la ficha
 
-> **Escala que cuenta:** la tabla de abajo es el detalle interno de la ficha (100 = 60 automático + 40 manual), pero la nota real es **2,5 puntos por tarjeta**: cada ejercicio reparte 2 tarjetas → **5 puntos por ejercicio**, y los 2 ejercicios asignados suman **10 puntos** en total. El profesor convierte el detalle en 2,5 proporcionalmente al verificarlo con este mismo archivo.
+> **Escala que cuenta:** la tabla de abajo es el **detalle interno de la ficha** (60 automáticos + 40 de campos abiertos, que **no puntúan**). La nota de la tarjeta sale SOLO de lo automático: **aciertos / máximo automático × 5 = nota (0-5)** → **× 1,25 = ponderación** (máx. 1,25 por tarjeta). El ejercicio reparte 2 tarjetas → **10 puntos = 2,5 ponderados**. Este archivo sirve para comprobar que la respuesta se parece al **modelo exacto o parecido**.
 
 
 | Bloque | Puntos | Tipo |
@@ -98,9 +100,11 @@
 | 4 · DOIH | 20 | Automática |
 | 7 · Cálculo | 20 | Automática |
 | 3, 5, 6, 8, 9 · campos abiertos | 40 | Manual (profesor) |
-| **Total** | **100** | 60 auto + 40 manual |
+| **Total** | **100** | 60 auto + 40 campos abiertos (no puntúan) |
 
-## Presupuesto (apartado final del ejercicio)
+## Presupuesto (apartado 8 · obligatorio)
 
 **Actuación prioritaria sugerida:** regletas inteligentes con horario para los puestos apagables — **≈ 150 €** (rango 40–150 €/puesto).
 **Justificación:** recuperación directa de 15–26 kWh/mes con coste mínimo y sin obra; la programación por software (0–100 €) puede complementarlo.
+
+> **Precios de referencia:** usa los precios del catálogo del módulo **Colocar aparatos** (p. ej. sensor de presencia 30 € · sensor de CO₂ 90 € · LDR 2 € · actuador de luz 70 € · cámara termográfica 350 €). La cifra de arriba es una estimación de mercado: en el **apartado 8** elige en la lista los aparatos que vas a instalar (se repiten con cantidades y **el precio se suma solo**) o escribe el importe a mano; debe encajar con esa lista o con un artículo del catálogo (±20 %), ser **obligatorio** y **no pasarte de 750 € en esta tarjeta** (1.500 € en total). Un precio vacío bloquea la entrega.

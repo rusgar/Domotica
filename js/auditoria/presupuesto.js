@@ -83,3 +83,88 @@ const COSTES_TIPICOS = {
 function obtenerCosteTipico(tipo) {
   return COSTES_TIPICOS[tipo] || { min: 0, max: 0, unidad: '' };
 }
+
+// ============================================================
+// COHERENCIA CON EL CATÁLOGO DE APARATOS (js/datos.js)
+// El precio que pone el alumno debe encajar con un artículo real
+// del catálogo del módulo Colocar aparatos (±20 %).
+// ============================================================
+function articuloCatalogoCercano(precio) {
+  const p = parseFloat(precio);
+  if (!p || p <= 0) return null;
+  if (typeof APARATOS === 'undefined' || !Array.isArray(APARATOS)) return null;
+
+  let mejor = null;
+  let mejorDif = Infinity;
+  APARATOS.forEach(a => {
+    const ref = parseFloat(a && a.precio);
+    if (!ref || ref <= 0) return;
+    const dif = Math.abs(p - ref);
+    if (dif < mejorDif) { mejorDif = dif; mejor = a; }
+  });
+  return mejor ? { articulo: mejor, dif: mejorDif } : null;
+}
+
+function precioCoherenteCatalogo(precio, materiales) {
+  const p = parseFloat(precio);
+  if (!p || p <= 0) return false;
+
+  // Con lista de aparatos: el precio debe cuadrar con la suma de la lista
+  const mats = Array.isArray(materiales) ? materiales : null;
+  if (mats && mats.length) {
+    const suma = sumaMateriales({ materiales: mats });
+    return suma > 0 && Math.abs(p - suma) <= 1;
+  }
+
+  // Sin lista: el importe debe encajar con un artículo del catálogo (±20 %)
+  const c = articuloCatalogoCercano(precio);
+  if (!c) return false;
+  if (typeof APARATOS === 'undefined') return true;
+  return c.dif <= c.articulo.precio * 0.2;   // ±20 %
+}
+
+// ============================================================
+// LISTA DE APARATOS DEL APARTADO 8 (desplegable del catálogo)
+// ============================================================
+const ZONAS_CATALOGO = [
+  ['exterior', 'Exterior'],
+  ['envolvente', 'Envolvente'],
+  ['interior', 'Interior'],
+  ['electrico', 'Eléctrico'],
+  ['hidraulico', 'Hidráulico'],
+  ['termico', 'Térmico'],
+  ['control', 'Control y actuadores'],
+  ['gateway', 'Gateway / IoT']
+];
+
+// Catálogo APARATOS agrupado por tipo para el desplegable del apartado 8
+function catalogoAgrupado() {
+  if (typeof APARATOS === 'undefined' || !Array.isArray(APARATOS)) return [];
+
+  const grupos = [];
+  ZONAS_CATALOGO.forEach(([zona, nombre]) => {
+    const items = APARATOS.filter(a => a.zona === zona);
+    if (items.length) grupos.push({ zona, nombre, items });
+  });
+  // Zonas nuevas que puedan aparecer en el catálogo
+  APARATOS.forEach(a => {
+    if (grupos.some(g => g.zona === a.zona)) return;
+    const items = APARATOS.filter(x => x.zona === a.zona);
+    grupos.push({ zona: a.zona, nombre: String(a.zona || 'Otros'), items });
+  });
+  return grupos;
+}
+
+function materialesDeFicha(ficha) {
+  return (ficha && Array.isArray(ficha.materiales)) ? ficha.materiales : [];
+}
+
+// Suma de la lista de aparatos de la tarjeta (precio catálogo × cantidad)
+function sumaMateriales(ficha) {
+  if (typeof APARATOS === 'undefined' || !Array.isArray(APARATOS)) return 0;
+  return materialesDeFicha(ficha).reduce((s, m) => {
+    const ap = APARATOS.find(a => a.id === m.id);
+    if (!ap) return s;
+    return s + (parseFloat(ap.precio) || 0) * (parseInt(m.cantidad, 10) || 0);
+  }, 0);
+}

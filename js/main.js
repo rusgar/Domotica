@@ -47,6 +47,7 @@ document.addEventListener('keydown', e => {
     const panelResultados = document.getElementById('panelResultados');
     if (modalPregunta?.classList.contains('show')) cerrarPregunta();
     if (modalInforme?.classList.contains('show')) cerrarModalInforme();
+    if (document.getElementById('modalDecision')?.classList.contains('show')) cerrarModalDecision();
     if (panelResultados?.classList.contains('show')) cerrarPanelResultados();
   }
 });

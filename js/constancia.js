@@ -1,7 +1,7 @@
 /* ============================================================
    CONSTANCIAS (imágenes PNG) Y JSON CON INICIALES
    Tarjetas resumen dibujadas con <canvas> (sin librerías).
-   · Colocar aparatos → "TODO CORRECTO" + tiempo
+   · Colocar aparatos → "EJERCICIO TERMINADO" + tiempo
    · Auditoría        → "TODAS LAS FICHAS VALIDADAS" + tiempo
    El alumno descarga la imagen y la manda al profesor.
    Las notas NO aparecen en la imagen (solo las ve el profesor).
@@ -151,9 +151,9 @@ function descargarConstanciaColocar() {
 
   const canvas = dibujarConstancia({
     titulo: 'Módulo: Colocar aparatos',
-    estado: 'TODO CORRECTO',
-    detalle: `Has colocado los ${APARATOS.length} aparatos en su zona correcta`,
-    tiempo: formatearTiempo(state.cronometro.segundos),
+    estado: 'EJERCICIO TERMINADO',
+    detalle: `Has dado por buenas las ${zonasPuntuadas().length} zonas del ejercicio`,
+    tiempo: formatearTiempo(state.colocar.segundos),
     iniciales: iniciales,
     fecha: fechaLegible()
   });
@@ -168,23 +168,43 @@ function descargarJSONColocar() {
   const iniciales = pedirIniciales();
   if (!iniciales) return;
 
+  // Aciertos: aparatos obligatorios bien colocados (viven con el tablero)
+  const obligatorios = aparatosObligatorios();
   let aciertos = 0;
-  Object.keys(state.zonasVerificadas).forEach(zonaId => {
-    if (state.zonasVerificadas[zonaId]) aciertos += aparatosDeZona(zonaId).length;
+  obligatorios.forEach(a => { if (state.colocados[a.id] === a.zona) aciertos++; });
+
+  // Puntuación parcial por zona: 8 zonas × 0,125 = 1,0
+  // (cada aparato vale 0,125 / nº de aparatos de su zona)
+  const zonas = {};
+  zonasPuntuadas().forEach(z => {
+    const p = puntuacionZona(z);
+    zonas[z] = { ok: p.ok, total: p.total, puntos: p.puntos };
   });
+  const puntos = puntuacionTotalColocar();          // 0-1
+  const c = (typeof ESCALA_COLOCAR !== 'undefined') ? ESCALA_COLOCAR : { puntos: 10 };
 
   const json = {
     tipo: 'colocar',
-    version: '1.0',
+    version: '2.0',
     fecha: new Date().toISOString(),
     fechaLegible: fechaLegible(),
-    iniciales: iniciales,
+    iniciales: iniciales.toUpperCase(),
+    // Tiempo SOLO del ejercicio (el reloj de sesión no cuenta para la penalización)
+    tiempoEjercicioSegundos: state.colocar.segundos,
+    tiempoEjercicioLegible: formatearTiempo(state.colocar.segundos),
     tiempoSegundos: state.cronometro.segundos,
     tiempoLegible: formatearTiempo(state.cronometro.segundos),
     aciertos: aciertos,
-    total: APARATOS.length,
-    todoCorrecto: aciertos === APARATOS.length,
-    zonasVerificadas: state.zonasVerificadas,
+    total: obligatorios.length,
+    totalCatalogo: APARATOS.length,
+    aparatosOpcionales: APARATOS.filter(a => a.opcional).length,
+    // Puntuación automática (la única que cuenta)
+    zonas: zonas,
+    puntos: puntos,                                 // 0-1 (8 × 0,125 = 1,0)
+    puntosEjercicio: puntos * c.puntos,             // 0-10
+    todoCorrecto: aciertos === obligatorios.length,
+    zonasVerificadas: state.zonasVerificadas,       // ✅ perfectas
+    zonasTerminadas: state.zonasTerminadas,         // 📌 aceptadas con el pop-up
     examenActivo: state.examen.activo
   };
 
