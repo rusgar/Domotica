@@ -18,13 +18,17 @@ const MOODLE = {
 };
 
 // Escalación de la auditoría:
-// 2 ejercicios asignados (Ejercicio 6 + Global), 5 puntos cada uno = 10 en total.
-// Cada ejercicio reparte 2 tarjetas aleatorias → 2,5 puntos por tarjeta.
+// Un solo ejercicio (Ejercicio 6) con 2 tarjetas aleatorias de las 6 zonas.
+// Cada tarjeta vale 5 puntos → 10 puntos en total.
+// Ponderación sobre la nota final del examen:
+//   Colocar aparatos = 1,5 · Auditoría = 2,5 (10 pts → 2,5).
 const ESCALA_AUDITORIA = {
-  ejerciciosAsignados: ['6', 'global'],
-  puntosPorEjercicio: 5,
-  puntosPorTarjeta: 2.5,
-  puntosTotales: 10
+  ejerciciosAsignados: ['6'],
+  puntosPorTarjeta: 5,
+  puntosPorEjercicio: 10,   // 2 tarjetas × 5
+  puntosTotales: 10,
+  ponderadoColocar: 1.5,
+  ponderadoAuditoria: 2.5
 };
 
 // Configuración del módulo de auditoría

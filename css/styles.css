@@ -70,6 +70,7 @@ header {
   display: flex; justify-content: space-between;
   align-items: center; margin-bottom: 20px;
   padding: 15px 25px;
+  padding-right: 205px; /* hueco para el cronÃ³metro fijo */
   background: rgba(30, 41, 59, 0.7);
   border-radius: 16px; border: 1px solid #334155;
   flex-wrap: wrap; gap: 12px;
@@ -82,16 +83,23 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 }
 
 .timer-box {
+  /* Fijo siempre a la vista durante todo el examen, y mÃ¡s grande
+     para que el alumno no tenga que buscar cuÃ¡nto tiempo lleva */
+  position: fixed;
+  top: 22px;
+  right: 24px;
+  z-index: 900;
   background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 6px 14px;
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  padding: 8px 18px;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: 800;
+  font-size: 1.75rem;
   color: #fbbf24;
-  min-width: 90px;
+  min-width: 134px;
   text-align: center;
+  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.6);
 }
 .timer-box.urgente { color: #f87171; animation: pulse 1s infinite; }
 @keyframes pulse { 50% { opacity: 0.6; } }
@@ -280,6 +288,10 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
 }
 @media (max-width: 700px) { .fila-zonas { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .timer-box { top: 14px; right: 14px; font-size: 1.3rem; min-width: 112px; padding: 6px 12px; }
+  header { padding-right: 150px; }
+}
 
 /* Colores por zona */
 .zona-exterior   { border-left: 4px solid #f59e0b; }
@@ -538,7 +550,7 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 .victoria-acciones .btn-json:hover { background: #9333ea; }
 
 /* ============================================================
-   PANEL DE PROFESOR · RESULTADOS
+   PANEL DE PROFESOR ï¿½ RESULTADOS
    ============================================================ */
 .panel-profesor { max-width: 980px; max-height: 90vh; overflow-y: auto; }
 
@@ -585,7 +597,7 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   color: #64748b; font-size: 0.9rem;
 }
 
-/* Botón de informe .md en el panel del profesor */
+/* Botï¿½n de informe .md en el panel del profesor */
 .btn-md {
   background: #22c55e; color: #0f172a;
   padding: 5px 10px; border: none; border-radius: 6px;
@@ -605,7 +617,7 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   color: #94a3b8; margin-top: 4px; font-weight: 400;
 }
 
-/* Aviso de puntuación en la pantalla de inicio de auditoría */
+/* Aviso de puntuaciï¿½n en la pantalla de inicio de auditorï¿½a */
 .aviso-nota {
   margin-top: 18px; padding: 14px 16px;
   background: rgba(56,189,248,0.08);

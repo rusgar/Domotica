@@ -2,12 +2,13 @@
    PANEL DE PROFESOR · Resultados de la clase
    · Se abre con 📊 Resultados (solo visible para el profe)
    · Pide la contraseña de CREDENCIALES_PROFE
-   · Carga los JSON subidos por los alumnos a Moodle
-     (Ejercicio 6 + Global → 5 + 5 = 10 puntos)
-   · El alumno NO se puntúa: puntuación automática de sus
-     respuestas + nota del profesor (0-5 por ejercicio)
-   · Botón ⬇ .md por fila: JSON convertido a Markdown CON la
-     solución modelo incrustada para verificarla
+   · Carga los JSON descargados de Moodle (Ejercicio 6 →
+     2 tarjetas de las 6 · 5 pts/tarjeta = 10 pts)
+   · Una fila POR TARJETA: puntuación automática + nota del
+     profesor (0-5 por tarjeta, tras verificar con la rúbrica)
+   · 10 pts = 2,5 ponderados (Colocar aparatos = 1,5)
+   · Botón ⬇ .md por JSON: convertido a Markdown CON la
+     solución/rúbrica incrustada para verificarla
    ============================================================ */
 
 const CLAVE_NOTAS_MANUALES = 'dashboard_notas_manuales';
@@ -20,18 +21,15 @@ const SOLUCIONES_POR_TARJETA = {
   'TALLER': 'soluciones/03_taller.md',
   'DESPACHO': 'soluciones/04_despacho.md',
   'BIBLIOTECA': 'soluciones/05_biblioteca.md',
-  'GIMNASIO': 'soluciones/06_gimnasio.md',
-  'VESTÍBULO': 'soluciones/07_vestibulo.md',
-  'COMEDOR / CAFETERÍA': 'soluciones/08_comedor.md',
-  'ASEO': 'soluciones/09_aseo.md',
-  'SALÓN DE ACTOS': 'soluciones/10_salon_de_actos.md'
+  'GIMNASIO': 'soluciones/06_gimnasio.md'
 };
 
 let panelDesbloqueado = false;
 let panelRegistros = [];
 
 const escala = () => (typeof ESCALA_AUDITORIA !== 'undefined' ? ESCALA_AUDITORIA : {
-  ejerciciosAsignados: ['6', 'global'], puntosPorEjercicio: 5, puntosPorTarjeta: 2.5, puntosTotales: 10
+  ejerciciosAsignados: ['6'], puntosPorTarjeta: 5, puntosPorEjercicio: 10, puntosTotales: 10,
+  ponderadoColocar: 1.5, ponderadoAuditoria: 2.5
 });
 
 const red2 = n => Math.round(n * 100) / 100;
@@ -92,6 +90,31 @@ function esc(texto) {
     .replace(/"/g, '&quot;');
 }
 
+// Puntuación automática de UNA tarjeta convertida a la escala 0-5
+function autoDeTarjeta(t) {
+  const e = escala();
+  let p = t && t.ficha ? t.ficha.puntuacion : null;
+
+  if ((!p || typeof p.aciertosAuto !== 'number') && typeof calcularPuntuacionFicha === 'function') {
+    const tarjetaObj = (typeof TARJETAS !== 'undefined') ? TARJETAS.find(x => x.id === (t && t.tarjetaId)) : null;
+    if (tarjetaObj && t && t.variacion) {
+      try { p = calcularPuntuacionFicha(t.ficha || {}, tarjetaObj, t.variacion); } catch (err) { p = null; }
+    }
+  }
+
+  const autoMax = (p && typeof p.autoMax === 'number') ? p.autoMax : 0;
+  const aciertos = (p && typeof p.aciertosAuto === 'number') ? p.aciertosAuto
+    : ((p && typeof p.obtenido === 'number') ? p.obtenido : 0);
+
+  return {
+    aciertosAuto: aciertos,
+    autoMax: autoMax,
+    autoEscala: autoMax > 0 ? red2(aciertos / autoMax * e.puntosPorTarjeta) : 0
+  };
+}
+
+// Devuelve UNA LISTA de registros (una fila por tarjeta de auditoría,
+// una sola fila para el módulo Colocar aparatos)
 function normalizarRegistro(json, nombreFichero) {
   const e = escala();
 
@@ -99,9 +122,11 @@ function normalizarRegistro(json, nombreFichero) {
   if (json && json.tipo === 'colocar') {
     const total = json.total || 0;
     const aciertos = typeof json.aciertos === 'number' ? json.aciertos : 0;
-    return {
+    return [{
       modulo: 'Colocar',
       ejercicio: 'Colocar aparatos',
+      tarjeta: '',
+      ordenTarjeta: 0,
       iniciales: (json.iniciales || '').toUpperCase(),
       nombre: '',
       fecha: json.fechaLegible || json.fecha || '',
@@ -110,41 +135,45 @@ function normalizarRegistro(json, nombreFichero) {
       autoMax: total,
       autoEscala: null,       // fuera de la escala 0-5
       notaMax: 0,
+      puedeMd: true,
       json: json
-    };
+    }];
   }
 
-  // 2) Informe de Auditoría
-  if (json && json.alumno && json.puntuacion) {
-    const p = json.puntuacion;
-    const autoMax = (p.totalMaximo || 0) - (p.pendienteManual || 0);
-    const autoEscala = autoMax > 0 ? red2((p.aciertosAuto || 0) / autoMax * e.puntosPorEjercicio) : 0;
-    const ejId = (json.meta && json.meta.ejercicio) ? String(json.meta.ejercicio) : '';
-    const ejNombre = (json.meta && json.meta.ejercicioNombre) || '';
-    const etiqueta = ejId
-      ? `Ejercicio ${ejId === 'global' ? 'Global' : ejId}${ejNombre ? ' · ' + ejNombre : ''}`
-      : (ejNombre || 'Auditoría');
+  // 2) Informe de Auditoría → una fila por tarjeta (5 pts cada una)
+  if (json && json.alumno && json.puntuacion && Array.isArray(json.tarjetas)) {
+    if (json.tarjetas.length === 0) return null;
 
-    return {
-      modulo: 'Auditoría',
-      ejercicio: etiqueta,
-      iniciales: (json.alumno.iniciales || '').toUpperCase(),
-      nombre: json.alumno.nombre || '',
-      fecha: (json.meta && json.meta.fechaLegible) || '',
-      tiempo: (json.meta && json.meta.duracionLegible) || '',
-      auto: typeof p.aciertosAuto === 'number' ? p.aciertosAuto : 0,
-      autoMax: autoMax,
-      autoEscala: autoEscala,                     // 0 a 5
-      notaMax: p.notaMaxima || e.puntosPorEjercicio,
-      json: json
-    };
+    const ejId = (json.meta && json.meta.ejercicio) ? String(json.meta.ejercicio) : '';
+    const etiqueta = ejId === '6' ? 'Ejercicio 6' : (ejId ? `Ejercicio ${ejId}` : 'Auditoría');
+    const totalTarjetas = json.tarjetas.length;
+
+    return json.tarjetas.map((t, i) => {
+      const auto = autoDeTarjeta(t);
+      return {
+        modulo: 'Auditoría',
+        ejercicio: etiqueta,
+        tarjeta: `${t.tarjetaNombre || 'Tarjeta'} (${i + 1}/${totalTarjetas})`,
+        ordenTarjeta: i,
+        iniciales: (json.alumno.iniciales || '').toUpperCase(),
+        nombre: json.alumno.nombre || '',
+        fecha: (json.meta && json.meta.fechaLegible) || '',
+        tiempo: (json.meta && json.meta.duracionLegible) || '',
+        auto: auto.aciertosAuto,
+        autoMax: auto.autoMax,
+        autoEscala: auto.autoEscala,                 // 0 a 5
+        notaMax: e.puntosPorTarjeta,                 // 5 por tarjeta
+        puedeMd: i === 0,                            // el .md se descarga una sola vez
+        json: json
+      };
+    });
   }
 
   return null;
 }
 
 function claveRegistro(reg, nombreFichero) {
-  return `${reg.modulo}|${reg.ejercicio}|${reg.iniciales}|${reg.fecha}|${nombreFichero}`;
+  return `${reg.modulo}|${reg.ejercicio}|${reg.tarjeta || ''}|${reg.iniciales}|${reg.fecha}|${nombreFichero}`;
 }
 
 function cargarResultadosPanel(files) {
@@ -155,18 +184,19 @@ function cargarResultadosPanel(files) {
     f.text().then(txt => {
       try {
         const json = JSON.parse(txt);
-        const reg = normalizarRegistro(json, f.name);
-        if (!reg) {
+        const regs = normalizarRegistro(json, f.name);
+        if (!regs || regs.length === 0) {
           errores.push(`${f.name}: formato no reconocido`);
           return;
         }
-        const key = claveRegistro(reg, f.name);
-        if (panelRegistros.find(r => r.key === key)) return;   // ya cargado
-
-        reg.key = key;
-        reg.fichero = f.name;
-        reg.notaProfe = leerNotaProfe(key);
-        panelRegistros.push(reg);
+        regs.forEach(reg => {
+          const key = claveRegistro(reg, f.name);
+          if (panelRegistros.find(r => r.key === key)) return;   // ya cargado
+          reg.key = key;
+          reg.fichero = f.name;
+          reg.notaProfe = leerNotaProfe(key);
+          panelRegistros.push(reg);
+        });
       } catch (e) {
         errores.push(`${f.name}: JSON inválido`);
       }
@@ -174,6 +204,10 @@ function cargarResultadosPanel(files) {
   );
 
   Promise.all(pendientes).then(() => {
+    panelRegistros.sort((a, b) =>
+      (a.iniciales || '').localeCompare(b.iniciales || '') ||
+      (a.modulo || '').localeCompare(b.modulo || '') ||
+      (a.ordenTarjeta || 0) - (b.ordenTarjeta || 0));
     renderPanel();
     document.getElementById('panelFiles').value = '';
     if (errores.length) {
@@ -265,13 +299,13 @@ function renderPanel() {
     tr.innerHTML = `
       <td><strong>${esc(reg.iniciales) || '—'}</strong></td>
       <td>${esc(reg.nombre) || '—'}</td>
-      <td>${esc(reg.ejercicio)}</td>
+      <td>${esc(reg.tarjeta) || esc(reg.ejercicio)}</td>
       <td class="panel-pequena">${esc(reg.fecha)}</td>
       <td>${esc(reg.tiempo) || '—'}</td>
       <td>${celdaAuto}</td>
       <td>${celdaProfe}</td>
       <td class="panel-nota">${final !== null ? `<strong>${final} / ${reg.notaMax}</strong>` : '—'}</td>
-      <td><button class="btn-md" onclick="descargarMarkdown(${i})">⬇ .md</button></td>
+      <td>${reg.puedeMd ? `<button class="btn-md" onclick="descargarMarkdown(${i})">⬇ .md</button>` : ''}</td>
     `;
     cuerpo.appendChild(tr);
   });
@@ -279,7 +313,7 @@ function renderPanel() {
   renderResumen(hayDatos, resumen);
 }
 
-// Resumen por alumno: total de sus ejercicios (5 + 5 = 10)
+// Resumen por alumno: sus 2 tarjetas (5 + 5 = 10 → 2,5 ponderados)
 function renderResumen(hayDatos, elResumen) {
   if (!elResumen) return;
 
@@ -291,7 +325,8 @@ function renderResumen(hayDatos, elResumen) {
     return;
   }
   if (auditoria.length === 0) {
-    elResumen.textContent = `${panelRegistros.length} resultado(s) de Colocar aparatos (fuera de la escala 0-10)`;
+    elResumen.textContent =
+      `${panelRegistros.length} resultado(s) de Colocar aparatos (pondera ${e.ponderadoColocar})`;
     return;
   }
 
@@ -301,31 +336,37 @@ function renderResumen(hayDatos, elResumen) {
     if (!grupos[id]) {
       grupos[id] = {
         iniciales: reg.iniciales, nombre: reg.nombre,
-        ejercicios: 0, max: 0, auto: 0, profe: 0, profeCompleto: true
+        tarjetas: 0, max: 0, auto: 0, profe: 0, profeCompleto: true
       };
     }
     const g = grupos[id];
-    g.ejercicios++;
+    g.tarjetas++;
     g.max += reg.notaMax;
     g.auto += reg.autoEscala || 0;
     if (typeof reg.notaProfe === 'number') g.profe += reg.notaProfe;
     else g.profeCompleto = false;
   });
 
+  const ponderar = n => red2(n / e.puntosTotales * e.ponderadoAuditoria);
+
   const lineas = Object.values(grupos).map(g => {
     const profe = g.profeCompleto
-      ? ` · Profesor: ${red2(g.profe)} / ${g.max}`
-      : ` · Profesor: ${red2(g.profe)}${g.ejercicios > 1 ? '' : ''} / ${g.max} (incompleta)`;
-    return `${g.iniciales || '?'} ${g.nombre ? '· ' + g.nombre : ''} → ${g.ejercicios} ejer. · Auto: ${red2(g.auto)}${profe}`;
+      ? `${red2(g.profe)} / ${g.max}`
+      : `${red2(g.profe)} / ${g.max} (incompleta)`;
+    const ponderado = g.profeCompleto ? ` → ${ponderar(g.profe)} de 2,5` : '';
+    return `${g.iniciales || '?'}${g.nombre ? ' · ' + g.nombre : ''} → ` +
+      `${g.tarjetas} tarjeta(s) · Auto: ${red2(g.auto)} · Profesor: ${profe}${ponderado}`;
   });
 
-  const asignados = e.ejerciciosAsignados.length;
-  const pendientes = Object.values(grupos).filter(g => g.ejercicios < asignados).length;
+  const esperadas = e.puntosTotales / e.puntosPorTarjeta;   // 2 tarjetas
+  const pendientes = Object.values(grupos).filter(g => g.tarjetas < esperadas).length;
 
   elResumen.innerHTML =
     `<strong>${Object.keys(grupos).length} alumno(s)</strong> · ` +
-    `${auditoria.length} entrega(s) · Escala ${e.puntosPorEjercicio} + ${e.puntosPorEjercicio} = ${e.puntosTotales}` +
-    (pendientes ? ` · ⚠️ ${pendientes} sin entregar los ${asignados} ejercicios` : '') +
+    `${auditoria.length} entrega(s) · ` +
+    `Escala: ${e.puntosPorTarjeta} pts/tarjeta × ${esperadas} = ${e.puntosTotales} pts ` +
+    `→ <strong>${e.ponderadoAuditoria} ponderados</strong> (Colocar aparatos: ${e.ponderadoColocar})` +
+    (pendientes ? ` · ⚠️ ${pendientes} con menos de ${esperadas} tarjetas` : '') +
     `<br>${lineas.map(l => `<div class="linea-resumen">${esc(l)}</div>`).join('')}`;
 }
 
@@ -389,7 +430,7 @@ async function descargarMarkdown(indice) {
   }
 
   const texto = generarInformeMarkdown(reg, soluciones);
-  const nombre = `informe_md_${slug(reg.iniciales || 'sin')}_${slug(reg.ejercicio)}.md`;
+  const nombre = `informe_md_${slug(reg.iniciales || 'sin')}_${slug(reg.tarjeta || reg.ejercicio)}.md`;
   descargarTexto(texto, nombre);
 }
 
@@ -401,9 +442,7 @@ function generarInformeMarkdown(reg, soluciones) {
   const json = reg.json;
   const e = escala();
   const notas = reg.notaMax > 0;
-  const final = notaFinalDe(reg);
   const esAuditoria = !!(json && json.alumno && json.tarjetas);
-  const nTarjetas = (json.tarjetas || []).length;
 
   let md = '';
 
@@ -412,28 +451,43 @@ function generarInformeMarkdown(reg, soluciones) {
   md += `| Campo | Valor |\n|---|---|\n`;
   md += `| Alumno | ${txt(reg.nombre) || '—'} |\n`;
   md += `| Iniciales | ${txt(reg.iniciales) || '—'} |\n`;
-  md += `| Grupo | ${esAuditoria ? txt(json.alumno.grupo) || '—' : '—'} |\n`;
   md += `| Ejercicio | ${txt(reg.ejercicio)} |\n`;
+  md += `| Tarjeta | ${txt(reg.tarjeta) || '—'} |\n`;
   md += `| Fecha | ${txt(reg.fecha)} |\n`;
   md += `| Tiempo | ${txt(reg.tiempo) || '—'} |\n`;
+  md += `| Email | ${esAuditoria ? txt(json.alumno.email) || '—' : '—'} |\n`;
   md += `| Archivo JSON | ${txt(reg.fichero)} |\n\n`;
 
   if (notas) {
-    md += `## Puntuación (hasta ${reg.notaMax} puntos en este ejercicio)\n\n`;
-    md += `Cada tarjeta vale **${e.puntosPorTarjeta} puntos** (${nTarjetas} tarjetas → ${reg.notaMax}).\n\n`;
-    md += `| Bloque | Puntos |\n|---|---:|\n`;
-    md += `| Automática (de las respuestas escritas) | ${reg.autoEscala} / ${reg.notaMax} |\n`;
-    md += `| **Nota del profesor (verificada con la solución)** | ${typeof reg.notaProfe === 'number' ? reg.notaProfe : '—'} / ${reg.notaMax} |\n`;
-    md += `| **Nota final** | ${final !== null ? final : '—'} / ${reg.notaMax} |\n\n`;
+    const delFichero = panelRegistros
+      .filter(r => r.notaMax > 0 && r.fichero === reg.fichero)
+      .sort((a, b) => (a.ordenTarjeta || 0) - (b.ordenTarjeta || 0));
 
-    const otros = panelRegistros.filter(r => r !== reg && r.notaMax > 0 &&
-      r.iniciales === reg.iniciales && r.nombre === reg.nombre);
-    const todos = otros.length ? [reg, ...otros] : [reg];
-    const totalMax = todos.reduce((s, r) => s + r.notaMax, 0);
-    const totalProfe = todos.reduce((s, r) => s + (typeof r.notaProfe === 'number' ? r.notaProfe : 0), 0);
-    const completo = todos.every(r => typeof r.notaProfe === 'number');
-    md += `> **Total de la auditoría (${todos.length} de ${e.ejerciciosAsignados.length} ejercicios): ` +
-          `${completo ? red2(totalProfe) : red2(totalProfe) + '?'} / ${totalMax === e.puntosTotales ? e.puntosTotales : totalMax}**\n\n`;
+    let sumAuto = 0, sumProfe = 0, sumFinal = 0, profeCompleto = true;
+    delFichero.forEach(r => {
+      const f = notaFinalDe(r);
+      sumAuto += r.autoEscala || 0;
+      if (typeof r.notaProfe === 'number') sumProfe += r.notaProfe;
+      else profeCompleto = false;
+      if (typeof f === 'number') sumFinal += f;
+    });
+
+    md += `## Puntuación (${e.puntosPorTarjeta} pts por tarjeta · ${e.puntosTotales} en total → ` +
+          `${e.ponderadoAuditoria} ponderados)\n\n`;
+    md += `| Tarjeta | Automática | Nota del profesor | Nota final |\n|---|---:|---:|---:|\n`;
+    delFichero.forEach(r => {
+      const f = notaFinalDe(r);
+      md += `| ${txt(r.tarjeta)} | ${r.autoEscala} / ${r.notaMax} | ` +
+            `${typeof r.notaProfe === 'number' ? r.notaProfe : '—'} / ${r.notaMax} | ` +
+            `${f !== null ? f : '—'} / ${r.notaMax} |\n`;
+    });
+    md += `| **Total** | **${red2(sumAuto)} / ${e.puntosTotales}** | ` +
+          `**${profeCompleto ? red2(sumProfe) : red2(sumProfe) + '?'} / ${e.puntosTotales}** | ` +
+          `**${red2(sumFinal)} / ${e.puntosTotales}** |\n\n`;
+
+    md += `> **Nota sobre el examen:** total del profesor / ${e.puntosTotales} × ` +
+          `${e.ponderadoAuditoria} = **${red2(sumProfe / e.puntosTotales * e.ponderadoAuditoria)}** ` +
+          `de 2,5 ponderados (Colocar aparatos pondera ${e.ponderadoColocar}).\n\n`;
   }
 
   if (!esAuditoria) {
@@ -444,14 +498,14 @@ function generarInformeMarkdown(reg, soluciones) {
   }
 
   // ---- Corrección
-  md += `## ✅ Verificación (comparar respuestas con la solución incrustada)\n\n`;
+  md += `## ✅ Verificación (comparar respuestas con la solución de cada tarjeta)\n\n`;
   md += `- [ ] Apartados de la ficha correctos\n`;
   md += `- [ ] Clasificación D/O/I/H correcta\n`;
   md += `- [ ] Cálculo correcto\n`;
   md += `- [ ] Medidas y verificación adecuadas\n`;
   md += `- [ ] Fuentes oficiales/técnicas citadas bien\n`;
   md += `- [ ] Presupuesto justificado\n`;
-  md += `- [ ] **Nota propuesta: ______ / ${reg.notaMax}**\n\n`;
+  md += `- [ ] **Total propuesto: ______ / ${e.puntosTotales}**\n\n`;
 
   // ---- Respuestas tarjeta a tarjeta con solución incrustada
   json.tarjetas.forEach((t, idx) => {
@@ -459,6 +513,8 @@ function generarInformeMarkdown(reg, soluciones) {
     const sol = soluciones[t.tarjetaNombre] || { ruta: SOLUCIONES_POR_TARJETA[t.tarjetaNombre] || '', texto: null };
 
     md += `---\n\n## ${idx + 1} · ${t.tarjetaNombre} (${e.puntosPorTarjeta} pts)\n\n`;
+    md += `> **Nota de esta tarjeta: ______ / ${e.puntosPorTarjeta}** ` +
+          `(comparar con la solución incrustada más abajo)\n\n`;
 
     md += `### 📝 Respuestas del alumno\n\n`;
     md += `- **Condiciones interiores:** ${txt(f.condicionesInteriores)}\n`;
@@ -538,8 +594,8 @@ function generarInformeMarkdown(reg, soluciones) {
   }
 
   md += `---\n\n*Generado desde el panel del profesor · Dashboard Domótica · ` +
-        `Escala: ${e.puntosPorTarjeta} pts/tarjeta · ${e.puntosPorEjercicio} pts/ejercicio · ` +
-        `${e.puntosTotales} pts totales*\n`;
+        `Escala: ${e.puntosPorTarjeta} pts/tarjeta · ${e.puntosTotales} pts totales → ` +
+        `${e.ponderadoAuditoria} ponderados (Colocar aparatos: ${e.ponderadoColocar})*\n`;
   return md;
 }
 

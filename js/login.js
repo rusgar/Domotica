@@ -95,11 +95,6 @@ function iniciarDashboard() {
 
   // Estado inicial de los botones «✓ Validar» de cada zona
   actualizarBotonesValidar();
-
-  // Inicializar bloque de carpeta de resultados (si aplica)
-  if (typeof inicializarBotonCarpeta === 'function') {
-    inicializarBotonCarpeta();
-  }
 }
 
 function cerrarSesion() {
@@ -158,7 +153,6 @@ function cerrarSesion() {
   document.getElementById('modalInforme').classList.remove('show');
   document.getElementById('informeNombre').value = '';
   document.getElementById('informeIniciales').value = '';
-  document.getElementById('informeGrupo').value = '';
   document.getElementById('informeEmail').value = '';
   document.getElementById('informeError').classList.remove('show');
 

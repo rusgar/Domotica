@@ -2,7 +2,7 @@
 
 ## 🎯 Objetivo
 
-Añadir un **segundo módulo** dentro del mismo dashboard que permita a los alumnos realizar auditorías energéticas por zonas siguiendo los ejercicios del curso (Ejercicio 6 como base, con estructura preparada para los ejercicios Global, 3 y 4).
+Añadir un **segundo módulo** dentro del mismo dashboard que permita a los alumnos realizar auditorías energéticas por zonas siguiendo los ejercicios del curso: hoy está activo **solo el Ejercicio 6**, con **2 tarjetas aleatorias de las 6 zonas disponibles**.
 
 ## 🧩 Filosofía del módulo
 
@@ -24,7 +24,7 @@ Ambas conviven en el mismo `index.html`. El módulo activo se guarda en `localSt
 ## 🎲 Aleatoriedad controlada por el profesor
 
 - El profesor (o el alumno si no hay examen activo) pulsa **"🎲 Repartir tarjetas"**.
-- Se sortean N tarjetas entre las 10 disponibles.
+- Se sortean **2 tarjetas entre las 6 disponibles** (aula, pasillo, taller, despacho, biblioteca, gimnasio).
 - Cada tarjeta tiene **3-4 variaciones** de sus datos numéricos (alumnos, luminarias, horas, temperaturas…).
 - Dos alumnos con la misma tarjeta reciben números distintos → no copian.
 
@@ -49,6 +49,13 @@ Cada tarjeta tiene 9 bloques:
 8. **Coste / Impacto / Dificultad** (radio + justificación).
 9. **Mini-investigación**: fuente oficial + fuente técnica.
 
+## 📌 Bloque de referencia fijo
+
+- El bloque **Escenario · Datos para trabajar · Foco de análisis** de la tarjeta activa está en una **barra fija arriba** (`#fichaFija`, `position: sticky`), visible durante todo el examen aunque se haga scroll.
+- La barra cambia de contenido al pulsar o enfocar otra tarjeta (`actualizarFichaFija`) y se puede plegar con el botón **▲** (`toggleFichaFija`).
+- Se oculta cuando no hay tarjetas repartidas o al reiniciar el ejercicio.
+- El **cronómetro** también está fijo (arriba a la derecha) y con letra grande para que el alumno no tenga que buscar cuánto tiempo lleva.
+
 ## 🧮 Validación mixta
 
 - **Automática**:
@@ -58,7 +65,7 @@ Cada tarjeta tiene 9 bloques:
   - Checkboxes de condiciones y factores correctos.
 - **Manual** (por el profesor):
   - Campos abiertos (problema, causa, medidas, justificaciones, fuentes).
-  - Se exportan en blanco en la rúbrica del XLSX.
+  - Se dejan en blanco en la **rúbrica del informe `.md`** (nota por tarjeta 0-5).
 
 La puntuación auto se calcula al pulsar **"✓ Validar ficha"**:
 
@@ -82,30 +89,21 @@ La puntuación auto se calcula al pulsar **"✓ Validar ficha"**:
 
 Al pulsar **"📤 Enviar informe"**:
 
-1. Se pide al alumno: nombre (obligatorio), grupo, email.
-2. Se descargan **dos archivos**:
-   - **JSON** → datos completos (para guardar / procesar).
-   - **XLSX** → informe tabulado con 5 hojas (Portada, Respuestas, Cálculos, Presupuesto, Rúbrica).
-3. **En Chrome/Edge**:
-   - Aparece el botón **"📁 Elegir carpeta resultados"**.
-   - Se pide permiso una vez y se guarda el handle en **IndexedDB**.
-   - Los siguientes informes se guardan **automáticamente** en esa carpeta, sin pasar por Descargas.
+1. Se pide al alumno: nombre (obligatorio), iniciales, email (opcional). **No** se pide grupo ni clase.
+2. Se descarga **un único archivo**:
+   - **JSON** → respuestas completas de las 2 tarjetas, puntuación automática y datos del alumno → **lo sube a la tarea de Moodle**.
+3. La puntuación **no la pone el alumno**: la calcula el ejercicio y la verifica el profesor en su panel.
+
+### Estructura del JSON (`construirInformeJSON`)
+
+- `alumno`: `{ nombre, iniciales, email }`.
+- `tarjetas[]`: zona, respuestas por bloque, presupuesto y puntuación automática.
+- `tiempo`, `fecha`, `escala` (puntos por tarjeta, puntos totales y ponderados).
 
 ### Limitaciones técnicas
 
-- Un HTML abierto con `file://` **no puede escribir directamente en una carpeta del sistema** (por seguridad del navegador).
-- La File System Access API solo funciona en **Chrome y Edge** (no Firefox / Safari).
-- En otros navegadores, el informe va a la carpeta de Descargas y el alumno lo mueve a mano.
-
-## 📊 Excel generado
-
-El XLSX contiene **5 hojas**:
-
-1. **Portada** — alumno, fecha, ejercicio, puntuación, presupuesto.
-2. **Respuestas** — todas las respuestas de las N tarjetas, apartado por apartado.
-3. **Cálculos** — fórmula, respuesta del alumno, respuesta correcta y veredicto.
-4. **Presupuesto** — coste por tarjeta + totales + dentro/fuera del límite.
-5. **Rúbrica** — criterios de evaluación con espacios para corrección manual.
+- Un HTML abierto con `file://` **no puede escribir directamente en una carpeta del sistema** (por seguridad del navegador) → se descarga a la carpeta habitual y el alumno lo sube a Moodle.
+- No se genera Excel ni se usa la File System Access API: el entregable es **solo el JSON**.
 
 ## 💾 Persistencia
 
@@ -116,6 +114,7 @@ El XLSX contiene **5 hojas**:
 ## ⏱️ Cronómetro y modo examen
 
 - El cronómetro sigue corriendo desde el login, sea cual sea el módulo activo.
+- Está **fijo** en pantalla y con tamaño grande.
 - El modo examen del profesor bloquea:
   - **Pistas** (módulo colocar).
   - **Reset** (ambos módulos).
@@ -126,18 +125,19 @@ El XLSX contiene **5 hojas**:
 ## 📌 Decisiones tomadas
 
 - **Un único HTML** con pestañas → el alumno no cambia de pestaña del navegador.
-- **Cronómetro compartido** entre módulos → el examen mide el tiempo total.
+- **Cronómetro compartido** entre módulos → el examen mide el tiempo total, y está fijo y grande.
 - **Login único** → el rol aplica a ambos módulos.
 - **Fichas por tarjeta** → cada una se valida por separado y se puede reabrir.
-- **JSON + XLSX** → el primero para procesar, el segundo para leer.
-- **Guardado en carpeta** → opcional, no bloquea el flujo si no está disponible.
+- **Referencia siempre visible** → Escenario/Datos/Foco en barra fija arriba.
+- **Solo JSON** → un entregable claro para Moodle; sin Excel ni carpeta de resultados.
+- **2 tarjetas de 6** (Ejercicio 6) → **10 puntos = 2,5 ponderados** (Colocar aparatos pondera 1,5).
 
 ## 🚧 Próximos pasos
 
-- **Paso 6** — Añadir el Ejercicio Global (2 zonas + sensores + protocolos + envolvente).
-- **Paso 7** — Añadir el Ejercicio 3 (10 casos de ineficiencia + presupuesto 8.000 €).
-- **Paso 8** — Añadir el Ejercicio 4 (auditoría de aula real con mediciones).
-- **Paso 9** — Panel del profesor para ver todos los informes recibidos.
+- **Paso 6** — Panel del profesor **por tarjeta** (ya construido: nota 0-5 por tarjeta + `.md` con la rúbrica incrustada).
+- **Paso 7** — URL de la tarea de Moodle en `js/config.js` (`MOODLE.urlTarea`).
+- **Paso 8** — Revisar la visibilidad de `soluciones/` en el despliegue.
+- **Paso 9** — Ampliar a más ejercicios (3 y 4) si el curso lo pide.
 - **Paso 10** — Exportación a PDF con rúbrica automática.
 
 ## 📁 Archivos nuevos / modificados en este paso
@@ -153,15 +153,15 @@ El XLSX contiene **5 hojas**:
 - `js/auditoria/ficha.js`
 - `js/auditoria/ui-auditoria.js`
 - `js/auditoria/informe.js`
-- `js/auditoria/storage-carpeta.js`
 
 ### Modificados
-- `index.html` — pestañas + modal informe
-- `js/config.js` — configuración auditoría
+- `index.html` — pestañas + barra fija + modal informe (solo JSON)
+- `js/config.js` — configuración auditoría + escala (5/tarjeta, 10 = 2,5)
 - `js/estado.js` — estado auditoría + módulo activo
 - `js/storage.js` — persistencia auditoría
 - `js/login.js` — cambio de módulo
 - `js/examen.js` — aplica a ambos módulos
 - `js/main.js` — arranque + cierre de modales con Escape
+- `css/styles.css` — cronómetro fijo y ampliado
 - `README.md`
 - `.gitignore`

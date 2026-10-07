@@ -62,17 +62,6 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
       </div>
     </div>
     <div class="tarjeta-cuerpo">
-      <!-- Datos didácticos de la tarjeta -->
-      <div class="tarjeta-datos">
-        <strong>Escenario:</strong> ${tarjeta.escenario(variacion)}
-        <div class="tarjeta-foco">
-          <strong>Datos para trabajar:</strong> ${tarjeta.datosTrabajo(variacion)}
-        </div>
-        <div class="tarjeta-foco">
-          <strong>Foco de análisis:</strong> ${tarjeta.focoAnalisis}
-        </div>
-      </div>
-
       <!-- BLOQUE 1: Condiciones interiores afectadas -->
       <div class="ficha-bloque">
         <div class="ficha-titulo"><span class="num">1</span> Condiciones interiores afectadas</div>
@@ -301,6 +290,7 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
 function toggleTarjeta(indice) {
   const card = document.querySelector(`.tarjeta-auditoria[data-indice="${indice}"]`);
   if (card) card.classList.toggle('abierta');
+  if (typeof actualizarFichaFija === 'function') actualizarFichaFija(indice);
 }
 
 function toggleCI(indice, clave, marcado) {
@@ -419,7 +409,7 @@ function validarFicha(indice) {
         (${puntuacion.porcentajeAuto} % de la parte auto).<br>
         Corrección manual pendiente: <strong>${puntuacion.pendienteManual}</strong> puntos (campos abiertos).<br>
         Nota final posible: <strong>${puntuacion.aciertosAuto + puntuacion.pendienteManual} / ${puntuacion.total}</strong><br>
-        En la nota del examen esta ficha vale <strong>2,5 puntos</strong> (2 tarjetas por ejercicio = 5)
+        En la nota del examen esta tarjeta vale <strong>5 puntos</strong> (2 tarjetas = 10)
       `;
     } else {
       res.innerHTML = `

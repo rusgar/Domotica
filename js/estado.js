@@ -36,7 +36,7 @@ const state = {
   // MÓDULO 2 · AUDITORÍA
   // ============================================================
   auditoria: {
-    ejercicio: null,       // '6' | 'global'
+    ejercicio: null,       // '6'
     config: null,          // objeto de EJERCICIOS
     tarjetas: [],          // tarjetas repartidas
     variaciones: [],       // variación elegida por tarjeta

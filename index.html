@@ -6,8 +6,6 @@
   <title>Dashboard · Domótica y Monitorización</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/auditoria.css">
-  <!-- ExcelJS para generar XLSX -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -196,16 +194,9 @@
         <div class="ejercicios-disponibles">
           <div class="ejercicio-card activo" onclick="iniciarEjercicio('6')">
             <div class="ejercicio-num">Ejercicio 6</div>
-            <div class="ejercicio-nombre">2 zonas aleatorias</div>
+            <div class="ejercicio-nombre">2 zonas aleatorias de las 6</div>
             <div class="ejercicio-desc">Auditoría de 2 zonas asignadas al azar · Presupuesto 1.500 €</div>
-            <div class="ejercicio-badge">Asignado · 5 pts</div>
-          </div>
-
-          <div class="ejercicio-card activo" onclick="iniciarEjercicio('global')">
-            <div class="ejercicio-num">Ejercicio Global</div>
-            <div class="ejercicio-nombre">2 zonas + integración</div>
-            <div class="ejercicio-desc">Auditoría completa con 2 zonas asignadas al azar</div>
-            <div class="ejercicio-badge">Asignado · 5 pts</div>
+            <div class="ejercicio-badge">Asignado · 10 pts</div>
           </div>
 
           <div class="ejercicio-card deshabilitado">
@@ -224,17 +215,30 @@
         </div>
 
         <p class="aviso-nota">
-          📌 <strong>Trabajo:</strong> son <strong>2 ejercicios asignados</strong> (Ejercicio 6 + Global),
-          cada uno reparte <strong>2 tarjetas aleatorias</strong> (5 puntos el ejercicio → 2,5 por tarjeta).
-          La auditoría vale <strong>10 puntos</strong> en total. Al terminar cada uno descargas tu
-          <strong>JSON</strong> y lo subes a la tarea de Moodle: el profesor lo verifica con las
-          soluciones modelo y asigna la nota.
+          📌 <strong>Trabajo:</strong> un solo ejercicio (Ejercicio 6) con
+          <strong>2 tarjetas aleatorias</strong> de las 6 zonas. Cada tarjeta vale
+          <strong>5 puntos</strong> → <strong>10 puntos</strong> en total (ponderado
+          <strong>2,5</strong>; Colocar aparatos pondera 1,5). Al terminar descargas tu
+          <strong>JSON</strong> y lo subes a la tarea de Moodle: el profesor lo verifica con
+          la rúbrica de cada solución y pone la nota de cada tarjeta.
         </p>
       </div>
     </div>
 
     <!-- Pantalla de trabajo del ejercicio activo -->
     <div id="auditoriaTrabajo" class="auditoria-trabajo" style="display:none;">
+
+      <!-- Ficha de la tarjeta activa, SIEMPRE visible durante el examen -->
+      <div class="ficha-fija" id="fichaFija" style="display:none;">
+        <div class="ficha-fija-barra">
+          <span class="ficha-fija-etiqueta">📌 Tarjeta activa</span>
+          <strong class="ficha-fija-nombre" id="fichaFijaNombre">—</strong>
+          <button class="ficha-fija-btn" id="fichaFijaBtn" type="button"
+            title="Plegar / desplegar" onclick="toggleFichaFija()">▲</button>
+        </div>
+        <div class="ficha-fija-cuerpo" id="fichaFijaCuerpo"></div>
+      </div>
+
       <div class="auditoria-header">
         <div>
           <h2 id="auditoriaTitulo">Ejercicio 6 · 2 zonas aleatorias</h2>
@@ -282,10 +286,9 @@
         <button class="btn-cerrar-modal" onclick="cerrarModalInforme()">✕</button>
       </div>
 
-        <p class="informe-texto">Rellena tus datos para generar el informe. Se descargarán dos archivos:</p>
+        <p class="informe-texto">Rellena tus datos para generar el informe. Se descarga <strong>un archivo</strong>:</p>
         <ul class="informe-lista">
           <li>📄 <strong>JSON</strong> · respuestas completas del ejercicio → <strong>lo subes a Moodle</strong></li>
-          <li>📊 <strong>XLSX</strong> · informe tabulado con rúbrica</li>
         </ul>
         <p class="campo-ayuda">
           La puntuación no la pones tú: sale de tus respuestas y la verifica el profesor
@@ -302,20 +305,9 @@
           <input type="text" id="informeIniciales" placeholder="Ej: AGL" maxlength="4" autocomplete="off">
         </label>
         <label>
-          Grupo / clase
-          <input type="text" id="informeGrupo" placeholder="Ej: 2º STI" autocomplete="off">
-        </label>
-        <label>
           Email (opcional)
           <input type="email" id="informeEmail" placeholder="alumno@centro.es" autocomplete="off">
         </label>
-      </div>
-
-      <div class="informe-fs" id="informeFS" style="display:none;">
-        <button class="btn-fs" onclick="elegirCarpetaResultados()">
-          📁 Elegir carpeta "resultados" (guardado automático)
-        </button>
-        <div class="informe-fs-estado" id="informeFSEstado"></div>
       </div>
 
       <div class="informe-error" id="informeError"></div>
@@ -362,11 +354,11 @@
 
         <p class="informe-texto">
           Descarga los <strong>JSON</strong> de la tarea de Moodle (los que han subido los alumnos con su
-          usuario) y cárgalos aquí (Ejercicio 6 y Ejercicio Global).
-          Verás lo que <strong>respondió el alumno</strong>, su puntuación automática en la escala 0-5
-          y podrás poner la <strong>nota del profesor (0-5)</strong> → <strong>10 en total</strong>
-          (5 + 5). Con el botón <strong>⬇ .md</strong> conviertes cada JSON en un informe con las
-          respuestas del alumno <strong>y la solución modelo incrustada</strong> para verificarlas.
+          usuario) y cárgalos aquí (Ejercicio 6). Verás una fila por <strong>tarjeta</strong>: lo que
+          <strong>respondió el alumno</strong>, su puntuación automática y la casilla para poner la
+          <strong>nota del profesor (0-5 por tarjeta)</strong> → <strong>10 en total</strong> = 2,5
+          ponderados. Con el botón <strong>⬇ .md</strong> conviertes cada JSON en un informe con las
+          respuestas del alumno <strong>y la solución/rúbrica incrustada</strong> para verificarlas.
         </p>
 
         <div class="informe-campos panel-carga">
@@ -384,7 +376,7 @@
               <tr>
                 <th>Iniciales</th>
                 <th>Nombre</th>
-                <th>Ejercicio</th>
+                <th>Tarjeta</th>
                 <th>Fecha</th>
                 <th>Tiempo</th>
                 <th>Auto (0-5)</th>
@@ -435,7 +427,6 @@
   <script src="js/auditoria/presupuesto.js"></script>
   <script src="js/auditoria/aleatorio.js"></script>
   <script src="js/auditoria/ficha.js"></script>
-  <script src="js/auditoria/storage-carpeta.js"></script>
   <script src="js/auditoria/informe.js"></script>
   <script src="js/auditoria/ui-auditoria.js"></script>
   <script src="js/panel-profesor.js"></script>
@@ -469,7 +460,6 @@
       if (typeof validarPresupuesto === 'undefined') faltan.push('auditoria/presupuesto.js');
       if (typeof repartirTarjetasAleatorias === 'undefined') faltan.push('auditoria/aleatorio.js');
       if (typeof renderTarjetaAuditoria === 'undefined') faltan.push('auditoria/ficha.js');
-      if (typeof guardarEnCarpetaResultados === 'undefined') faltan.push('auditoria/storage-carpeta.js');
       if (typeof generarInforme === 'undefined') faltan.push('auditoria/informe.js');
       if (typeof iniciarEjercicio === 'undefined') faltan.push('auditoria/ui-auditoria.js');
       if (typeof abrirPanelResultados === 'undefined') faltan.push('panel-profesor.js');
