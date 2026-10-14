@@ -10,7 +10,7 @@ function toggleExamen() {
     alert('Modo examen desactivado.');
   } else {
     const minutos = CONFIG.duracionExamenSegundos / 60;
-    if (!confirm(`¿Activar modo examen?\n\n· Se reiniciará todo el progreso\n· Duración: ${minutos} minutos\n· Se bloquean pistas, reset y auto-colocación\n· Aplica a ambos módulos (Colocar y Auditoría)`)) return;
+    if (!confirm(`¿Activar modo examen?\n\n· Se reiniciará todo el progreso\n· Duración: ${minutos} minutos\n· Se bloquean el reset y la auto-colocación\n· Aplica a ambos módulos (Colocar y Auditoría)`)) return;
 
     // Reset de ambos módulos
     resetear();
@@ -34,7 +34,6 @@ function toggleExamen() {
     }, 1000);
 
     actualizarTimerUI();
-    actualizarBotonPista();
   }
 }
 
@@ -50,7 +49,6 @@ function detenerExamen() {
   document.getElementById('btnExamen').textContent = '🎓 Activar modo examen';
   document.getElementById('btnReset').disabled = false;
   actualizarTimerUI();
-  actualizarBotonPista();
 }
 
 function finalizarExamenPorTiempo() {

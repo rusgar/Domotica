@@ -57,6 +57,7 @@ function iniciarDashboard() {
   state.zonasDesbloqueadas = {};
   state.zonasVerificadas = {};
   state.zonasTerminadas = {};
+  state.zonasConCuenta = {};
   state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
   state.colocar.segundos = 0;
@@ -69,6 +70,7 @@ function iniciarDashboard() {
     state.zonasDesbloqueadas = progreso.zonasDesbloqueadas || {};
     state.zonasVerificadas = progreso.zonasVerificadas || {};
     state.zonasTerminadas = progreso.zonasTerminadas || {};
+    state.zonasConCuenta = progreso.zonasConCuenta || {};
     state.ultimaPregunta = progreso.ultimaPregunta || {};
     state.cronometro.segundos = progreso.segundos || 0;
     state.colocar.segundos = progreso.segundosEjercicioColocar || 0;
@@ -90,7 +92,6 @@ function iniciarDashboard() {
 
   actualizarTimerUI();
   actualizarScore();
-  actualizarBotonPista();
   iniciarCronometro();
 
   // Re-pintar zonas verificadas guardadas (y cuadrar las que ya no lo están).
@@ -114,6 +115,7 @@ function cerrarSesion() {
   state.zonasDesbloqueadas = {};
   state.zonasVerificadas = {};
   state.zonasTerminadas = {};
+  state.zonasConCuenta = {};
   state.ultimaPregunta = {};
   state.cronometro.segundos = 0;
   state.colocar = { segundos: 0, intervalo: null, corriendo: false, completado: false };
@@ -137,7 +139,7 @@ function cerrarSesion() {
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => {
     z.classList.add('bloqueada');
-    z.classList.remove('correcta', 'aceptada', 'over');
+    z.classList.remove('correcta', 'aceptada', 'cerrada', 'over');
   });
   document.querySelectorAll('.zona-estado').forEach(e => {
     e.className = 'zona-estado bloqueada';

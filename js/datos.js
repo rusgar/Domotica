@@ -103,18 +103,6 @@ const NOMBRES_ZONAS = {
   gateway: '🔀 Gateways / Protocolos',
 };
 
-// Pistas para cuando el alumno tenga desbloqueada la pista
-const PISTAS_ZONAS = {
-  exterior: '🌤️ Va fuera, midiendo el clima (temperatura, humedad, sol, viento, lluvia o calidad del aire).',
-  envolvente: '🧱 Mide la temperatura de las superficies: paredes, ventanas o tejado.',
-  interior: '🏠 Va dentro: mide temperatura, humedad, CO₂, luz o presencia en aulas y oficinas.',
-  electrico: '⚡ Va en el cuadro eléctrico: mide tensión, corriente, potencia, energía o factor de potencia.',
-  hidraulico: '💧 Va en la sala hidráulica: mide caudal, volumen, presión o detecta fugas de agua.',
-  termico: '🔥 Va en la sala de calderas: mide energía térmica, temperaturas de impulsión/retorno o gas.',
-  control: '🧠 Va en la sala de control o BMS: controla, decide o ejecuta acciones.',
-  gateway: '🔀 Traduce entre protocolos: Modbus, KNX, BACnet, Zigbee, MQTT o LoRa.',
-};
-
 // FUTURO: tipos de edificio para la actividad de presupuesto
 const TIPOS_EDIFICIO = {
   colegio: {

@@ -71,7 +71,7 @@ ahorro, medidas y presupuesto) y entrega **un único JSON** con las dos.
 | Superar **60 min** en el Ejercicio Auditoría (reloj propio del ejercicio) | **−0,25** (1 décima de los 2,5) sobre la ponderación total |
 | Precio vacío en el apartado 8 de cualquiera de las 2 tarjetas | **No se puede entregar** el JSON |
 | Precio > 750 € por tarjeta o fuera de coherencia con el catálogo (±20 %) | Aviso y marca en el informe; revisión del profesor |
-| Modo examen activo | Sin pistas, sin reinicio, sin auto-colocación; cuenta atrás de 5 min |
+| Modo examen activo | Sin reinicio ni auto-colocación; cuenta atrás de 5 min |
 
 ---
 
@@ -109,7 +109,9 @@ Cada zona vale lo mismo (**0,125**) y, dentro de la zona, cada aparato vale
 | Situación al pulsar «✓ Validar» | Resultado visual | Efecto |
 |---|---|---|
 | **Zona perfecta**: los obligatorios están todos ahí y sin intrusos | Zona **verde ✅**, botón «✅ Validada» | Zona **terminada** y puntúa al máximo |
-| **Zona imperfecta** (falta o sobra algo) | Pop-up **«¿Quieres dejarlo así o poner más?»** sin decir qué falta | **📌 Dejarlo así** → zona terminada con lo que haya · **➕ Poner más** → se cierra y sigue editando |
+| **Zona imperfecta** (falta o sobra algo) | Pop-up **«¿Quieres dejarlo así o poner más?»** sin decir qué falta | **📌 Dejarlo así** → zona **CERRADA** (🔒) con lo que haya · **➕ Poner más** → se cierra y sigue editando |
+| **Primera validación** | Pop-up con **SOLO la cantidad**: «Tienes X de N aparatos obligatorios bien colocados» | Información única: nunca dice **cuáles** faltan ni en qué zona van |
+| **Segunda validación** (salvavidas) | Mismo pop-up **sin número**: «🔄 Segunda oportunidad: revisa la zona y decide» | Evita que el alumno «mida» aciertos probando una y otra vez |
 | Añadir o quitar aparatos tras aceptarla | La zona se puede **volver a validar** | La nota se recalcula en vivo |
 | **Fin del ejercicio** | Pantalla «EJERCICIO TERMINADO» | Las **8 zonas** están dadas por buena (✅ o 📌): se para el reloj y aparecen los botones de entrega |
 
@@ -133,7 +135,7 @@ Cada zona vale lo mismo (**0,125**) y, dentro de la zona, cada aparato vale
 | No terminar las 8 zonas | El ejercicio **no se da por terminado** (no hay pantalla final ni JSON automático) |
 | Falta de **captura de pantalla** | Falta evidencia: la fila del panel queda sin verificación visual |
 | Aparatos repetidos | Imposible: la plataforma retira el chip de la zona anterior |
-| Modo examen activo | Sin pistas, sin reinicio, sin auto-colocación |
+| Modo examen activo | Sin reinicio ni auto-colocación |
 
 ---
 
@@ -185,7 +187,7 @@ Nota Colocar   = Σ(zonas) / 8                                          → 0 �
 1. **Todo automático**: la plataforma no admite editar notas; el panel solo calcula a partir del JSON.
 2. **Los alumnos no ven ninguna nota ni porcentaje**: solo saben si han terminado el ejercicio y
    cuántas zonas han dado por buena (Colocar). Las notas las ve únicamente el profesor.
-3. **Modo examen** (cuenta atrás de 5 min): bloquea pistas, reinicio y auto-colocación; al agotarse
+3. **Modo examen** (cuenta atrás de 5 min): bloquea el reinicio y la auto-colocación; al agotarse
    el tiempo se verifica el estado del módulo activo.
 4. **Repetir no penaliza**: en Colocar ninguna validación fallida borra trabajo ni resta puntos;
    el único coste es el tiempo.

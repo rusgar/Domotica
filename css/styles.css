@@ -139,9 +139,6 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 .btn-reset:hover:not(:disabled) { background: #dc2626; }
 .btn-check { background: #22c55e; color: #0f172a; }
 .btn-check:hover:not(:disabled) { background: #16a34a; }
-.btn-hint { background: #f59e0b; color: #0f172a; }
-.btn-hint:hover:not(:disabled) { background: #d97706; }
-.btn-hint:disabled { background: #475569; color: #94a3b8; }
 .btn-auto { background: #a855f7; color: white; }
 .btn-auto:hover:not(:disabled) { background: #9333ea; }
 .btn-examen { background: #dc2626; color: white; }
@@ -271,6 +268,10 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
   position: absolute; bottom: 8px; right: 12px;
   font-size: 1.1rem;
 }
+/* Zona CERRADA (dada por buena, ✅ o 📌): no se puede ni poner ni quitar */
+.zona.cerrada .drop-zone { pointer-events: none; }
+.zona.cerrada .colocado { cursor: default; }
+.zona.cerrada .btn-validar { cursor: not-allowed; }
 .zona .titulo-zona {
   display: flex; align-items: center; gap: 8px;
   font-size: 0.85rem; font-weight: 700; color: #cbd5e1;
@@ -510,6 +511,23 @@ header .sub { font-size: 0.8rem; color: #94a3b8; }
 .opcion:disabled { cursor: not-allowed; opacity: 0.7; }
 
 /* Pop-up «¿Quieres dejarlo así o poner más?» (módulo Colocar) */
+.decision-cuenta {
+  font-size: 0.92rem; font-weight: 700;
+  padding: 10px 12px; border-radius: 8px;
+  background: rgba(245, 158, 11, 0.10);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24; margin-bottom: 10px; line-height: 1.5;
+}
+.decision-cuenta.ok {
+  background: rgba(34, 197, 94, 0.10);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+.decision-cuenta.salvavidas {
+  background: rgba(56, 189, 248, 0.10);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #7dd3fc;
+}
 .opcion-dejar {
   border-color: #f59e0b;
   background: rgba(245, 158, 11, 0.12);

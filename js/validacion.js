@@ -84,18 +84,13 @@ function zonasTerminadasIds() {
   return zonasPuntuadas().filter(z => state.zonasVerificadas[z] || state.zonasTerminadas[z]);
 }
 
-// (nombre histórico: para la pista cuenta cualquier zona dada por buena)
-function zonasCompletas() {
-  return zonasTerminadasIds();
-}
-
 function marcarZonaVerificada(zonaId) {
   state.zonasVerificadas[zonaId] = true;
   state.zonasTerminadas[zonaId] = true;
 
   const zona = document.querySelector(`.zona[data-zona="${zonaId}"]`);
   if (zona) {
-    zona.classList.add('correcta');
+    zona.classList.add('correcta', 'cerrada');
     zona.classList.remove('aceptada');
   }
 
@@ -107,35 +102,34 @@ function marcarZonaVerificada(zonaId) {
   const estado = document.getElementById('estado-' + zonaId);
   if (estado) {
     estado.className = 'zona-estado desbloqueada';
-    estado.textContent = '✅';
+    estado.textContent = '🔒 ✅';
   }
 
   actualizarBotonValidar(zonaId);
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
 }
 
 // Zona dada por buena con el pop-up «¿Dejarlo así?»: puede estar
 // incompleta o con algún aparato mal colocado; se puntúa lo que haya.
+// La zona queda CERRADA: no se puede añadir ni quitar aparatos.
 function marcarZonaAceptada(zonaId) {
   state.zonasTerminadas[zonaId] = true;
 
   const zona = document.querySelector(`.zona[data-zona="${zonaId}"]`);
   if (zona) {
-    zona.classList.add('aceptada');
+    zona.classList.add('aceptada', 'cerrada');
     zona.classList.remove('correcta');
   }
 
   const estado = document.getElementById('estado-' + zonaId);
   if (estado) {
     estado.className = 'zona-estado aceptada';
-    estado.textContent = '📌 Aceptada';
+    estado.textContent = '🔒 📌';
   }
 
   actualizarBotonValidar(zonaId);
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
 }
 
@@ -164,17 +158,16 @@ function desVerificarZona(zonaId) {
 
   actualizarBotonValidar(zonaId);
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
 }
 
 /* ------------------------------------------------------------
    BOTÓN «✓ VALIDAR» DE CADA ZONA
-   · Zona bloqueada / ya validada (✅) → botón deshabilitado
-   · Zona dada por buena con el pop-up (📌) → se puede volver a validar
-   · Zona perfecta → verde ✅ + ¿victoria?
-   · Zona imperfecta → pop-up «¿Quieres dejarlo así o poner más?»
-     (NO vacía nada y NO da pistas de qué falta)
+   · Zona bloqueada / ya cerrada (✅ o 📌) → botón deshabilitado
+   · Al validar: pop-up con SOLO la cantidad (X de N bien colocados),
+     nunca qué aparato falta ni en qué zona va
+   · «Poner más» → segunda oportunidad: se cierra y se sigue editando
+   · «Dejarlo así» → la zona queda CERRADA (no se puede ni poner ni quitar)
    ------------------------------------------------------------ */
 function actualizarBotonValidar(zonaId) {
   const btn = document.getElementById('btnValidar-' + zonaId);
@@ -182,16 +175,16 @@ function actualizarBotonValidar(zonaId) {
 
   const desbloq = !!state.zonasDesbloqueadas[zonaId];
   const verif = !!state.zonasVerificadas[zonaId];
-  const aceptada = !verif && !!state.zonasTerminadas[zonaId];
+  const cerrada = !!state.zonasTerminadas[zonaId];
+  const aceptada = !verif && cerrada;
 
   btn.classList.toggle('validada', verif);
   btn.classList.toggle('aceptada', aceptada);
-  btn.disabled = !desbloq || verif;
-  btn.textContent = verif ? '✅ Validada' : (aceptada ? '📌 Aceptada' : '✓ Validar');
+  btn.disabled = !desbloq || cerrada;
+  btn.textContent = verif ? '🔒 ✅ Validada' : (aceptada ? '🔒 📌 Aceptada' : '✓ Validar');
 
   if (!desbloq) btn.title = 'Zona bloqueada: responde la pregunta primero';
-  else if (verif) btn.title = 'Zona validada correctamente';
-  else if (aceptada) btn.title = 'Zona dada por buena: puedes seguir añadiendo aparatos o volver a validarla';
+  else if (cerrada) btn.title = 'Zona cerrada: ya no se puede modificar';
   else btn.title = 'Comprueba los aparatos de esta zona. Si algo falta o sobra, el pop-up te deja darla por buena o seguir poniendo.';
 }
 
@@ -213,23 +206,13 @@ function validarZona(zonaId) {
     return;
   }
 
-  const p = puntuacionZona(zonaId);
-  const perfecta = p.ok === p.total && zonaContenidoCorrecto(zonaId);
-
-  // Todo correcto → verde al momento (sin pop-up)
-  if (perfecta) {
-    marcarZonaVerificada(zonaId);
-    comprobarVictoria();
-    return;
-  }
-
-  // Falta o sobra algo → el alumno decide: dejarla así o seguir poniendo.
-  // NO se dicen cuáles faltan ni en qué zona va cada cosa.
+  // Pop-up con SOLO la cantidad de aparatos bien colocados (nunca cuáles).
+  // El alumno decide: «Dejarlo así» o «Poner más» (segunda oportunidad).
   abrirModalDecision(zonaId);
 }
 
 /* ------------------------------------------------------------
-   POP-UP «¿Quieres dejarlo así o poner más?»
+   POP-UP DE VALIDACIÓN: cantidad + «¿Quieres dejarlo así o poner más?»
    ------------------------------------------------------------ */
 let zonaEnDecision = null;
 
@@ -238,6 +221,25 @@ function abrirModalDecision(zonaId) {
   const modal = document.getElementById('modalDecision');
   const titulo = document.getElementById('decisionZona');
   if (titulo) titulo.textContent = NOMBRES_ZONAS[zonaId] || 'Zona';
+
+  // La cantidad se muestra SOLO UNA vez por zona. La segunda validación
+  // es un «salvavidas»: mismo pop-up pero SIN número.
+  const cuenta = document.getElementById('decisionCuenta');
+  if (cuenta) {
+    if (!state.zonasConCuenta[zonaId]) {
+      const p = puntuacionZona(zonaId);
+      const intrusos = APARATOS.some(a => a.zona !== zonaId && !a.opcional && state.colocados[a.id] === zonaId);
+      const perfecta = p.ok === p.total && !intrusos;
+      cuenta.textContent = `Tienes ${p.ok} de ${p.total} aparatos obligatorios bien colocados.`;
+      cuenta.className = 'decision-cuenta' + (perfecta ? ' ok' : '');
+      state.zonasConCuenta[zonaId] = true;
+      guardarProgreso();
+    } else {
+      cuenta.textContent = '🔄 Segunda oportunidad: revisa la zona y decide.';
+      cuenta.className = 'decision-cuenta salvavidas';
+    }
+  }
+
   if (modal) modal.classList.add('show');
 }
 
@@ -247,12 +249,15 @@ function cerrarModalDecision() {
   zonaEnDecision = null;
 }
 
-// «Dejarlo así» → la zona queda dada por buena (📌) y puntúa lo colocado
+// «Dejarlo así» → si la zona es perfecta queda ✅ verificada; si no, 📌 aceptada
 function dejarZonaAsi() {
   const zonaId = zonaEnDecision;
   cerrarModalDecision();
   if (!zonaId) return;
-  marcarZonaAceptada(zonaId);
+  const p = puntuacionZona(zonaId);
+  const intrusos = APARATOS.some(a => a.zona !== zonaId && !a.opcional && state.colocados[a.id] === zonaId);
+  if (p.ok === p.total && !intrusos) marcarZonaVerificada(zonaId);
+  else marcarZonaAceptada(zonaId);
   comprobarVictoria();
 }
 
@@ -328,7 +333,7 @@ function reconciliarZonasVerificadas() {
     state.zonasTerminadas[zonaId] = true;
     const zonaDiv = document.querySelector(`.zona[data-zona="${zonaId}"]`);
     if (zonaDiv) {
-      zonaDiv.classList.add('correcta');
+      zonaDiv.classList.add('correcta', 'cerrada');
       zonaDiv.classList.remove('aceptada');
     }
     aparatosDeZona(zonaId).forEach(ap => {
@@ -338,7 +343,7 @@ function reconciliarZonasVerificadas() {
     const estado = document.getElementById('estado-' + zonaId);
     if (estado) {
       estado.className = 'zona-estado desbloqueada';
-      estado.textContent = '✅';
+      estado.textContent = '🔒 ✅';
     }
   });
 
@@ -347,13 +352,13 @@ function reconciliarZonasVerificadas() {
     if (state.zonasVerificadas[zonaId] || !state.zonasTerminadas[zonaId]) return;
     const zona = document.querySelector(`.zona[data-zona="${zonaId}"]`);
     if (zona) {
-      zona.classList.add('aceptada');
+      zona.classList.add('aceptada', 'cerrada');
       zona.classList.remove('correcta');
     }
     const estado = document.getElementById('estado-' + zonaId);
     if (estado) {
       estado.className = 'zona-estado aceptada';
-      estado.textContent = '📌 Aceptada';
+      estado.textContent = '🔒 📌';
     }
   });
 
@@ -362,59 +367,6 @@ function reconciliarZonasVerificadas() {
   comprobarVictoria();
 }
 
-
-function actualizarBotonPista() {
-  const btn = document.getElementById('btnPista');
-
-  if (state.examen.activo) {
-    btn.disabled = true;
-    btn.title = 'Pista bloqueada durante el examen';
-    btn.textContent = '💡 Pista (examen)';
-    return;
-  }
-
-  const completas = zonasCompletas();
-  if (completas.length > 0) {
-    btn.disabled = false;
-    btn.title = 'Pista desbloqueada';
-    const n = completas.length;
-    btn.textContent = `💡 Pista (${n} zona${n > 1 ? 's' : ''} ✓)`;
-  } else {
-    btn.disabled = true;
-    btn.title = 'Dá por buena al menos una zona (✅ o 📌) para desbloquear la pista';
-    btn.textContent = '💡 Pista (bloqueada)';
-  }
-}
-
-function mostrarPista() {
-  if (state.examen.activo) {
-    alert('🔒 Las pistas están bloqueadas durante el examen.');
-    return;
-  }
-
-  const completas = zonasCompletas();
-  if (completas.length === 0) {
-    alert('🔒 La pista se desbloquea cuando des por buena al menos una zona (✅ o 📌).');
-    return;
-  }
-
-  const noColocados = aparatosObligatorios().filter(a => !state.colocados[a.id]);
-  if (noColocados.length === 0) {
-    alert('¡Ya has colocado todos los aparatos! Pulsa «✓ Validar» en cada zona.');
-    return;
-  }
-
-  const candidatos = noColocados.filter(a => !completas.includes(a.zona));
-  const lista = candidatos.length > 0 ? candidatos : noColocados;
-  const ap = lista[Math.floor(Math.random() * lista.length)];
-
-  alert(
-    `💡 Pista desbloqueada\n\n` +
-    `Aparato: ${ap.emoji} ${ap.nombre}\n\n` +
-    `${PISTAS_ZONAS[ap.zona]}\n\n` +
-    `(Zonas dadas por buena: ${completas.join(', ')})`
-  );
-}
 
 function verificarTodo() {
   const obligatorios = aparatosObligatorios();
@@ -455,12 +407,12 @@ function verificarTodo() {
       state.zonasVerificadas[zonaId] = true;
       state.zonasTerminadas[zonaId] = true;
       if (zonaDiv) {
-        zonaDiv.classList.add('correcta');
+        zonaDiv.classList.add('correcta', 'cerrada');
         zonaDiv.classList.remove('aceptada');
       }
       if (estado) {
         estado.className = 'zona-estado desbloqueada';
-        estado.textContent = '✅';
+        estado.textContent = '🔒 ✅';
       }
     } else {
       delete state.zonasVerificadas[zonaId];
@@ -468,8 +420,8 @@ function verificarTodo() {
       if (estado) {
         if (state.zonasTerminadas[zonaId]) {
           estado.className = 'zona-estado aceptada';
-          estado.textContent = '📌 Aceptada';
-          if (zonaDiv) zonaDiv.classList.add('aceptada');
+          estado.textContent = '🔒 📌';
+          if (zonaDiv) zonaDiv.classList.add('aceptada', 'cerrada');
         } else if (state.zonasDesbloqueadas[zonaId]) {
           estado.className = 'zona-estado desbloqueada';
           estado.textContent = '🔓';
@@ -499,7 +451,6 @@ function verificarTodo() {
       </div>
     `;
   }
-  actualizarBotonPista();
 }
 
 // Reinicio total del módulo colocar.
@@ -514,6 +465,7 @@ function reiniciarEjercicio(forzar = false) {
   state.zonasDesbloqueadas = {};
   state.zonasVerificadas = {};
   state.zonasTerminadas = {};
+  state.zonasConCuenta = {};
   state.colocar.completado = false;
   // state.ultimaPregunta se conserva a propósito:
   // las próximas preguntas serán distintas a las anteriores.
@@ -521,7 +473,7 @@ function reiniciarEjercicio(forzar = false) {
   document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = '');
   document.querySelectorAll('.zona').forEach(z => {
     z.classList.add('bloqueada');
-    z.classList.remove('correcta', 'aceptada', 'over');
+    z.classList.remove('correcta', 'aceptada', 'cerrada', 'over');
   });
   document.querySelectorAll('.zona-estado').forEach(e => {
     e.className = 'zona-estado bloqueada';
@@ -539,7 +491,6 @@ function reiniciarEjercicio(forzar = false) {
   actualizarBotonesValidar();
   actualizarUsados();
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
 }
 
@@ -566,6 +517,6 @@ function colocarTodo() {
   // Colocar todos los aparatos
   APARATOS.forEach(ap => colocarAparato(ap.id, ap.zona));
 
-  // Validar cada zona (todo correcto: sin alertas ni reinicios)
-  Object.keys(NOMBRES_ZONAS).forEach(zonaId => validarZona(zonaId));
+  // Marcar cada zona como verificada (todo correcto: sin pop-ups)
+  Object.keys(NOMBRES_ZONAS).forEach(zonaId => marcarZonaVerificada(zonaId));
 }

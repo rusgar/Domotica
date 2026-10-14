@@ -146,7 +146,6 @@ Al pulsar **"📤 Enviar informe"**:
   **−0,1** (`ESCALA_COLOCAR.penalizacionTiempo`) sobre **1,0**; la aplica el panel al calcular la
   nota del **JSON** del alumno (también en el badge `⏰ −0,1`, el resumen y el `.md`).
 - El modo examen del profesor bloquea:
-  - **Pistas** (módulo colocar).
   - **Reset** (ambos módulos).
   - **Auto-colocar** (módulo colocar).
   - **Atajo Ctrl+Shift+A**.

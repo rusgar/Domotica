@@ -49,6 +49,17 @@ function colocarAparato(id, zona) {
   if (state.examen.activo && state.examen.segundosRestantes <= 0) return;
   if (!state.zonasDesbloqueadas[zona]) return;
 
+  // Zona cerrada (✅ o 📌): no se puede añadir ni quitar aparatos
+  if (state.zonasTerminadas[zona]) {
+    alert('🔒 Esta zona ya está cerrada: no puedes añadir más aparatos.');
+    return;
+  }
+  const origen = state.colocados[id];
+  if (origen && state.zonasTerminadas[origen]) {
+    alert('🔒 Ese aparato pertenece a una zona cerrada: no puedes moverlo.');
+    return;
+  }
+
   const anterior = state.colocados[id];
 
   // Al sacarle un aparato de otra zona, esa zona pierde su validación
@@ -75,7 +86,6 @@ function colocarAparato(id, zona) {
 
   actualizarUsados();
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
   document.getElementById('resultadoFinal').classList.remove('show');
 }
@@ -85,6 +95,10 @@ function devolverAlBanco(id) {
 
   const zona = state.colocados[id];
   if (!zona) return;
+  if (state.zonasTerminadas[zona]) {
+    alert('🔒 Esta zona ya está cerrada: no puedes quitar aparatos.');
+    return;
+  }
   const div = document.querySelector(`.drop-zone[data-zona="${zona}"] .colocado[data-id="${id}"]`);
   if (div) div.remove();
   delete state.colocados[id];
@@ -95,7 +109,6 @@ function devolverAlBanco(id) {
 
   actualizarUsados();
   actualizarScore();
-  actualizarBotonPista();
   guardarProgreso();
 }
 

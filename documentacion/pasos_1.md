@@ -36,29 +36,30 @@ Se establecieron 8 zonas que cubren todo el ciclo de monitorización del edifici
    en «Exterior» **o** en «Envolvente», nunca en las dos).
 4. **Clic sobre un chip** para devolverlo al banco.
 5. **Botón "✓ Validar" en cada zona** (validación por zona, no global):
-   - **Zona perfecta** (todo puesto y en su sitio) → zona en verde con `✓`, chips en verde,
-     botón cambia a **"✅ Validada"** (y se cierra el ejercicio si eran la última pendiente).
-   - **Zona imperfecta** (falta o sobra algo) → pop-up **«¿Quieres dejarlo así o poner más?»**
-     **sin decir qué falta ni en qué zona va cada cosa**:
-     - **«📌 Dejarlo así»** → la zona queda **aceptada** (borde ámbar, estado 📌, botón
-       **"📌 Aceptada"**; se puede seguir añadiendo aparatos o volver a validarla).
-     - **«➕ Poner más»** (también `Escape` o clic fuera) → se cierra el pop-up y se sigue editando.
-     - **No se vacía nada**; las demás zonas **no se tocan**.
+   - **Primera validación**: pop-up con **SOLO la cantidad**: «Tienes X de N aparatos
+     obligatorios bien colocados» — **nunca dice qué aparato falta ni en qué zona va**.
+   - **Segunda validación** («salvavidas»): mismo pop-up pero **sin número** —
+     solo «🔄 Segunda oportunidad: revisa la zona y decide». Así no se puede
+     «medir» el acierto probando una y otra vez.
+   - El pop-up pregunta **«¿Quieres dejarlo así o poner más?»**:
+     - **«📌 Dejarlo así»** → la zona queda **CERRADA** (✅ si es perfecta, 📌 si no):
+       no se puede **ni añadir ni quitar** aparatos. Botón deshabilitado «🔒 ✅ Validada»
+       o «🔒 📌 Aceptada».
+     - **«➕ Poner más»** (también `Escape` o clic fuera) → se cierra y se sigue editando.
+   - **No se vacía nada**; las demás zonas **no se tocan**.
    - Para terminar hay que dar por buenas **las 8 zonas** (✅ o 📌); entonces aparece la pantalla
      final con las **instrucciones de captura de pantalla** y se para el reloj del ejercicio.
    - **Puntuación parcial automática** (la única): **8 zonas × 0,125 = 1,0** y dentro de cada
      zona **cada aparato vale `0,125 / nº de aparatos de esa zona`** (Ej.: Exterior con 7 →
      **0,018** c/u, con 5 bien = **0,089** de la zona). Solo puntúan los **42 obligatorios**.
    - El marcador "Aciertos · Nota" permanece **oculto** para el alumno (solo lo ve el profesor).
-6. **Botón "Pista"**: da una ayuda sobre una zona pendiente (se desbloquea al dar por buena la
-   primera zona, ✅ o 📌; bloqueada en examen).
-7. **Botón "Auto-colocar"**: solución automática (uso del profesor).
-8. **Botón "Reiniciar"**: limpia todo.
-9. **Botón "✓ Verificar colocación"** (barra superior): deshabilitado; ahora solo se valida con el botón de cada zona (se mantiene para el cierre del examen).
-10. **⏱ Reloj del ejercicio** en la barra (`#tiempoColocar`): cuenta **solo** el tiempo de este
+6. **Botón "Auto-colocar"**: solución automática (uso del profesor).
+7. **Botón "Reiniciar"**: limpia todo.
+8. **Botón "✓ Verificar colocación"** (barra superior): deshabilitado; ahora solo se valida con el botón de cada zona (se mantiene para el cierre del examen).
+9. **⏱ Reloj del ejercicio** en la barra (`#tiempoColocar`): cuenta **solo** el tiempo de este
     módulo, **se pausa al cambiar de pestaña** y se guarda en `localStorage`
     (`segundosEjercicioColocar`). Pasar de **60 min** resta **0,1** de los **1,0 ponderados**.
-11. **Entrega**: al terminar se pide una **captura de pantalla** (con el reloj visible) y el
+10. **Entrega**: al terminar se pide una **captura de pantalla** (con el reloj visible) y el
     **JSON**; ambos se suben a **Moodle**. La nota del profesor es **solo automática**: sale del
     `puntos` del JSON (8 × 0,125) menos la penalización de tiempo, con la captura como evidencia.
 
@@ -81,4 +82,6 @@ Se establecieron 8 zonas que cubren todo el ciclo de monitorización del edifici
   parcial por aparato, −0,1 si > 60 min) y sale del **JSON** de entrega.
 - **Las 8 zonas dadas por buena** (✅ o 📌) marcan el final del ejercicio; los 14 de relleno
   (barómetro, ruido, gateway Wi-Fi…) **no puntúan ni penalizan**, solo ocupan hueco en el banco.
+- Las zonas se pueden **seguir editando hasta aceptarlas** con «📌 Dejarlo así»; después
+  quedan **cerradas y bloqueadas** (no se puede ni añadir ni quitar aparatos).
 - La solución de referencia sigue siendo `img/Captura de pantalla 2026-10-04 094925.png`.

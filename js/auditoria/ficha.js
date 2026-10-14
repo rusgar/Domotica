@@ -257,7 +257,7 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
         <div class="ficha-titulo"><span class="num">9</span> Mini-investigación</div>
         <div class="ficha-campo">
           <label>Fuente oficial o normativa</label>
-          <select onchange="actualizarFuente(${indice}, 'oficial', 'id', this.value)">
+          <select onchange="actualizarFuenteOficial(${indice}, this.value)">
             <option value="">— Selecciona —</option>
             ${FUENTES_OFICIALES.map(f => `
               <option value="${f.id}" ${respuestas.fuenteOficial.id === f.id ? 'selected' : ''}>${f.nombre}</option>
@@ -266,11 +266,21 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
         </div>
         <div class="ficha-campo">
           <label>Apartado o página consultada</label>
-          <input type="text" placeholder="Ej: HE1, apartado 2.1..." onchange="actualizarFuente(${indice}, 'oficial', 'apartado', this.value)" value="${respuestas.fuenteOficial.apartado}">
+          <select onchange="actualizarApartadoOficial(${indice}, this.value)">
+            <option value="">— Selecciona —</option>
+            ${(APARTADOS_FUENTES_OFICIALES[respuestas.fuenteOficial.id] || []).map(a => `
+              <option value="${a.id}" ${respuestas.fuenteOficial.apartado === a.id ? 'selected' : ''}>${a.nombre}</option>
+            `).join('')}
+          </select>
         </div>
         <div class="ficha-campo">
           <label>¿Qué dato o criterio has encontrado?</label>
-          <textarea placeholder="Cita literal o parafrasea el dato concreto..." onchange="actualizarFuente(${indice}, 'oficial', 'datoEncontrado', this.value)">${respuestas.fuenteOficial.datoEncontrado}</textarea>
+          <select onchange="actualizarFuente(${indice}, 'oficial', 'datoEncontrado', this.value)">
+            <option value="">— Selecciona —</option>
+            ${((APARTADOS_FUENTES_OFICIALES[respuestas.fuenteOficial.id] || []).find(a => a.id === respuestas.fuenteOficial.apartado)?.datos || []).map(d => `
+              <option value="${d}" ${respuestas.fuenteOficial.datoEncontrado === d ? 'selected' : ''}>${d}</option>
+            `).join('')}
+          </select>
         </div>
         <div class="ficha-campo">
           <label>¿Cómo se aplica a esta tarjeta?</label>
@@ -279,7 +289,7 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
 
         <div class="ficha-campo">
           <label>Fuente técnica fiable</label>
-          <select onchange="actualizarFuente(${indice}, 'tecnica', 'id', this.value)">
+          <select onchange="actualizarFuenteTecnica(${indice}, this.value)">
             <option value="">— Selecciona —</option>
             ${FUENTES_TECNICAS.map(f => `
               <option value="${f.id}" ${respuestas.fuenteTecnica.id === f.id ? 'selected' : ''}>${f.nombre}</option>
@@ -288,7 +298,12 @@ function renderTarjetaAuditoria(indice, tarjeta, variacion, respuestas, abierta 
         </div>
         <div class="ficha-campo">
           <label>Información concreta que aporta</label>
-          <textarea placeholder="Dato técnico, guía, recomendación..." onchange="actualizarFuente(${indice}, 'tecnica', 'informacion', this.value)">${respuestas.fuenteTecnica.informacion}</textarea>
+          <select onchange="actualizarFuente(${indice}, 'tecnica', 'informacion', this.value)">
+            <option value="">— Selecciona —</option>
+            ${((APARTADOS_FUENTES_TECNICAS[respuestas.fuenteTecnica.id] || []).flatMap(a => a.datos)).map(d => `
+              <option value="${d}" ${respuestas.fuenteTecnica.informacion === d ? 'selected' : ''}>${d}</option>
+            `).join('')}
+          </select>
         </div>
         <div class="ficha-campo">
           <label>¿Cómo se aplica a esta tarjeta?</label>
@@ -372,6 +387,34 @@ function actualizarFuente(indice, tipo, campo, valor) {
   const key = tipo === 'oficial' ? 'fuenteOficial' : 'fuenteTecnica';
   ficha[key][campo] = valor;
   guardarProgresoAuditoria();
+}
+
+function actualizarApartadoOficial(indice, apartado) {
+  const ficha = state.auditoria.fichas[indice];
+  if (!ficha) return;
+  ficha.fuenteOficial.apartado = apartado;
+  ficha.fuenteOficial.datoEncontrado = '';
+  guardarProgresoAuditoria();
+  renderTarjetasAuditoria();
+}
+
+function actualizarFuenteOficial(indice, idFuente) {
+  const ficha = state.auditoria.fichas[indice];
+  if (!ficha) return;
+  ficha.fuenteOficial.id = idFuente;
+  ficha.fuenteOficial.apartado = '';
+  ficha.fuenteOficial.datoEncontrado = '';
+  guardarProgresoAuditoria();
+  renderTarjetasAuditoria();
+}
+
+function actualizarFuenteTecnica(indice, idFuente) {
+  const ficha = state.auditoria.fichas[indice];
+  if (!ficha) return;
+  ficha.fuenteTecnica.id = idFuente;
+  ficha.fuenteTecnica.informacion = '';
+  guardarProgresoAuditoria();
+  renderTarjetasAuditoria();
 }
 
 function validarCalculoTarjeta(indice) {

@@ -65,6 +65,7 @@ El botón **"Salir"** vuelve a la pantalla de login, borra el progreso guardado 
   "zonasDesbloqueadas": { "interior": true },
   "zonasVerificadas": { "interior": true },
   "zonasTerminadas": {},
+  "zonasConCuenta": { "interior": true },
   "ultimaPregunta": { "interior": 3 },
   "timestamp": 1732354821000
 }
@@ -74,6 +75,9 @@ El botón **"Salir"** vuelve a la pantalla de login, borra el progreso guardado 
 - `zonasVerificadas`: zonas **perfectas** (✅) que el alumno validó con «✓ Validar».
 - `zonasTerminadas`: zonas dadas por buenas con el pop-up «¿Quieres dejarlo así o poner más?» (📌,
   pueden estar incompletas o con algún aparato mal colocado). Las ✅ también quedan aquí.
+- `zonasConCuenta`: zonas en las que **ya se mostró la cantidad** de aparatos bien colocados.
+  La cantidad se muestra **solo una vez** por zona; la segunda validación es un
+  **«salvavidas» sin número** (evita que el alumno «mida» aciertos probando).
 - `ultimaPregunta`: índice de la última pregunta mostrada por zona (para no repetir tras un reinicio).
 
 ### Cuándo se guarda
@@ -125,7 +129,6 @@ dashboard_progreso_profe
 
 Añadir un **modo examen** que solo el profesor puede activar, con restricciones que simulan una prueba cronometrada real:
 
-- Sin pistas.
 - Sin reinicio.
 - Sin auto-colocación.
 - Cuenta atrás con límite de tiempo.
@@ -155,9 +158,8 @@ Durante el examen se aplican estas restricciones:
 |---|---|
 | Colocar / quitar aparatos | ✅ Permitido |
 | Botón "✓ Validar" de cada zona | ✅ Permitido (y obligatorio para dar la zona por buena) |
-| Pop-up «¿Quieres dejarlo así o poner más?» | ✅ Permitido (no da pistas de qué falta) |
+| Pop-up de validación (cantidad + «¿Dejarlo así o poner más?») | ✅ Permitido (solo indica cuántos van bien, no cuáles) |
 | Botón "✓ Verificar colocación" (barra) | ❌ Deshabilitado |
-| Botón "💡 Pista" | ❌ Bloqueado |
 | Botón "🔄 Reiniciar" | ❌ Deshabilitado |
 | Botón "🤖 Auto-colocar" | ❌ Bloqueado |
 | Atajo `Ctrl+Shift+A` | ❌ Bloqueado |
@@ -167,7 +169,7 @@ Durante el examen se aplican estas restricciones:
 
 Se muestra un banner rojo parpadeante en la parte superior del dashboard:
 
-> 🎓 MODO EXAMEN ACTIVO · No hay pistas · No se puede reiniciar · No hay auto-colocación
+> 🎓 MODO EXAMEN ACTIVO · No se puede reiniciar · No hay auto-colocación
 
 El fondo de la página cambia a un tono morado oscuro para reforzar visualmente que está activo.
 

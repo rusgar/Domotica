@@ -96,7 +96,7 @@ de ahorro, medidas y presupuesto) y entrega <b>un único JSON</b> con las dos.</
   <tr><td>Superar <b>60 min</b> en el Ejercicio Auditoría (reloj propio del ejercicio)</td><td><b>−0,25</b> (1 décima de los 2,5) sobre la ponderación total</td></tr>
   <tr><td>Precio vacío en el apartado 8 de cualquiera de las 2 tarjetas</td><td><b>No se puede entregar</b> el JSON</td></tr>
   <tr><td>Precio &gt; 750 € por tarjeta o fuera de coherencia con el catálogo (±20 %)</td><td>Aviso y marca en el informe; revisión del profesor</td></tr>
-  <tr><td>Modo examen activo</td><td>Sin pistas, sin reinicio, sin auto-colocación; cuenta atrás de 5 min</td></tr>
+   <tr><td>Modo examen activo</td><td>Sin reinicio ni auto-colocación; cuenta atrás de 5 min</td></tr>
 </table>
 
 <h2>B · Rúbrica del módulo Colocar aparatos</h2>
@@ -131,7 +131,9 @@ puntúan</b>. No se admiten aparatos repetidos.</p>
 <table>
   <tr><th>Situación al pulsar «✓ Validar»</th><th>Resultado visual</th><th>Efecto</th></tr>
   <tr><td><b>Zona perfecta</b>: los obligatorios están todos ahí y sin intrusos</td><td>Zona <b>verde ✅</b>, botón «✅ Validada»</td><td>Zona <b>terminada</b> y puntúa al máximo</td></tr>
-  <tr><td><b>Zona imperfecta</b> (falta o sobra algo)</td><td>Pop-up <b>«¿Quieres dejarlo así o poner más?»</b> sin decir qué falta</td><td><b>📌 Dejarlo así</b> → zona terminada con lo que haya · <b>➕ Poner más</b> → se cierra y sigue editando</td></tr>
+  <tr><td><b>Zona imperfecta</b> (falta o sobra algo)</td><td>Pop-up <b>«¿Quieres dejarlo así o poner más?»</b> sin decir qué falta</td><td><b>📌 Dejarlo así</b> → zona <b>CERRADA</b> (🔒) con lo que haya · <b>➕ Poner más</b> → se cierra y sigue editando</td></tr>
+  <tr><td><b>Primera validación</b></td><td>Pop-up con <b>SOLO la cantidad</b>: «Tienes X de N aparatos obligatorios bien colocados»</td><td>Información única: nunca dice <b>cuáles</b> faltan ni en qué zona van</td></tr>
+  <tr><td><b>Segunda validación</b> (salvavidas)</td><td>Mismo pop-up <b>sin número</b>: «🔄 Segunda oportunidad: revisa la zona y decide»</td><td>Evita que el alumno «mida» aciertos probando una y otra vez</td></tr>
   <tr><td>Añadir o quitar aparatos tras aceptarla</td><td>La zona se puede <b>volver a validar</b></td><td>La nota se recalcula en vivo</td></tr>
   <tr><td><b>Fin del ejercicio</b></td><td>Pantalla «EJERCICIO TERMINADO»</td><td>Las <b>8 zonas</b> están dadas por buena (✅ o 📌): se para el reloj y aparecen los botones de entrega</td></tr>
 </table>
@@ -154,7 +156,7 @@ trabajo hecho; repetir cuesta <b>tiempo</b>, no puntos.</blockquote>
   <tr><td>No terminar las 8 zonas</td><td>El ejercicio <b>no se da por terminado</b> (no hay pantalla final ni JSON automático)</td></tr>
   <tr><td>Falta de <b>captura de pantalla</b></td><td>Falta evidencia: la fila del panel queda sin verificación visual</td></tr>
   <tr><td>Aparatos repetidos</td><td>Imposible: la plataforma retira el chip de la zona anterior</td></tr>
-  <tr><td>Modo examen activo</td><td>Sin pistas, sin reinicio, sin auto-colocación</td></tr>
+   <tr><td>Modo examen activo</td><td>Sin reinicio ni auto-colocación</td></tr>
 </table>
 
 <h2>C · Cálculo de la nota final de estas pruebas</h2>
@@ -200,7 +202,7 @@ Nota Colocar   = Σ(zonas) / 8                                          → 0 �
   <li><b>Todo automático</b>: la plataforma no admite editar notas; el panel solo calcula a partir del JSON.</li>
   <li><b>Los alumnos no ven ninguna nota ni porcentaje</b>: solo saben si han terminado el ejercicio
       y cuántas zonas han dado por buena (Colocar). Las notas las ve únicamente el profesor.</li>
-  <li><b>Modo examen</b> (cuenta atrás de 5 min): bloquea pistas, reinicio y auto-colocación; al
+  <li><b>Modo examen</b> (cuenta atrás de 5 min): bloquea el reinicio y la auto-colocación; al
       agotarse el tiempo se verifica el estado del módulo activo.</li>
   <li><b>Repetir no penaliza</b>: en Colocar ninguna validación fallida borra trabajo ni resta
       puntos; el único coste es el tiempo.</li>

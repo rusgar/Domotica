@@ -18,6 +18,10 @@ const state = {
   // Zonas que el alumno dio por buenas con el pop-up «¿Dejarlo así?»
   // (pueden estar incompletas o con algún aparato mal colocado)
   zonasTerminadas: {},
+  // Zonas en las que ya se mostró la cantidad de aparatos bien colocados.
+  // La cantidad se muestra SOLO UNA vez por zona; la segunda validación
+  // es un «salvavidas» sin número (solo «¿Dejarlo así o poner más?»)
+  zonasConCuenta: {},
   ultimaPregunta: {},     // zonaId -> índice de la última pregunta mostrada (para no repetir)
   preguntaActual: null,
 

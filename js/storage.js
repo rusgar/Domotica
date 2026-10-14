@@ -21,6 +21,7 @@ function guardarProgreso() {
     zonasDesbloqueadas: state.zonasDesbloqueadas,
     zonasVerificadas: state.zonasVerificadas,
     zonasTerminadas: state.zonasTerminadas,
+    zonasConCuenta: state.zonasConCuenta,
     ultimaPregunta: state.ultimaPregunta,
     timestamp: Date.now(),
   };

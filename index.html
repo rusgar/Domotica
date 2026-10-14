@@ -47,7 +47,7 @@
   </header>
 
   <div class="examen-banner" id="examenBanner">
-    🎓 MODO EXAMEN ACTIVO · No hay pistas · No se puede reiniciar · No hay auto-colocación
+    🎓 MODO EXAMEN ACTIVO · No se puede reiniciar · No hay auto-colocación
   </div>
 
   <!-- ============================================================ -->
@@ -70,7 +70,6 @@
     <div class="toolbar">
       <button class="btn-check" id="btnVerificar" disabled
         title="Usa el botón «✓ Validar» de cada zona para comprobarla">✓ Verificar colocación</button>
-      <button class="btn-hint" id="btnPista" onclick="mostrarPista()" disabled>💡 Pista (bloqueada)</button>
       <button class="btn-auto" id="btnAuto" onclick="colocarTodo()" style="display:none;">🤖 Auto-colocar</button>
       <button class="btn-examen" id="btnExamen" onclick="toggleExamen()" style="display:none;">🎓 Activar modo examen</button>
       <button class="btn-reset" id="btnReset" onclick="resetear()">🔄 Reiniciar</button>
@@ -286,6 +285,7 @@
         <h3 id="decisionZona">Zona</h3>
         <button class="btn-cerrar-modal" onclick="cerrarModalDecision()">✕</button>
       </div>
+      <p class="decision-cuenta" id="decisionCuenta"></p>
       <p class="pregunta-texto">¿Quieres dejarlo así o poner más?</p>
       <div class="opciones">
         <button class="opcion opcion-dejar" onclick="dejarZonaAsi()">📌 Dejarlo así</button>
@@ -470,6 +470,7 @@
   <!-- Módulo auditoría -->
   <script src="js/auditoria/tarjetas.js"></script>
   <script src="js/auditoria/fuentes.js"></script>
+  <script src="js/auditoria/datos-fuentes.js"></script>
   <script src="js/auditoria/normativa.js"></script>
   <script src="js/auditoria/calculos.js"></script>
   <script src="js/auditoria/presupuesto.js"></script>

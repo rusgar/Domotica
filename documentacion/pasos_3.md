@@ -67,8 +67,8 @@ El objeto `zonasDesbloqueadas` se guarda en `localStorage` junto al resto del pr
 Al pulsar `🔄 Reiniciar` (el reinicio total; **validar una zona ya no hace esto**: validar mal
 solo abre el pop-up «¿Quieres dejarlo así o poner más?» y no toca nada):
 
-- Se vacían `colocados`, `zonasDesbloqueadas`, `zonasVerificadas` y `zonasTerminadas`.
-- Todas las zonas vuelven a estado bloqueado (desaparecen ✅ y 📌).
+- Se vacían `colocados`, `zonasDesbloqueadas`, `zonasVerificadas`, `zonasTerminadas` y `zonasConCuenta`.
+- Todas las zonas vuelven a estado bloqueado (desaparecen ✅, 📌 y 🔒).
 - Los botones de pregunta se reactivan y los de «✓ Validar» se deshabilitan.
 - Se conserva `ultimaPregunta`: la próxima pregunta de cada zona **no se repetirá**.
 
@@ -79,6 +79,7 @@ El botón `🤖 Auto-colocar` ahora también desbloquea todas las zonas sin preg
 ## 📌 Decisiones tomadas
 
 - Las preguntas se eligen **al azar** cada vez que se abre el modal, **sin repetir la anterior** de esa zona (`ultimaPregunta`).
+- Al aceptar una zona («📌 Dejarlo así») queda **cerrada** (🔒): no se puede añadir ni quitar aparatos.
 - Al fallar **no se bloquea la zona**; simplemente se carga otra pregunta.
 - Los aciertos no se acumulan: solo hay que acertar **una vez** por zona.
 - El profesor en modo examen **no** desbloquea automáticamente: el alumno sigue respondiendo.

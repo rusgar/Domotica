@@ -60,7 +60,7 @@ El material cubre los temas del curso:
 - Usuario: `profe` · Contraseña: `domotica2025`
 - Se desbloquean:
   - Botón **🤖 Auto-colocar** (solución rápida).
-  - Botón **🎓 Modo examen** (bloquea pistas, reset y auto-colocación, añade cuenta atrás).
+  - Botón **🎓 Modo examen** (bloquea el reset y la auto-colocación, añade cuenta atrás).
   - Botón **📊 Resultados** (panel privado con contraseña): carga los JSON descargados de Moodle, muestra **una fila por tarjeta** con la **puntuación automática (0-5)** y su **ponderación (0-1,25)**. **No hay nota manual**: la nota de cada tarjeta es la automática → **Auto/5 × 1,25** (las 2 tarjetas = **10** = **2,5 ponderados**). Además convierte cada JSON en un **informe `.md`** con las respuestas del alumno **y la solución/rúbrica incrustada**. En **Colocar aparatos** cargas la **captura** (botón **＋ 📷**, se ve con **📷 Ver**) **y el JSON**: la nota también es **solo automática** → `puntos` del JSON × 1,0 (8 zonas × 0,125) restando **−0,1** si el reloj del ejercicio pasa de **60 min**; sin JSON la fila queda **sin puntuación**.
   - Atajo de teclado `Ctrl + Shift + A` para auto-colocar.
 
@@ -83,7 +83,7 @@ dashboard-domotica/
 │ ├── constancia.js ← constancias PNG + JSON con iniciales
 │ ├── login.js ← login alumno/profesor + cambio de módulo
 │ ├── dragdrop.js ← arrastrar y soltar + preguntas
-│ ├── validacion.js ← verificación, pistas, reset
+ │ ├── validacion.js ← verificación, pop-up de confirmación, reset
 │ ├── examen.js ← modo examen (ambos módulos)
 │ ├── ui.js ← renderizado del banco
 │ ├── panel-profesor.js ← panel de resultados (solo profesor)
